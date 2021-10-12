@@ -20,30 +20,23 @@ const StudentProfile = () => {
 	
     
 	const submitProfile = async () => {
-	   const resp = await postStudentProfile({...form})
+	   const resp = await postStudentProfile({...form,flag_profile_lock:1})
 	   if(resp.success){
 		 const esp = await fetchStudentData(userData.refno)
 		 if(esp.success) setUserData({...esp.data})
 		 dispatch(updateAlert({show:true,message:`PROFILE UPDATED`,type:'success'}))
 	   }
 	   setIsEdit(false)
-	   
-    }
+	}
 
     const onChange = (e) => {
         setForm({...form, [e.target.name]:e.target.value})
     }
 
 	const onPhotoChange = async (e) => {
-        console.log(e)
-		console.log(e.files)
-		const f = e.target.files[0];
+        const f = e.target.files[0];
         if(f && f.type.match('image.*')){
           const base64 = await convertBase64(f);
-          // Initial Setup
-          //localStorage.setItem('photo', base64);
-          //dispatch(setUser({...applicant.user,photo:base64}))
-          
           // Resizing & Compression from Backend
           try {
             Resizer.imageFileResizer(
@@ -54,10 +47,13 @@ const StudentProfile = () => {
               100,  // quality
               0,  // rotation
               async (uri) => {
-                console.log(uri);
                 // Send To Server
-				const resp = await sendPhoto(user.user.refno,uri,'01') 
-				document.querySelector('#studphoto').setAttribute('src',uri)
+				const resp = await sendPhoto(user.user.refno,uri,'01',true)
+				if(resp.success){
+				  document.querySelector('#studphoto').setAttribute('src',uri)
+				  dispatch(updateUser({...userData,photo:resp.data+'&rand='+Math.random()*2000})) 
+				}
+				
               },
               "base64",
             );
@@ -69,7 +65,8 @@ const StudentProfile = () => {
     }
 
 	const browsePhoto = (e) => {
-        document.querySelector('#photo').click();
+		const cm = window.confirm('YOU ARE ALLOWED ONLY ONE ATTEMPT TO UPLOAD A PHOTO !\n\n -- UPLOAD NEW PHOTO ?')
+		if(cm) document.querySelector('#photo').click();
     }
 
 
@@ -167,7 +164,7 @@ const StudentProfile = () => {
 									<td className="data-col left" colspan="2">
 									    { !isEdit ?
 										<h3 className="lead"><small><b>{userData && userData.phone}</b></small></h3>:
-										<input type="text" name="phone" value={form.phone} onChange={onChange}/>
+										<input type="text" name="phone" minLength={9} maxLength={10} value={form.phone} onChange={onChange}/>
 										}
 								    </td>
 								</tr>
@@ -203,12 +200,14 @@ const StudentProfile = () => {
 									<td className="data-col left" colspan="2">
 									    { !isEdit ?
 										<h3 className="lead"><small><b>{userData.guardian_phone && userData.guardian_phone || 'NONE'}</b></small></h3>:
-										<input type="text" name="guardian_phone" value={form.guardian_phone} onChange={onChange}/>
+										<input type="text" name="guardian_phone" minLength={9} maxLength={10} value={form.guardian_phone} onChange={onChange}/>
 										}
 									</td>
 								</tr>
 
-
+								{ userData.flag_profile_lock == 0 &&
+								<>  </>}
+								
                                 <tr role="row" className="odd py-1">
 									<td className="data-col"><b className="text-primary left">PROGRAMME OF STUDY</b></td>
 									<td className="data-col left" colspan="2">
@@ -279,7 +278,8 @@ const StudentProfile = () => {
 									    { !isEdit ?
 										<h3 className="lead"><small><b>{userData.semester && Math.ceil(userData.semester/2) || 'NOT SET'}</b></small></h3>:
 										<select name="semester" value={form.semester} onChange={onChange} className="form-control">
-                                            <option>-- CHOOSE CURRENT YEAR --</option>
+                                            <option disabled selected>-- CHOOSE CURRENT YEAR --</option>
+											<option value="0">-- COMPLETED --</option>
 											<option value="1">YEAR 1, SEMESTER 1</option>
 											<option value="2">YEAR 1, SEMESTER 2</option>
 											<option value="3">YEAR 2, SEMESTER 1</option>
@@ -292,7 +292,19 @@ const StudentProfile = () => {
                                         }
 									</td>
 								</tr>
-                               
+								<tr role="row" className="odd py-1">
+									<td className="data-col"><b className="text-primary left">COMPLETE STATUS</b></td>
+									<td className="data-col left" colspan="2">
+					                    { !isEdit ?
+										<h3 className="lead"><small><b>{userData.complete_status == '1' ? 'COMPLETED PROGRAMME':'STILL IN SCHOOL'}</b></small></h3>:
+										<select name="complete_status" value={form.complete_status} onChange={onChange} className="form-control">
+                                            { form.semester != 0 && <option value="0" selected={form.semester != 0}>STILL IN SCHOOL</option>}
+                                            <option value="1">COMPLETED PROGRAMME</option>
+										</select>
+                                        }
+									</td>
+								</tr>
+                             
 
                               {/*
 
@@ -343,16 +355,19 @@ const StudentProfile = () => {
 								<tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">{userData.major_name && userData.major_name.toUpperCase() || 'NONE'}</small><small><b className="user-id text-primary left">SPECIALIZATION / MAJOR</b></small></td></tr>
 								<tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">{userData.indexno && userData.indexno.toUpperCase()}</small><small><b className="user-id text-primary left">INDEX NUMBER</b></small></td></tr>
 								<tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">{userData.refno}</small><small><b className="user-id text-primary left">STUDENT ID</b></small></td></tr>
-                                <tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">{userData.semester && Math.ceil(userData.semester/2) || 'NOT SET'}</small><small><b className="user-id text-primary left">LEVEL / YEAR</b></small></td></tr>
-                                <tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">{userData.session && (userData.session === 'E' ? 'EVENING':(userData.session === 'W' ? 'WEEKEND':'MORNING'))}</small><small><b className="user-id text-primary left">STUDY MODE</b></small></td></tr>
+                                { userData.complete_status == '0' && <tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">{userData.semester && Math.ceil(userData.semester/2) || 'NOT SET'}</small><small><b className="user-id text-primary left">LEVEL / YEAR</b></small></td></tr>}
+								{ userData.complete_status == '1' && <tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">YES</small><small><b className="user-id text-primary left">COMPLETED</b></small></td></tr>}
+								<tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">{userData.session && (userData.session === 'E' ? 'EVENING':(userData.session === 'W' ? 'WEEKEND':'MORNING'))}</small><small><b className="user-id text-primary left">STUDY MODE</b></small></td></tr>
 							
                             </tbody>
 						</table>
 					</div>
+					{ userData.flag_photo_lock == '0' && 
 					<div className="col-sm-12 pl-0">
 						<input type="file" name="photo" id="photo" onChange={onPhotoChange}  style={{display:'none'}}/>
 						<button className="btn btn-block alert-dark text-primary" onClick={browsePhoto}><i className="fa fa-user-circle fa-lg"></i>&nbsp;&nbsp;<b>CHANGE/ADD NEW PHOTO</b></button>
 					</div>
+                    }
 				</div>
 			</div>
 		  </div>

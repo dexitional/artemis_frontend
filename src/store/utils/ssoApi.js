@@ -106,6 +106,12 @@ export const fetchSemesterSlip = async (session_id,indexno) => {
   return res.data;
 } 
 
+export const fetchSemesterSlipAIS = async (session_id,indexno) => {
+  const query = `?session_id=${session_id}&indexno=${indexno}`
+  const res = await axios.get(`${API_URL}/student/semregslip${query}`);
+  return res.data;
+} 
+
 export const fetchSemesterReg = async (session_id,refno) => {
   const query = `?session_id=${session_id}&refno=${refno}`
   const res = await axios.get(`${API_URL}/student/semesterreg${query}`);
@@ -123,20 +129,192 @@ export const fetchResults = async (indexno) => {
   return res.data;
 } 
 
-export const sendPhoto = async (refno,uri,group) => {
+export const sendPhoto = async (refno,uri,group,lock) => {
   var formData = new FormData()
   formData.append('tag',refno)
   formData.append('photo',uri)
   formData.append('group_id',group)
   console.log(formData)
-  const res = await axios.post(`${API_URL}/ssophoto`,{tag:refno,photo:uri,group_id:group});
+  const res = await axios.post(`${API_URL}/ssophoto`,{tag:refno,photo:uri,group_id:group,lock});
+  return res.data;
+} 
+
+
+// SSO & USER ENDPOINTS
+
+export const sendOtp = async (data) => {
+  const res = await axios.post(`${API_URL}/reset/sendotp`,{...data});
+  return res.data;
+} 
+
+
+export const verifyOtp = async (data) => {
+  const res = await axios.post(`${API_URL}/reset/verifyotp`,{...data});
+  return res.data;
+} 
+
+export const sendPwd = async (data) => {
+  const res = await axios.post(`${API_URL}/reset/sendpwd`,{...data});
+  return res.data;
+} 
+
+
+/* AIS APP ENDPOINTS */
+
+// STUDENTS
+export const fetchStudentDataAIS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/students${query}`);
+  return res.data;
+} 
+
+export const postStudentDataAIS = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/students`,{...data});
+  return res.data;
+} 
+
+export const resetAccount = async (refno) => {
+  const res = await axios.get(`${API_URL}/ais/resetpwd/${refno}`);
+  return res.data;
+} 
+
+export const generateMail = async (refno) => {
+  const res = await axios.get(`${API_URL}/ais/genmail/${refno}`);
+  return res.data;
+} 
+
+export const stageAccount = async (refno) => {
+  const res = await axios.get(`${API_URL}/ais/setupaccess/${refno}`);
+  return res.data;
+} 
+
+// REGISTRATIONS
+export const fetchRegDataAIS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/regdata${query}`);
+  return res.data;
+} 
+
+export const fetchRegListAIS = async () => {
+  const res = await axios.get(`${API_URL}/ais/reglist`);
+  return res.data;
+} 
+
+export const fetchMountListAIS = async () => {
+  const res = await axios.get(`${API_URL}/ais/regmount`);
+  return res.data;
+} 
+
+
+/* FMS APP ENDPOINTS */
+
+// BILLS  
+export const fetchBillsFMS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/fms/sbills${query}`);
+  return res.data;
+} 
+
+export const fetchBillFMS = async (id) => {
+  const res = await axios.get(`${API_URL}/fms/sbills/${id}`);
+  return res.data;
+} 
+
+export const postBillFMS = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/sbills`,{...data});
+  return res.data;
+} 
+
+export const sendBillFMS = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/sendbill`,{...data});
+  return res.data;
+} 
+
+export const deleteBill = async (id) => {
+  const res = await axios.delete(`${API_URL}/fms/sbills/${id}`);
+  return res.data;
+} 
+
+
+// FEE PAYMENTS  
+export const fetchPaymentsFMS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/fms/feestrans${query}`);
+  return res.data;
+} 
+
+export const fetchPaymentFMS = async (id) => {
+  const res = await axios.get(`${API_URL}/fms/feestrans/${id}`);
+  return res.data;
+} 
+
+export const postPaymentFMS = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/feestrans`,{...data});
+  return res.data;
+} 
+
+export const sendPaymentFMS = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/sfeestrans`,{...data});
+  return res.data;
+} 
+
+export const deletePayment = async (id) => {
+  const res = await axios.delete(`${API_URL}/fms/feestrans/${id}`);
+  return res.data;
+} 
+
+export const generateIndexNo = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/genindexno`,{...data});
   return res.data;
 } 
 
 
 
+/* HRS APP ENDPOINTS */
 
+// HRS STAFF
+export const fetchHRStaffDataHRS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/hrs/hrstaff${query}`);
+  return res.data;
+} 
 
+export const postHRStaffDataHRS = async (data) => {
+  const res = await axios.post(`${API_URL}/hrs/hrstaff`,{...data});
+  return res.data;
+} 
+
+export const deleteHRStaffDataHRS = async (id) => {
+  const res = await axios.delete(`${API_URL}/hrs/hrstaff/${id}`);
+  return res.data;
+} 
+
+export const resetAccountHRS = async (staffno) => {
+  const res = await axios.get(`${API_URL}/hrs/resetpwd/${staffno}`);
+  return res.data;
+} 
+
+export const generateMailHRS = async (staffno) => {
+  const res = await axios.get(`${API_URL}/hrs/genmail/${staffno}`);
+  return res.data;
+} 
+
+export const stageAccountHRS = async (staffno) => {
+  const res = await axios.get(`${API_URL}/hrs/setupaccess/${staffno}`);
+  return res.data;
+} 
+
+// ADMIN - HELPERS
+
+export const loadFMSHelpers = async () => {
+  const res = await axios.get(`${API_URL}/fms/helpers`);
+  return res.data;
+} 
+
+export const loadAISHelpers = async () => {
+  const res = await axios.get(`${API_URL}/ais/helpers`);
+  return res.data;
+} 
+
+export const loadHRSHelpers = async () => {
+  const res = await axios.get(`${API_URL}/hrs/helpers`);
+  return res.data;
+} 
 
 
 

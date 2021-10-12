@@ -1,4 +1,4 @@
-import React, { Component }  from 'react';
+import React, { useEffect }  from 'react';
 import '../../assets/css/ui-auth-elements.css';
 import '../../assets/css/ui-index.css';
 import NationalIcon from '../../assets/img/icon-national-id.png'
@@ -68,6 +68,17 @@ const SSOLoginLayout = ({children}) => {
 	   setError('');
     }
 
+	useEffect(()=>{
+		var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+		(function(){
+			var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+			s1.async=true;
+			s1.src='https://embed.tawk.to/614b5c42d326717cb682d291/1fg760pit';
+			s1.charset='UTF-8';
+			s1.setAttribute('crossorigin','*');
+			s0.parentNode.insertBefore(s1,s0);
+		})();
+	},[])
 
 
       return (
@@ -120,10 +131,11 @@ const SSOLoginLayout = ({children}) => {
 												{/*dsgform.password && form.password.length < 6 ? <span className="f.password.errors and f.password.errors.minlength" className="ae-input__error-msg ae-input__font-roboto-regular">Password must be at least 6 characters</span> : null*/}
 											</div>
                                             {error ? <div class="login-form__error"><b>Incorrect SSO Username or Password !</b></div> : null}
-											<Link className="login-form__link signin-form__forgot-password" to="/SSOReset"><b>Forgot your password? </b></Link>
+											<Link className="login-form__link signin-form__forgot-password" to="/SSOReset"><b>Reset your password? </b></Link>
+											<a className="login-form__link signin-form__forgot-password" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSccZFkI0JzisvrFmjyYLPSP7cGsdPnPotpKlk5rFjprUE9QHA/viewform" style={{color:"#f59f60",marginLeft:"10px"}}><b>Need assistance & help? </b></a>
 											<button type="submit" className="login-form__submit-button ae-button__green ae-button__button"><span className="ae-button__label"><b>{ !authenticate ? 'SIGN IN':'AUTHENTICATING ...'}</b></span></button>
-											
-                                            <div className="gauth">
+											<div style={{fontSize:'10px',fontWeight:'bolder',marginTop:'10px',fontSize:'11px'}}>*** Student sso username must be ( eg: xxxx@st.aucc.edu.gh ) <br/>*** Staff sso username must be ( eg: yyyy@aucc.edu.gh ) </div>
+											<div className="gauth d-none">
 												<button type="button" className="gauth__button ae-button__white ae-button__button"><span className="ae-button__label"> <i className="icon icon_gauth"></i> <b>SIGN IN WITH GOOGLE</b></span></button>
 											</div>
 										</form>

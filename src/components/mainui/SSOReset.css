@@ -18,3 +18,12 @@
 .login-form__title {
     font-size: 28px;
 }
+
+@media (max-width: 576px) {
+    .layout-login__reset {
+        left: 0;
+        width:auto; 
+    }
+}
+
+@media (max-width: 480px) {}

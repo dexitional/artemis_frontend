@@ -5,6 +5,9 @@ import './SSOReset.css';
 import { useHistory } from 'react-router-dom';
 import RoleHRS from './roles/RoleHRS';
 import RoleAMS from './roles/RoleAMS';
+import RoleAIS from './roles/RoleAIS';
+import RoleFMS from './roles/RoleFMS';
+import RoleSSO from './roles/RoleSSO';
 
 const SSORole = ({data}) => {
 	  
@@ -18,6 +21,9 @@ const SSORole = ({data}) => {
         switch(tag){
           case 'ams': return <RoleAMS data={data}/>
 		  case 'hrs': return <RoleHRS data={data}/>
+		  case 'ais': return <RoleAIS data={data}/>
+		  case 'fms': return <RoleFMS data={data}/>
+		  case 'sso': return <RoleSSO data={data}/>
 		}
 	  }
 

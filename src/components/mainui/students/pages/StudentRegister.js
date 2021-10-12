@@ -36,9 +36,7 @@ const StudentRegister = () => {
 	// Fetch Mounted courses for this semester
 	const loadSemesterReg = async () => {
 		setIsLoading(true)
-		console.log(user.user.refno);
 		const res = await fetchSemesterReg(user.user.session_id,user.user.refno)
-		
 		if(res.success){
 		   setRegcourses(res.data)
 		   setIsLoading(false)
@@ -72,6 +70,7 @@ const StudentRegister = () => {
 
 	const sendCourses = async () => {
 	   var isAllow = true;
+	   /*
 	   // Check for Exceeded Credit Hours
 	   const num = (regcourses.elective && regcourses.elective.filter(row => row.selected || row.lock == 1).reduce((acc,row)=> acc+row.credit,0))+(regcourses.core && regcourses.core.filter(row => row.selected || row.lock == 1).reduce((acc,row)=> acc+row.credit,0))+(regcourses.trail && regcourses.trail.filter(row => row.selected || row.lock == 1).reduce((acc,row)=> acc+row.credit,0))
 	   const selElective = (regcourses.elective && regcourses.elective.filter(row => row.selected || row.lock == 1)).length
@@ -84,6 +83,7 @@ const StudentRegister = () => {
 		  dispatch(updateAlert({show:true,message:`CHOOSE ${regcourses.meta.max_elective} ELECTIVES!`,type:'error'}))
 		  isAllow = false
 	   } 
+       */
        if(isAllow){
 		  // Submit Form Data
 		  const send = window.confirm('Register selected courses for semester ?')
@@ -128,6 +128,12 @@ const StudentRegister = () => {
 			allowReg = false
 			msg = "Registration is closed temporarily!"
 		}
+        // If Semester Level or Program ID or Major  ID is not Updated, Block Registration
+        if(!user.user.semester || !user.user.prog_id){
+			allowReg = false
+			msg = "Goto `Profile` to update Year/Level,Program of Study with/without Major Before permitted to Register or Contact AUCC IT Helpdesk for Assistance!"
+		}
+
 		setAllowRegister(allowReg)
 		setRegMsg(msg)
 		if(msg){
@@ -169,7 +175,7 @@ const StudentRegister = () => {
 							    courses.map((row) =>
 								<tr role="row" className="data-item odd">
 									<td className="data-col" colspan="2"><span className="lead user-name">{row.course_name && row.course_name.toUpperCase()}</span></td>
-									<td className="data-col dt-doc-type center"><b className="lead user-name text-primary">{row.course_id && row.course_id.toUpperCase()}</b></td>
+									<td className="data-col dt-doc-type center"><b className="lead user-name text-primary">{row.course_code && row.course_code.toUpperCase()}</b></td>
 									<td className="data-col center"><b className="badge badge-outline badge-dark badge-sm text-dark" style={{fontSize:'18px'}}>{row.credit}</b></td>
 								</tr>
 							    ) : null }
@@ -196,8 +202,8 @@ const StudentRegister = () => {
 									{ regcourses.core.map((row) =>
 									<tr role="row" className="data-item odd" style={{cursor:`${row.lock == 1 ? 'cursor':'pointer'}`,background:`${row.selected || row.lock == 1  ? '#e9f3ed':'none'}`}} onClick={(e) => chooseCourse(e,row.course_id,'C',row.lock)}>
 										<td className="data-col center"><span className={`text-white ${row.selected || row.lock == 1  ? 'btn-success':'btn-dark'}`} style={{width:'50px',height:'45px',padding:'3px 5px', borderRadius:'50%'}}><i className={`fa ${row.selected || row.lock == 1 ? 'fa-check':'fa-minus'}`}></i></span> </td>
-										<td className="data-col" colspan="2"><span className="lead user-name">{row.course_name.toUpperCase()}</span></td>
-										<td className="data-col dt-doc-type center"><b className="lead user-name text-primary">{row.course_id.toUpperCase()}</b></td>
+										<td className="data-col" colspan="2"><span className="lead user-name">{row.course_name && row.course_name.toUpperCase()}</span></td>
+										<td className="data-col dt-doc-type center"><b className="lead user-name text-primary">{row.course_code }</b></td>
 										<td className="data-col center"><b className="badge badge-outline badge-dark badge-sm text-dark" style={{fontSize:'18px'}}>{row.credit}</b></td>
 									</tr>
 									)}
@@ -205,25 +211,25 @@ const StudentRegister = () => {
 							 
                               { regcourses.elective && regcourses.elective.length > 0 ?
 							   <>
-									<tr><td colspan={5}><h4 className="alert alert-warning text-primary">ELECTIVE COURSES FOR THIS SEMESTER REGISTRATION {regcourses.meta.elective_remark && regcourses.meta.elective_remark.toUpperCase()} </h4></td></tr>
+									<tr><td colspan={5}><h4 className="alert alert-warning text-primary">ELECTIVE COURSES FOR THIS SEMESTER REGISTRATION {regcourses.meta && regcourses.meta.elective_remark/* && regcourses.meta.elective_remark.toUpperCase()*/} </h4></td></tr>
 									{ regcourses.elective.map((row) =>
 									<tr role="row" className="data-item odd" style={{cursor:`${row.lock == 1 ? 'cursor':'pointer'}`,background:`${row.selected || row.lock == 1  ? '#e9f3ed':'none'}`}} onClick={(e) => chooseCourse(e,row.course_id,'E',row.lock)}>
 										<td className="data-col center"><span className={`text-white ${row.selected || row.lock == 1  ? 'btn-success':'btn-dark'}`} style={{width:'50px',height:'45px',padding:'3px 5px', borderRadius:'50%'}}><i className={`fa ${row.selected || row.lock == 1 ? 'fa-check':'fa-minus'}`}></i></span> </td>
-										<td className="data-col" colspan="2"><span className="lead user-name">{row.course_name.toUpperCase()}</span></td>
-										<td className="data-col dt-doc-type center"><b className="lead user-name text-primary">{row.course_id.toUpperCase()}</b></td>
+										<td className="data-col" colspan="2"><span className="lead user-name">{row.course_name && row.course_name.toUpperCase()}</span></td>
+										<td className="data-col dt-doc-type center"><b className="lead user-name text-primary">{row.course_code}</b></td>
 										<td className="data-col center"><b className="badge badge-outline badge-dark badge-sm text-dark" style={{fontSize:'18px'}}>{row.credit}</b></td>
 									</tr>
 									)}
 							  </> : null }
 
-							  { regcourses.trail && regcourses.trail.length > 0 ?
+							  { false ?
 							   <>
 									<tr><td colspan={5}><h4 className="alert alert-warning text-primary">TRAILED COURSES FOR THIS SEMESTER REGISTRATION </h4></td></tr>
 									{ regcourses.trail.map((row) =>
 									<tr role="row" className="data-item odd" style={{cursor:`${row.lock == 1 ? 'cursor':'pointer'}`,background:`${row.selected || row.lock == 1  ? '#e9f3ed':'none'}`}} onClick={(e) => chooseCourse(e,row.course_id,'R',row.lock)}>
 										<td className="data-col center"><span className={`text-white ${row.selected || row.lock == 1  ? 'btn-success':'btn-dark'}`} style={{width:'50px',height:'45px',padding:'3px 5px', borderRadius:'50%'}}><i className={`fa ${row.selected || row.lock == 1 ? 'fa-check':'fa-minus'}`}></i></span> </td>
-										<td className="data-col" colspan="2"><span className="lead user-name">{row.course_name.toUpperCase()}</span></td>
-										<td className="data-col dt-doc-type center"><b className="lead user-name text-primary">{row.course_id.toUpperCase()}</b></td>
+										<td className="data-col" colspan="2"><span className="lead user-name">{row.course_name && row.course_name.toUpperCase()}</span></td>
+										<td className="data-col dt-doc-type center"><b className="lead user-name text-primary">{row.course_code}</b></td>
 										<td className="data-col center"><b className="badge badge-outline badge-dark badge-sm text-dark" style={{fontSize:'18px'}}>{row.credit}</b></td>
 									</tr>
 									)}

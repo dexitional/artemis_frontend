@@ -2,7 +2,12 @@ import React, { useState,useEffect } from 'react'
 import { Button,Modal,TabContainer,Tabs,Tab,Col,Row,Nav } from 'react-bootstrap'
 import { useDispatch,useSelector } from 'react-redux'
 import { updateModal } from '../../store/admission/ssoSlice'
+import PaperBill from './PaperBill'
 import PaperForm from './PaperForm'
+import PaperMountList from './PaperMountList'
+import PaperReceipt from './PaperReceipt'
+import PaperRegList from './PaperRegList'
+import PaperRegSlip from './PaperRegSlip'
 import PaperResult from './PaperResult'
 import PaperSlip from './PaperSlip'
 import PaperTable from './PaperTable'
@@ -22,7 +27,16 @@ const ModalPage = () => {
       if(modal && modal.page == 'letter') return  <PaperTable />
       if(modal && modal.page == 'slip') return  <PaperSlip />
       if(modal && modal.page == 'result') return  <PaperResult />
-      if(modal && modal.page == 'form') return  <PaperForm />
+      // Admin Modals Printout
+      if(modal && modal.page == 'form') return  <PaperForm /> // Applicant Printout
+      if(modal && modal.page == 'bill') return  <PaperBill /> // Bill Printout
+      if(modal && modal.page == 'payment') return  <PaperReceipt /> // Payment Receipt Printout
+      if(modal && modal.page == 'regslip') return  <PaperRegSlip /> // Registration Printout
+      if(modal && modal.page == 'reglist') return  <PaperRegList /> // Registration Printout
+      if(modal && modal.page == 'regmount') return  <PaperMountList /> // Registration Printout
+ 
+ 
+      
   }
 
 

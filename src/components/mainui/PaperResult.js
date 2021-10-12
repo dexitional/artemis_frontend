@@ -99,7 +99,7 @@ const PaperResult = () => {
                             <td align="center">{row.credit}</td>
                             <td align="center">{row.total_score}</td>
                             <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{getGrade(row.total_score)}</td>
-                            <td align="center">{row.total_score && getPoint(row.total_score).toFixed(1)}</td>
+                            <td align="center">{row.total_score && getPoint(row.total_score) && getPoint(row.total_score).toFixed(1)}</td>
                         </tr>
                          ) : 
                          <tr>
@@ -132,3 +132,28 @@ const PaperResult = () => {
 }
 
 export default PaperResult
+
+{/*
+
+
+element.style {
+}
+<style>
+.token-padding {
+    padding-left: 15px;
+    padding-right: 15px;
+    border: 4px solid #f58635;
+    position: relative;
+}
+<style>
+.token-information {
+    border-radius: 10px;
+    overflow: hidden;
+}
+@media (min-width: 576px)
+<style>
+.card-full-height {
+    height: calc(77% - 30px);
+
+
+*/}

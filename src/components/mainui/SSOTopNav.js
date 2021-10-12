@@ -4,6 +4,7 @@ import '../../assets/css/ui-style.css';
 import LogoP from '../../assets/img/logo_portal.png'
 import { Fragment } from 'react';
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom';
 
 const SSOTopNav = () => {
       const { sso } = useSelector( state => state)
@@ -26,7 +27,7 @@ const SSOTopNav = () => {
 					</li>
 				</ul>
 				
-				<a className="topbar-logo" href="/dash"><img src={LogoP} srcSet={LogoP} alt="logo" /></a>
+				<Link className="topbar-logo" to={ user && user.user.user_group == "01" ? '/student':'/dash' }><img src={LogoP} srcSet={LogoP} alt="logo" /></Link>
 				<ul className="topbar-nav">
 					<li className="topbar-nav-item relative">
 						<span className="user-welcome d-none d-lg-inline-block">WELCOME ! { user && user.user.name || (user.user.fname+' '+user.user.lname)	 }</span><a className="toggle-tigger user-thumb" href="#"><em className="ti ti-user" /></a>

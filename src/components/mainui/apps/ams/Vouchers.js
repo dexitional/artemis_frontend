@@ -133,6 +133,7 @@ const List = () => {
    
    const onSearchChange = async (e) => {
      setKeyword(e.target.value)
+     setPage(1)
      if(e.target.value == '') fetchVoucherData()
    }
 

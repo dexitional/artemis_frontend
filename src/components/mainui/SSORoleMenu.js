@@ -23,8 +23,7 @@ const SSORoleMenu = ({data,mod}) => {
 	if(!user){
 	  history.push('/login');
 	}
-
-	if(!data){
+    if(!data){
 	  history.push('/dash');
 	}
 
@@ -37,7 +36,7 @@ const SSORoleMenu = ({data,mod}) => {
 					<div className="token-balance token-balance-with-icon">
 						<div className="token-balance-icon"><img src={user.photo} style={{width:'200px',borderRadius:'5px'}} alt="logo"/></div>
 						<div className="token-balance-text">
-							<h6 className="card-sub-title">{user.user.fname+' '+user.user.mname+' '+user.user.lname}</h6><span className="lead"> {data && data.app_name && data.app_name.toUpperCase()}</span>
+							<h6 className="card-sub-title">{user.user.names}</h6><span className="lead"> {data && data.app_name && data.app_name.toUpperCase()}</span>
 						 {/*<h6 className="card-sub-title">SENIOR ICT ASSISTANT<br><span className="btitle"><b>DESIGNATION</b></span><br><br></h6>
 							<h6 className="card-sub-title">SENIOR MEMBER<br><span className="btitle"><b>STAFF CATEGORY</b></span></h6> */}
 						</div> 

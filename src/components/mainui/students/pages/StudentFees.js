@@ -38,31 +38,32 @@ const StudentFees = () => {
 									<th className="data-col dt-user sorting_disabled center">BALANCE</th>
 								</tr>
 							</thead>
-							<tbody >
-								<tr role="row" className="data-item odd">
+							<tbody>
+								<tr role="row" className="data-item odd d-none">
 									<td className="data-col" colspan="2" ><span className="lead user-name">ACADEMIC USER FACILITY FEES</span><b className="user-id text-primary left">-- 01 Jul 2020 | Semester 1, Year 1 </b></td>
 									<td className="data-col dt-doc-type  center"><h3 className="lead user-name"><small><b>BILL</b></small></h3></td>
 									<td className="data-col center"><b className="badge badge-outline badge-danger badge-sm text-danger" style={{fontSize:'15px', fontWeight:'bolder'}}>GHS -29787</b></td>
 								    <td className="data-col center"><b className="badge badge-outline badge-dark badge-sm text-dark" style={{fontSize:'15px', fontWeight:'bolder'}}>GHS -29787</b></td>
 								</tr>
-								<tr role="row" className="data-item odd">
+								<tr role="row" className="data-item odd d-none">
 									<td className="data-col" colspan="2" ><span className="lead user-name">ACADEMIC USER FACILITY FEES</span><b className="user-id text-primary left">-- 01 Jul 2020</b></td>
 									<td className="data-col dt-doc-type  center"><h3 className="lead user-name"><small><b>BILL</b></small></h3></td>
 									<td className="data-col center"><b className="badge badge-outline badge-danger badge-sm text-danger" style={{fontSize:'15px', fontWeight:'bolder'}}>GHS -29787</b></td>
 								    <td className="data-col center"><b className="badge badge-outline badge-dark badge-sm text-dark" style={{fontSize:'15px', fontWeight:'bolder'}}>GHS -29787</b></td>
 								</tr>
-								<tr role="row" className="data-item odd">
+								<tr role="row" className="data-item odd d-none">
 									<td className="data-col" colspan="2" ><span className="lead user-name">ONLINE: 20777941-Ebenezer Kwabena Blay ACKAH</span><b className="user-id text-primary left">-- 01 Jul 2020</b></td>
 									<td className="data-col dt-doc-type  center"><h3 className="lead user-name"><small><b>PAYMENT</b></small></h3></td>
 									<td className="data-col center"><b className="badge badge-outline badge-success badge-sm text-dark" style={{fontSize:'15px', fontWeight:'bolder'}}>GHS -29787</b></td>
 								    <td className="data-col center"><b className="badge badge-outline badge-dark badge-sm text-dark" style={{fontSize:'15px', fontWeight:'bolder'}}>GHS -29787</b></td>
 								</tr>
-								
-								
+								<tr role="row" className="data-item odd">
+									<td className="data-col dt-doc-type center" colspan="5" ><span className="lead user-name">-- NO TRANSACTIONAL RECORDS --</span></td>
+								</tr>
 							</tbody>
 						</table>
 					</div>
-					<h6  className="text-light mb-0">* Last update on 28 August, 2020.</h6>
+					<h6  className="text-light mb-0">* Transactional data shall be updated soon!</h6>
 				</div>
 			</div>
 		</div>
@@ -86,15 +87,15 @@ const StudentFees = () => {
 					<div  className="table-wrap responsive-table">
 						<table id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" className="data-table dt-init kyc-list dataTable no-footer">
 							<thead >
-								<tr role="row" className="data-item data-head"><th colspan="2" className="data-col dt-user sorting_disabled pt-3">FEE ITEMS & AMOUNT</th></tr>
+								<tr role="row" className="data-item data-head d-none"><th colspan="2" className="data-col dt-user sorting_disabled pt-3">FEE ITEMS & AMOUNT</th></tr>
 							</thead>
 							<tbody >
-								<tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">INTRODUCTION TO MANAGEMENT IN LIVING</small><small><b className="user-id text-primary left">GHC 5000.22</b></small></td></tr>
-								<tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">INTRODUCTION TO MANAGEMENT IN LIVING</small><small><b className="user-id text-primary left">GHC 5000.22</b></small></td></tr>
-								<tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">INTRODUCTION TO MANAGEMENT IN LIVING</small><small><b className="user-id text-primary left">GHC 5000.22</b></small></td></tr>
-								<tr role="row" className="data-item"><td className="data-col" colspan="2" ><small className="lead user-name">INTRODUCTION TO MANAGEMENT IN LIVING</small><small><b className="user-id text-primary left">GHC 5000.22</b></small></td></tr>
-								<tr role="row" className="data-item data-head"><th className="data-col dt-user sorting_disabled py-3 px-3">AMNT PAID: </th><th className="data-col dt-user sorting_disabled py-3 px-3"><b className="text-primary w-50">GHC</b> 10000.0</th></tr>
-								<tr role="row" className="data-item data-head"><th className="data-col dt-user sorting_disabled py-3 px-3">AMNT OWED: </th><th className="data-col dt-user sorting_disabled py-3 px-3"><b className="text-primary w-50">GHC</b> 10000.0</th></tr>
+								<tr role="row" className="data-item d-none"><td className="data-col" colspan="2" ><small className="lead user-name">INTRODUCTION TO MANAGEMENT IN LIVING</small><small><b className="user-id text-primary left">GHC 5000.22</b></small></td></tr>
+								<tr role="row" className="data-item d-none"><td className="data-col" colspan="2" ><small className="lead user-name">INTRODUCTION TO MANAGEMENT IN LIVING</small><small><b className="user-id text-primary left">GHC 5000.22</b></small></td></tr>
+								<tr role="row" className="data-item d-none"><td className="data-col" colspan="2" ><small className="lead user-name">INTRODUCTION TO MANAGEMENT IN LIVING</small><small><b className="user-id text-primary left">GHC 5000.22</b></small></td></tr>
+								<tr role="row" className="data-item d-none"><td className="data-col" colspan="2" ><small className="lead user-name">INTRODUCTION TO MANAGEMENT IN LIVING</small><small><b className="user-id text-primary left">GHC 5000.22</b></small></td></tr>
+								<tr role="row" className="data-item data-head d-none"><th className="data-col dt-user sorting_disabled py-3 px-3">AMNT PAID: </th><th className="data-col dt-user sorting_disabled py-3 px-3"><b className="text-primary w-50">GHC</b> 10000.0</th></tr>
+								<tr role="row" className="data-item data-head d-none"><th className="data-col dt-user sorting_disabled py-3 px-3">AMNT OWED: </th><th className="data-col dt-user sorting_disabled py-3 px-3"><b className="text-primary w-50">GHC</b> 10000.0</th></tr>
 							</tbody>
 						</table>
 					</div>

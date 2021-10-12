@@ -10,6 +10,8 @@ import SSORoleMenu from './SSORoleMenu';
 import SSORole from './SSORole';
 import SSOModuleHead from './SSOModuleHead';
 import SSOModuleBody from './SSOModuleBody';
+import AlertBox from './students/components/AlertBox';
+import DialogBox from './students/components/DialogBox';
 
 
 const SSOModuleLayout = () => {
@@ -53,7 +55,8 @@ const SSOModuleLayout = () => {
 
 			</div>
 		</div>
-		
+		<AlertBox/>
+	    <DialogBox/>
 
 
 

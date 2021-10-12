@@ -18,7 +18,7 @@ const StudentHeader = ({data,mod}) => {
 						<div className="token-balance-text">
 						  <h6 className="card-sub-title">{user.user.name}</h6>
 						  <span className="lead">{user.user.indexno}</span><br/><br/>
-					      <h6 className="card-sub-title"><span className="btitle"><b>{user.user.program_name} { user.user.major_name ? <><br/> [ <span style={{color:'#f58635'}}>STRATEGIC COMMUNICATIONS</span> ]</> : null } </b></span></h6>
+					      <h6 className="card-sub-title"><span className="btitle"><b>{user.user.program_name} { user.user.major_name ? <><br/> [ <span style={{color:'#f58635'}}>{user.user.major_name && user.user.major_name.toUpperCase()}</span> ]</> : null } </b></span></h6>
 						</div> 
 					</div>
 				</div>

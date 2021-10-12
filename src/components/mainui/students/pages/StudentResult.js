@@ -171,7 +171,7 @@ const StudentResult = () => {
 						<hr/>
 					  </>
                     )}
-					<ul  className="progress-info nitro" style={{border:"none"}}>
+					<ul  className="progress-info nitro" style={{border:"none",display:"none"}}>
 					  <li>
 						 <button className="btn btn-sm btn-block btn-primary " style={{color: 'rgb(248, 224, 205)'}}><b><span style={{display:'none'}}>FINAL</span>CUMULATIVE-GPA&nbsp;&nbsp;:&nbsp;&nbsp; 3.24 </b></button>
 					  </li>

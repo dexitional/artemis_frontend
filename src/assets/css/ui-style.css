@@ -5499,6 +5499,10 @@ select.select-sm {
     height: calc(100% - 30px);
   }
 
+  .cardbox-full-height {
+    height: calc(77% - 30px);
+  }
+
   .card-timeline .card-innr {
     height: calc(100% - 50px);
   }

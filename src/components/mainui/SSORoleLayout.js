@@ -7,6 +7,8 @@ import { useSelector,useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom'; 
 import SSORoleMenu from './SSORoleMenu';
 import SSORole from './SSORole';
+import AlertBox from './students/components/AlertBox';
+import DialogBox from './students/components/DialogBox';
 
 
 const SSORoleLayout = ({location:{data}}) => {
@@ -29,16 +31,14 @@ const SSORoleLayout = ({location:{data}}) => {
 		{/* Content */}
 		<div className="page-content">
 		   <div className="container">
-			  {/* Menu */}
 			  <SSORoleMenu data={data}/>
-			  {/* Content Page */}
 			  <SSORole data={data}/>
 		    </div>
-			  {/* .container */}
-		   </div>
-		   {/* .page-content */}
+		</div>
+		<AlertBox/>
+	    <DialogBox/>
 
-
+          
 		   <div className="footer-bar">
 			  <div className="container">
 				 <div className="row align-items-center justify-content-center">

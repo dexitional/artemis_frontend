@@ -14,6 +14,8 @@ import SSODashMenu from './SSODashMenu';
 import SSODash from './SSODash';
 import { useSelector,useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom'; 
+import AlertBox from './students/components/AlertBox';
+import DialogBox from './students/components/DialogBox';
 
 
 const SSOPageLayout = () => {
@@ -41,7 +43,8 @@ const SSOPageLayout = () => {
 			  <SSODashMenu/>
 			  {/* Content Page */}
 			  <SSODash/>
-		           
+			  <AlertBox/>
+			  <DialogBox/>
 
 				 {/* E-learning Services 
 				 <div class="row">

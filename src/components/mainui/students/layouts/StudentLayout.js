@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ useEffect } from 'react';
 import '../../../../assets/css/ui-vendor.css';
 import '../../../../assets/css/ui-style.css';
 import { useParams,useLocation } from 'react-router-dom';
@@ -9,6 +9,8 @@ import StudentNavbar from '../components/StudentNavbar';
 import StudentPageLoad from '../components/StudentPageLoad';
 import StudentHeader from '../components/StudentHeader';
 import AlertBox from '../components/AlertBox';
+import DialogBox from '../components/DialogBox';
+import { updateDialog } from '../../../../store/admission/ssoSlice';
 
 const StudentLayout = () => {
 	
@@ -30,7 +32,18 @@ const StudentLayout = () => {
 	if(!sso.user && (sso.user && sso.user.user.user_group && parseInt(sso.user.user.user_group) > 1)){
 		history.push('/login');
 	}
+
+	const checkNotes = () => {
+       // Display Notifications
+	   if(sso.user && sso.user.user.flag_profile_lock == 0){
+		 dispatch(updateDialog({...sso.dialog, title:'<b>GENERAL STUDENT NOTIFICATION</b><hr/>',content:`Greetings <b>${sso.user.user.fname}</b>! Please click on <b>GOTO</b> to update your Student Profile. This exercise is mandatory to all active students of AUCC.<br/><br/>Choose <b>CHANGE</b> to bring the Edit Form and provide the needed information. Thank you !`, url:'student?mod=profile&view=list',show:true}))
+	   }
+	}
+	
    
+	useEffect(()=>{
+       checkNotes()
+	},[])
 	
     return (
 	  <div>
@@ -46,6 +59,7 @@ const StudentLayout = () => {
 			  <StudentHeader mod={mod}/>
 			  <StudentPageLoad mod={mod} view={view} recid={recid}/>
 			  <AlertBox/>
+			  <DialogBox/>
 		   </div>
 		</div>
 		

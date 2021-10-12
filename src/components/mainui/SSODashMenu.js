@@ -28,9 +28,13 @@ const SSODashMenu = () => {
 								<div className="token-balance-text">
 									<h6 className="card-sub-title">{user && (user.user.fname+' '+user.user.mname+' '+user.user.lname)}</h6>
 									<span className="lead">{user && user.user.staff_no}<span> -- ( { user && user.user.staff_status} STAFF )</span></span>
+									<h6 className="card-sub-title">{user.user.designation}<br /><span className="btitle"><b>DESIGNATION</b></span></h6>
+									
+									{/*
 									<hr />
 									<h6 className="card-sub-title">{user.user.designation}<br /><span className="btitle"><b>DESIGNATION</b></span><br /><br /></h6>
 									<h6 className="card-sub-title">{user.user.staff_group}<br /><span className="btitle"><b>STAFF CATEGORY</b></span></h6>
+								    */}
 								</div>
 							</div>
 						</div>
@@ -42,23 +46,23 @@ const SSODashMenu = () => {
 					</div>
 				</div>
 				<div className="col-lg-5">
-						<div className="token-information card card-full-height token-padding">
+						<div className="token-information card card-full-height cardbox-full-height token-padding">
 							<div className="row">
 							<div className="col-12">
 								<div className="token-currency-choose">
 									<div className="row">
 										<div className="col-12" style={{marginBottom: '10px'}}>
-										<div className="pay-option-label unit-cover">
-										<h6><b>USERNAME : {user.user.inst_mail ? user.user.inst_mail.toUpperCase():'NOT SET'}</b></h6>
+										  <div className="pay-option-label unit-cover">
+										  <h6><b>USERNAME : {user.user.inst_mail ? user.user.inst_mail.toUpperCase():'NOT SET'}</b></h6>
 										</div>
 									</div>
-									<div className="col-12">
+									<div className="col-12 d-none">
 										<div className="pay-option">
 											<label className="pay-option-label" htmlFor="learn"><span className="pay-title"><span className="pay-cur">PHONE : {user.user.phone}</span>&nbsp;&nbsp;|&nbsp;&nbsp;<span className="pay-cur">DOB : {moment(user.user.dob).format('MMM DD, YYYY')}</span></span></label>
 										</div>
 									</div>
 									<br />
-									<div className="col-12">
+									<div className="col-12 d-none">
 										<div className="pay-option-label unit-cover">
 										<h6><b>{user.user.unitname}</b></h6>
 										</div>
@@ -74,13 +78,13 @@ const SSODashMenu = () => {
 					{/* .card */}
 				</div>
 				<div className="col-lg-2">
-					<div className="token-information card card-full-height dash-cover">
+					<div className="token-information card card-full-height cardbox-full-height dash-cover">
 						<div className="row no-gutters height-100">
 							<div className="col-md-12 text-center">
 							{/*
 							<div class="gaps-2x"></div>
 							*/}
-							<img src={Staff} className="dash-photo" style={{display: 'block', alignSelf: 'baseline'}} />
+							<img src={Staff} className="dash-photo" style={{display: 'block', alignSelf: 'top'}} />
 							</div>
 						</div>
 					</div>
