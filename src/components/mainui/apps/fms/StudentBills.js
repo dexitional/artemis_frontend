@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { deleteBill, fetchBillFMS, fetchBillsFMS, loadFMSHelpers, postBillFMS, sendBillFMS } from '../../../../store/utils/ssoApi';
+import { deleteBill, fetchBillFMS, fetchBillsFMS, loadFMSHelpers, postBillFMS, revokeBillFMS, revokeStBillFMS, sendBillFMS } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
@@ -105,6 +105,36 @@ const List = () => {
     }
   }
 
+  const revokeBill = async (id) => {
+    const bl = await revokeBillFMS({id})
+    if(bl.success){
+      const ss = bills.map(s => {
+        if(s.bid == id) return {...s,post_status:1 }
+        return s
+      })
+      setBills([...ss ])
+      dispatch(updateAlert({show:true,message:`BILL REMOVED FROM STUDENT ACCOUNTS !`,type:'success'}))
+      setBid(null);
+    }else{
+      dispatch(updateAlert({show:true,message:`${bl.msg.toUpperCase()}`,type:'error'}))
+    }
+  }
+
+
+  const revokeStBill = async (id) => {
+    const getInp = window.prompt("Please enter Student Reference Number or Student ID!")
+    if(getInp && getInp != ''){
+        const bl = await revokeStBillFMS({id,refno:getInp})
+        if(bl.success){
+          dispatch(updateAlert({show:true,message:`BILL REMOVED FROM STUDENT ACCOUNT !`,type:'success'}))
+          setBid(null);
+        }else{
+          dispatch(updateAlert({show:true,message:`${bl.msg.toUpperCase()}`,type:'error'}))
+        }
+    }
+  }
+
+
   const viewBill = async (id) => {
     const bl = await fetchBillFMS(id)
     if(bl.success){
@@ -152,6 +182,7 @@ const List = () => {
   const onSubmitSearch = async (e) => {
     e.preventDefault()
     setIsLoading(true)
+    
     fetchBills()
   }
 
@@ -159,6 +190,7 @@ const List = () => {
     setAnchorEl(e.currentTarget);
     setBid(id);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
     setBid(null);
@@ -222,13 +254,14 @@ const List = () => {
                                   <Button id={`basic-button${row.bid}`} variant="contained" color={row.post_status > 0 ? 'success':'warning'} aria-controls={`basic-menu${row.bid}`} aria-haspopup="true" aria-expanded={anchorEl && anchorEl == row.bid ? 'true' : undefined} onClick={(e) => handleClick(e,row.bid)}><i className="fa fa-bars"></i></Button>
                                   <Menu id={`basic-menu${row.bid}`} anchorEl={anchorEl} open={bid && bid == row.bid} onClose={handleClose} variant="outlined" MenuListProps={{'aria-labelledby': `basic-button${row.bid}`}}>
                                     <MenuItem onClick={()=> viewBill(row.bid)}>VIEW BILL</MenuItem>
-                                    { row.post_status == 0 && <MenuItem onClick={()=> postBill(row.bid)}>POST BILL</MenuItem> }
-                                    { row.post_status == 0 && <MenuItem onClick={()=> editBill(row.bid)}>EDIT BILL</MenuItem>}
+                                    { row.post_status == 1 && <MenuItem onClick={()=> revokeBill(row.bid)}>REVOKE BILL</MenuItem> }
+                                    { row.post_status == 1 && <MenuItem onClick={()=> revokeStBill(row.bid)}>REVOKE STUDENT</MenuItem> }
+                                    {/* row.post_status == 0 && <MenuItem onClick={()=> postBill(row.bid)}>POST BILL</MenuItem> */}
+                                    {/* row.post_status == 0 && <MenuItem onClick={()=> postBill(row.bid)}>POST BILL</MenuItem> */}
+                                    <MenuItem onClick={()=> editBill(row.bid)}>EDIT BILL</MenuItem>
                                     { row.post_status == 0 && <MenuItem onClick={()=> delBill(row.bid)}>DELETE BILL</MenuItem>}
                                   </Menu>
                                 </>
-
-
                             </td>   
                           </tr>
                           )}
@@ -248,7 +281,7 @@ const List = () => {
 // COMPONENT - FORM
 const Form = ({recid}) => {
     const [ loading,setLoading ] = useState(false);
-    const [ helper,setHelper ] = useState({ programs:[]});
+    const [ helper,setHelper ] = useState({ programs:[],sessions:[]});
     const history = useHistory();
     const dispatch = useDispatch();
     const { sso } = useSelector(state => state)
@@ -337,6 +370,13 @@ const Form = ({recid}) => {
 
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
+                                <label htmlFor="discount" className="input-item-label">BILL DISCOUNT</label>
+                                <input {...register("discount", { required: 'Please enter Discount amount !' })} className="input-bordered" type="text"/></div>
+                        </div>
+
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
                                 <label htmlFor="currency" className="input-item-label">BILL CURRENCY </label>
                                 <select {...register("currency")} className="input-bordered">
                                    <option value={'GHC'}>GHC</option>
@@ -366,11 +406,33 @@ const Form = ({recid}) => {
                                 </select>
                             </div>
                         </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="session_id" className="input-item-label">ACADEMIC SESSION</label>
+                                <select {...register("session_id")} className="input-bordered">
+                                  <option value="" disabled selected>--NONE--</option>
+                                  {helper && helper.sessions.map( row => 
+                                    <option value={row.id}>{row.academic_year}</option>
+                                  )}
+                                </select>
+                            </div>
+                        </div>
                         
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
                                 <label htmlFor="group_code" className="input-item-label">TARGET GROUP CODE</label>
                                 <input {...register("group_code", { required: 'Please enter Group code !' })} className="input-bordered" type="text"/></div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="currency" className="input-item-label">PUBLISH STATUS </label>
+                                <select {...register("post_status")} className="input-bordered">
+                                   <option value={1}>PUBLISHED</option>
+                                   <option value={0}>UNPUBLISHED</option>
+                                </select>
+                            </div>
                         </div>
 
                        

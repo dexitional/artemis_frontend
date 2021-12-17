@@ -1,6 +1,12 @@
+body {
+  overflow-y: scroll !important;
+  padding-right:0 !important;
+}
+
 h2,h3{
   font-family: Proxima Nova,proxima-nova,Helvetica Neue,Helvetica,Arial,sans-serif !important;
   line-height:1.5 !important;
+  
 }
 
 hr{

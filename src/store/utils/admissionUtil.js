@@ -12,6 +12,9 @@ import Qualification from '../../pages/admission/steps/Qualification';
 import Referee from '../../pages/admission/steps/Referee';
 import Result from '../../pages/admission/steps/Result';
 import { helperData } from '../utils/helperData'
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
+
 
 
 export const getReligion = (id) => {
@@ -46,9 +49,9 @@ export const getStage = (id) => {
    return null;
 } 
 
-export const getProgram = (id) => {
-   const row = helperData.programs.find(row => row.id == id)
-   if(row) return row['short'];
+export const getProgram = (id,data) => {
+   const row = data && data.find(row => row.id == id)
+   if(row) return `${row.program_name.toUpperCase()} ${row.major_name ? '( '+row.major_name.toUpperCase()+' )':''}`;
    return null;
 } 
 
@@ -114,6 +117,12 @@ export const getStageTitle = (id) => {
 
 export const getApplyTypeTitle = (id) => {
   const row = helperData.applyType.find(row => row.type_id == id)
+  if(row) return row['title'];
+  return null;
+}
+
+export const getAdmissionGroupTitle = (id) => {
+  const row = helperData.admissionGroups.find(row => row.stage_id == id)
   if(row) return row['title'];
   return null;
 }
@@ -238,4 +247,119 @@ export const convertBase64 = (file) => {
      fileReader.onerror = error => reject(error)
    })
 };
+
+export const getStudyMode = (mode) => {
+  var resp;
+  switch(mode){
+    case 'M': resp = 'Morning';break;
+    case 'A': resp = 'Afternoon';break;
+    case 'E': resp = 'Evening';break;
+    case 'W': resp = 'Weekend';break;
+    default: resp = '--NONE--';break;
+  }
+  return resp;
+} 
+
+export const getCountryTitle = (code,countries) => {
+  const row = countries.find(row => row.code_name == code)
+  if(row) return row['title'];
+  return null;
+}
+
+export const getGradeWeight = (grade) => {
+  const row = helperData.grades.find(row => row.id == grade)
+  if(row) return row['weight'];
+  return null;
+} 
+
+export const getGradeValue = (subjects,dataset) => {
+    var core = [],coreRequired = [],elective = [], core_val = 0, elective_val = 0,grade_value = 0;
+    if(subjects && subjects.length > 0){
+      for(var ro of subjects){
+        var row = {...ro }
+        row.weight = getGradeWeight(row.grade) || 0    
+        const sj = dataset.find(dt => dt.id == row.subject)
+        if(sj && sj.isCore) core.push(row)
+        if(sj && (sj.isCore && sj.isRequired)) coreRequired.push(row)
+        if(sj && !sj.isCore) elective.push(row)
+      }
+      if(coreRequired.length == 3){
+        core_val = core.reduce((ac,val) => ac+val.weight,0) || 0
+      }else{
+        if(core.length > 0){
+          core = core.sort((a, b) => a.weight - b.weight);
+          var mcore = []
+          for(var i = 0; i < core.length;i++){
+            if(i < 3) mcore.push(core[i])
+          }
+          if(mcore.length > 0) core_val = core.reduce((ac,val) => ac+val.weight,0) || 0
+        }
+      }
+      if(elective.length > 0){
+        elective = elective.sort((a, b) => a.weight - b.weight);
+        var melect = []
+        for(var i = 0; i < elective.length;i++){
+           if(i < 3) melect.push(elective[i])
+        }
+        if(melect.length > 0) elective_val = melect.reduce((ac,val) => ac+val.weight,0)
+      }
+      if(subjects.length >= 7 && elective.length >= 3 && core.length >= 3){
+        grade_value = core_val+elective_val;
+      }
+    }
+    return grade_value;
+} 
+
+export const getGradeByTotal = (total,schemeData) => {
+  const scheme = JSON.parse(schemeData)
+  let grade;
+  if(scheme && scheme.length > 0){
+    for(let s of scheme){
+      if(total >= s.min && total <= s.max){
+         grade = s.grade;
+         break;
+      }
+    }
+  }
+  if(grade) return grade;
+  return 'N/A';
+} 
+
+
+
+export const jsonToExcel = (csvData, fileName) => {
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+
+    const ws = XLSX.utils.json_to_sheet(csvData);
+    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], {type: fileType});
+    FileSaver.saveAs(data, fileName + fileExtension);
+}
+
+export const excelToJson = (fileName,callback) => {
+    const reader = new FileReader();
+    var responseData;
+    reader.onload = (evt) => {
+      // evt = on_file_select event
+      /* Parse data */
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: "binary" });
+      /* Get first worksheet */
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      
+      /* Convert array of arrays */
+      //const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
+      const data = XLSX.utils.sheet_to_json(ws);
+      console.log(data)
+      return callback(data)
+      
+    };
+    reader.readAsBinaryString(fileName);
+    //console.log(responseData)
+    //return responseData;
+}
+
 

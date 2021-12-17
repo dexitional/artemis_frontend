@@ -50,7 +50,7 @@ export const setDefaultSession = async (id) => {
 // VOUCHERS ENDPOINT CALLS
 
 export const fetchVouchers = async (id,query = '') => {
-  const res = await axios.get(`${API_URL}/ams/vouchers/${id}${query}`);
+  const res = await axios.get(`${API_URL}/ams/vouchers${query}`);
   return res.data;
 } 
 
@@ -69,6 +69,11 @@ export const recoverVoucher = async (data) => {
   return res.data;
 } 
 
+export const resendVoucherBySms = async (data) => {
+  const res = await axios.post(`${API_URL}/ams/resendvoucher`,{...data});
+  return res.data;
+} 
+
 
 // APPLICANTS ENDPOINT CALLS
 
@@ -82,6 +87,12 @@ export const  fetchApplicant = async (serial) => {
   return res.data;
 } 
 
+// SORTED APPLICANTS ENDPOINT CALLS
+
+export const fetchSortedApplicants = async (id,query = '') => {
+  const res = await axios.get(`${API_URL}/ams/sorted/${id}${query}`);
+  return res.data;
+} 
 
 // STUDENT PORTAL ENDPOINT CALLS
 
@@ -140,6 +151,17 @@ export const sendPhoto = async (refno,uri,group,lock) => {
 } 
 
 
+export const fetchStudentTrans = async (refno) => {
+  const res = await axios.get(`${API_URL}/student/transactions/${encodeURIComponent(refno)}`);
+  return res.data;
+} 
+
+export const fetchStudentBill = async (refno) => {
+  const res = await axios.get(`${API_URL}/student/bill/${encodeURIComponent(refno)}`);
+  return res.data;
+} 
+
+
 // SSO & USER ENDPOINTS
 
 export const sendOtp = async (data) => {
@@ -193,8 +215,8 @@ export const fetchRegDataAIS = async (query = '') => {
   return res.data;
 } 
 
-export const fetchRegListAIS = async () => {
-  const res = await axios.get(`${API_URL}/ais/reglist`);
+export const fetchRegListAIS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/reglist${query}`);
   return res.data;
 } 
 
@@ -202,6 +224,113 @@ export const fetchMountListAIS = async () => {
   const res = await axios.get(`${API_URL}/ais/regmount`);
   return res.data;
 } 
+
+
+// SCORESHEETS
+export const fetchSheetDataAIS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/scoresheets${query}`);
+  return res.data;
+} 
+
+export const fetchMySheetDataAIS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/myscoresheets${query}`);
+  return res.data;
+} 
+
+export const postSheetDataAIS = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/scoresheets`,{...data});
+  return res.data;
+} 
+
+export const deleteSheet = async (id) => {
+  const res = await axios.delete(`${API_URL}/ais/scoresheets/${id}`);
+  return res.data;
+} 
+
+
+export const assignSheet = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/assignsheet`,{...data});
+  return res.data;
+} 
+
+export const unassignSheet = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/unassignsheet`,{...data});
+  return res.data;
+} 
+
+export const loadAssessment = async (id) => {
+  const res = await axios.get(`${API_URL}/ais/loadsheet/${id}`);
+  return res.data;
+} 
+
+export const saveAssessment = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/savesheet`,{...data});
+  return res.data;
+} 
+
+export const publishAssessment = async (id) => {
+  const res = await axios.get(`${API_URL}/ais/publishsheet/${id}`);
+  return res.data;
+} 
+
+export const certifyAssessment = async (id) => {
+  const res = await axios.get(`${API_URL}/ais/certifysheet/${id}`);
+  return res.data;
+} 
+
+export const uncertifyAssessment = async (id) => {
+  const res = await axios.get(`${API_URL}/ais/uncertifysheet/${id}`);
+  return res.data;
+} 
+
+export const loadCourselist = async (id) => {
+  const res = await axios.get(`${API_URL}/ais/loadcourselist/${id}`);
+  return res.data;
+} 
+
+ 
+// CURRICULUM
+
+export const fetchMetaDataAIS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/curriculum${query}`);
+  return res.data;
+} 
+
+export const postMetaDataAIS = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/curriculum`,{...data});
+  return res.data;
+} 
+
+export const deleteMeta = async (id) => {
+  const res = await axios.delete(`${API_URL}/ais/curriculum/${id}`);
+  return res.data;
+} 
+
+
+// CALENDAR
+
+export const fetchCalDataAIS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/calendar${query}`);
+  return res.data;
+} 
+
+export const postCalDataAIS = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/calendar`,{...data});
+  return res.data;
+} 
+
+export const deleteCalendar = async (id) => {
+  const res = await axios.delete(`${API_URL}/ais/calendar/${id}`);
+  return res.data;
+} 
+
+export const activateCalendar = async (id) => {
+  const res = await axios.delete(`${API_URL}/ais/setcalendar/${id}`);
+  return res.data;
+} 
+
+
+
 
 
 /* FMS APP ENDPOINTS */
@@ -222,6 +351,16 @@ export const postBillFMS = async (data) => {
   return res.data;
 } 
 
+export const revokeBillFMS = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/revokebill`,{...data});
+  return res.data;
+} 
+
+export const revokeStBillFMS = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/revokestbill`,{...data});
+  return res.data;
+} 
+
 export const sendBillFMS = async (data) => {
   const res = await axios.post(`${API_URL}/fms/sendbill`,{...data});
   return res.data;
@@ -233,9 +372,46 @@ export const deleteBill = async (id) => {
 } 
 
 
+// BILL ITEMS  
+export const fetchBillItemsFMS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/fms/sbillitems${query}`);
+  return res.data;
+} 
+
+export const fetchBillItemFMS = async (id) => {
+  const res = await axios.get(`${API_URL}/fms/sbillitems/${id}`);
+  return res.data;
+} 
+
+export const postBillItemFMS = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/sbillitems`,{...data});
+  return res.data;
+} 
+
+export const addToBillFMS = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/addtobill`,{...data});
+  return res.data;
+} 
+
+export const deleteBillItem = async (id) => {
+  const res = await axios.delete(`${API_URL}/fms/sbillitems/${id}`);
+  return res.data;
+} 
+
+
 // FEE PAYMENTS  
 export const fetchPaymentsFMS = async (query = '') => {
   const res = await axios.get(`${API_URL}/fms/feestrans${query}`);
+  return res.data;
+} 
+
+export const fetchOtherPaymentsFMS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/fms/othertrans${query}`);
+  return res.data;
+} 
+
+export const fetchVoucherSalesFMS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/fms/vouchersales${query}`);
   return res.data;
 } 
 
@@ -264,6 +440,19 @@ export const generateIndexNo = async (data) => {
   return res.data;
 } 
 
+export const moveToFees = async (id) => {
+  const res = await axios.get(`${API_URL}/fms/movetofees/${id}`);
+  return res.data;
+} 
+
+
+// DEBTORS ENDPOINTS
+export const fetchStudentDebtorsFMS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/fms/debtors${query}`);
+  return res.data;
+} 
+
+
 
 
 /* HRS APP ENDPOINTS */
@@ -271,6 +460,16 @@ export const generateIndexNo = async (data) => {
 // HRS STAFF
 export const fetchHRStaffDataHRS = async (query = '') => {
   const res = await axios.get(`${API_URL}/hrs/hrstaff${query}`);
+  return res.data;
+} 
+
+export const fetchHRStaffHRS = async (sno) => {
+  const res = await axios.get(`${API_URL}/hrs/hrstaff/${sno}`);
+  return res.data;
+} 
+
+export const fetchActiveStListHRS = async () => {
+  const res = await axios.get(`${API_URL}/hrs/stactive`);
   return res.data;
 } 
 
@@ -299,6 +498,54 @@ export const stageAccountHRS = async (staffno) => {
   return res.data;
 } 
 
+export const revokeRole = async (uid,role) => {
+  const res = await axios.get(`${API_URL}/hrs/revokerole/${uid}/${role}`);
+  return res.data;
+} 
+
+export const upgradeRole = async (uid,role) => {
+  const res = await axios.get(`${API_URL}/hrs/upgraderole/${uid}/${role}`);
+  return res.data;
+} 
+
+
+
+// HRS UNIT
+export const fetchHRUnitDataHRS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/hrs/hrunit${query}`);
+  return res.data;
+} 
+
+export const postHRUnitDataHRS = async (data) => {
+  const res = await axios.post(`${API_URL}/hrs/hrunit`,{...data});
+  return res.data;
+} 
+
+export const deleteHRUnitDataHRS = async (id) => {
+  const res = await axios.delete(`${API_URL}/hrs/hrunit/${id}`);
+  return res.data;
+} 
+
+// HRS JOB
+export const fetchJobDataHRS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/hrs/hrsjob${query}`);
+  return res.data;
+} 
+
+export const postJobDataHRS = async (data) => {
+  const res = await axios.post(`${API_URL}/hrs/hrsjob`,{...data});
+  return res.data;
+} 
+
+export const deleteJobDataHRS  = async (id) => {
+  const res = await axios.delete(`${API_URL}/hrs/hrsjob/${id}`);
+  return res.data;
+} 
+
+
+
+
+
 // ADMIN - HELPERS
 
 export const loadFMSHelpers = async () => {
@@ -315,6 +562,13 @@ export const loadHRSHelpers = async () => {
   const res = await axios.get(`${API_URL}/hrs/helpers`);
   return res.data;
 } 
+
+export const loadAMSHelpers = async () => {
+  const res = await axios.get(`${API_URL}/ams/helpers`);
+  return res.data;
+} 
+
+
 
 
 

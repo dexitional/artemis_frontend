@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, } from '../../../../store/utils/ssoApi';
+import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, loadAMSHelpers, } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setModal, setVouchers } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
@@ -70,7 +70,6 @@ const List = () => {
    const [ vouchs, setVouchs ] = useState([])
    const { sso } = useSelector(state => state)
    const dispatch = useDispatch();
-   const sid = sso.sessions.find(s => s.status == 1);
    
    const restoreVoucherData = () => {
       setVouchs([...sso.vouchers]);
@@ -118,17 +117,16 @@ const List = () => {
    const [ isLoading, setIsLoading ] = React.useState(false);
 
    const fetchVoucherData = async () => {
-      if(sid){
-        var query = ``;
-        if(page >= 1) query += `?page=${page-1}`
-        if(keyword != '') query += `&keyword=${keyword}`
-        const res = await fetchVouchers(sid && sid.session_id,query);
-        if(res.success){
-           setIsLoading(false)
-           setVouchs([...res.data.data]);// Page Data
-           setCount(res.data.totalPages)// Total Pages
-        }
+      var query = ``;
+      if(page >= 1) query += `?page=${page-1}`
+      if(keyword != '') query += `&keyword=${keyword}`
+      const res = await fetchVouchers(query);
+      if(res.success){
+          setIsLoading(false)
+          setVouchs([...res.data.data]);// Page Data
+          setCount(res.data.totalPages)// Total Pages
       }
+      
    }
    
    const onSearchChange = async (e) => {
@@ -152,10 +150,8 @@ const List = () => {
    
   const onSubmitSearch = async (e) => {
     e.preventDefault()
-    if(sid){
-      setIsLoading(true)
-      fetchVoucherData()
-    }
+    setIsLoading(true)
+    fetchVoucherData()
   }
 
    // End
@@ -205,7 +201,7 @@ const List = () => {
                                 { row.used_at ? <small className="badge badge-sm badge-outline badge-dark text-dark"><b>USED</b></small> : null }
                                 
                                 <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => recover(e,row.serial)}><b><em className="ti ti-sms"></em> RECOVER</b></Link>
-                                <Link className={`badge badge-sm badge-danger text-white`} onClick={ e => deleteRecord(e,row.serial)}><b><em className="ti ti-trash"></em> DELETE</b></Link>
+                                <Link className={`badge badge-sm badge-danger text-white`} onClick={ e => deleteRecord(e,row.serial)}><b><em className="ti ti-trash"></em></b></Link>
                             </td>   
                           </tr>
                           )}
@@ -225,6 +221,7 @@ const List = () => {
 // COMPONENT - FORM
 const Form = ({recid}) => {
     const [ loading,setLoading ] = useState(false);
+    const [ helper,setHelper ] = useState({ vendors:[] });
     const history = useHistory();
     const { sso } = useSelector(state => state)
     const { register, handleSubmit, formState : { errors } } = useForm();
@@ -246,12 +243,24 @@ const Form = ({recid}) => {
       }
     }
 
+    const helperData = async() => {
+        const hp = await loadAMSHelpers()
+        console.log(hp)
+        if(hp.success){
+          setHelper(hp.data)
+        } 
+    }
+
 
     const cancelForm = (e) => {
        e.preventDefault();
        const cm = window.confirm('Cancel Form ?')
        if(cm) history.push('/app/ams?mod=vouchers&view=list')
     }
+
+    useEffect(()=>{
+      helperData();
+    },[])
   
 
     return (
@@ -294,7 +303,8 @@ const Form = ({recid}) => {
                             <div className="input-item input-with-label">
                                 <label htmlFor="vendor_id" className="input-item-label">VENDOR</label>
                                 <select {...register("vendor_id")} className="input-bordered">
-                                  {sso.vendors.map( row => 
+                                    <option value={''} selected disabled>--CHOOSE--</option>
+                                  {helper && helper.vendors.map( row => 
                                     <option value={row.vendor_id}>{row.vendor_name && row.vendor_name.toUpperCase()}</option>
                                   )}
                                 </select>

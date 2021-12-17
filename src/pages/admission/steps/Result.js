@@ -1,9 +1,9 @@
 import React,{ useCallback, useState,useEffect, Fragment} from 'react'
 import { useSelector,useDispatch } from 'react-redux'
-import { addResult, setResult,delResult,setGrade } from '../../../store/admission/applicantSlice';
+import { addResult, setResult,delResult,setGrade, updateUser, setGradeValue } from '../../../store/admission/applicantSlice';
 import Session from '../Session';
 import { helperData } from '../../../store/utils/helperData';
-import { getGrade, getSubject } from '../../../store/utils/admissionUtil';
+import { getGrade, getGradeValue, getSubject } from '../../../store/utils/admissionUtil';
 import moment from 'moment';
 
 const Result = () => {
@@ -26,15 +26,26 @@ const Result = () => {
     setForm({...form,[e.target.name] : e.target.value });
   }
 
+  const calculateGradeValue = async (subjects,dataset) => {
+     //dispatch(updateUser())
+     const grade_value = await getGradeValue(subjects,dataset)
+     dispatch(setGradeValue(grade_value))
+     console.log(`You scored an Aggregate ${grade_value}`)
+  }
+
+
   const formSubmit = (e,id) => {
      e.preventDefault();
      if(form.subject && form.grade && form.subject !== '' && form.grade !== ''){
-       results.map((r,i) => {
+       results.map(async (r,i) => {
          if(i == id){
             const sj = subjects.find((s,j) => s.subject === form.subject && r.result_id === s.result_id);
             if(!sj){
               setSubjects([...subjects,{...form,result_id:r.result_id}])
               dispatch(setGrade(subjects));
+              // Calculate Grade Value
+              //const grade_value = await getGradeValue(subjects,helperData.subjects)
+              //dispatch(setGradeValue(grade_value))
             }
          }
        });
@@ -42,12 +53,13 @@ const Result = () => {
      setForm({ id: 0, subject: "", grade: "" });
   }
 
-  const delSubj = (id) => {
+  const delSubj = async(id) => {
     const cm = window.confirm(`Delete Subject ${id}?`)
     if(cm){
       let sjs = subjects.filter((s,i) => i !== id);
       setSubjects([...sjs]);
     }
+    
   }
 
 
@@ -97,18 +109,18 @@ const Result = () => {
   useEffect(() => {
     setResults([...applicant.result])
     setSubjects([...applicant.grade])
+    //calculateGradeValue(applicant.grade,helperData.subjects)
   },[])
 
   useEffect(() => {
     dispatch(setResult(results))
-    dispatch(setGrade(subjects))
-  },[results,subjects])
-
+  },[results])
 
   useEffect(() => {
-    console.log(results);
-    console.log(subjects);
-  })
+    dispatch(setGrade(subjects))
+    calculateGradeValue(subjects,helperData.subjects)
+  },[subjects])
+
 
     return (
       <Session>

@@ -201,7 +201,7 @@ const Education = () => {
                                 {/* Secondary */}
                                 { edurows[i].institute_type && edurows[i].institute_type == 2 ?
                                 <Fragment>
-                                <p className="u-ml-0 label-title">Aggregate Obtained</p>
+                                <p className="u-ml-0 label-title">Aggregate Obtained <em><small><b>( ** Awaiting students should enter zero(0) **)</b></small></em></p>
                                 <div id="ember1133" className={ !edurows[i].cert_grade ? "fleet-name-input is-required ember-view" : (isDirty('cert_grade',i) ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}> 
                                     <input type="text" name="cert_grade" onChange={(e)=> onChange(e,i)} value={edurows[i].cert_grade} spellCheck="false" placeholder="Enter Aggregate obtained" id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view" />
                                     { isDirty('cert_grade',i) ? <label className="FloatLabel-label">Total aggregate cannot be blank</label> :'' }

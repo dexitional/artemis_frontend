@@ -3,9 +3,10 @@ import { useHistory } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux'
 import AdminLayout from '../../components/admission/AdminLayout'
 import { setApplyMode, setEducation, setStage, updateUser } from '../../store/admission/applicantSlice'
-import { setActiveStep, setIsAllowed, setMeta } from '../../store/admission/stepSlice'
+import { setActiveStep, setIsAllowed, setMeta, setPrevStep } from '../../store/admission/stepSlice'
 import { getApplyTypeTitle, getStageTitle, getStepData, sortMeta } from '../../store/utils/admissionUtil';
 import { helperData } from '../../store/utils/helperData';
+import { loadAMSHelpers } from '../../store/utils/ssoApi';
 
 const Admin = () => {
      
@@ -13,6 +14,7 @@ const Admin = () => {
     const dispatch = useDispatch();
     const stageRef = useRef();
     const [group,setGroup] = useState({});
+    const [ helper,setHelper ] = useState({ session:{},programs:[],majors:[],stages:[],applytypes:[] });
     const history = useHistory();
     
     const onSubmit = (e) => {
@@ -68,12 +70,36 @@ const Admin = () => {
         } return false;
     }
 
+    const helperData = async() => {
+        const hps = await loadAMSHelpers()
+        console.log(hps)
+        if(hps.success){
+          setHelper(hps.data)
+        } 
+    }
+
     const onChange = (e) => {
        setGroup({ ...group, [e.target.name] : e.target.value });
     }
 
+    const reviewForm = () => {
+      const cm = window.confirm("Review Aplication Form")
+      if(cm){
+        history.push('/admission-print')
+        dispatch(setPrevStep())
+      }
+     
+    }
+
+    const printForm = () => {
+       const cm = window.confirm("Print Submitted Aplication Form")
+       if(cm) history.push('/admission-print')
+    }
+
     useEffect(() => {
+       helperData()
        setGroup({ stage_id: applicant.stage_id, apply_type: applicant.apply_type });
+       console.log(applicant.group_id)
     },[])
 
     useEffect(() => {
@@ -93,7 +119,7 @@ const Admin = () => {
                        <section className="bandwidth-meter">
                         <div className="Box">
                             <h3 className="heading">APPLICATION GUIDE<hr/></h3>
-                            { applicant.stage_id != '' && applicant.apply_type != '' ?
+                            { applicant.stage_id && applicant.apply_type ?
                             <Fragment>
                             <p className="u-floatRight u-mb-2">COMPLETED <b>STEP {step.step}</b> out of <b>STEP {step.count}</b></p>
                             <div id="ember1331" className="bandwidth-meter-calculated-tooltip u-ml-1 tooltip-wrap multiline ember-view"/>
@@ -105,6 +131,32 @@ const Admin = () => {
                                 </div>
                             </div>
                             <p><b>Current Step is <span style={applicant.flag_submit <= 0 ? {color:'rgb(183 97 23)'} : {color:'green'}}>{getStepData(step,step.step) && getStepData(step,step.step).title}</span> .</b> <em>( Application submitted! You can review and edit before deadline for final submission !  )</em></p><hr/>
+                            
+                            {applicant.flag_submit > 0 &&
+                            <section className="Box">
+                            <div className="row">
+                            {/*
+                            <div className="small-12 columns">
+                                <div className="small-8 columns u-pl-0">
+                                    <h3 className="u-mb-1">Visit Application Review</h3>
+                                    <p className="u-mb-4">Revise your application and make any changes where necessary.<br/><small><b>Changes can not be made to application past the Admission Deadline.</b></small></p>
+                                </div>
+                                <div className="small-4 columns u-pr-0">
+                                    <button onClick={reviewForm} className="Button u-floatRight u-mb-3">&nbsp;<span className="Icon--edit" />&nbsp;&nbsp;Review Application Form&nbsp;&nbsp;</button>
+                                </div>
+                            </div><hr style={{border:'1px solid #ccc'}}/>
+                            */}
+                            <div className="small-12 columns">
+                                <div className="small-8 columns u-pl-0">
+                                    <h3 className="u-mb-1">Print Out Application</h3>
+                                    <p className="u-mb-2">Get application printout for endorsement or personal submission.<br/><small><b>Changes can not be made to application past the Admission Deadline.</b></small></p>
+                                </div>
+                                <div className="small-4 columns u-pr-0">
+                                    <button onClick={printForm} className="Button u-floatRight u-mb-2">&nbsp;<i className="fa fa-print" />&nbsp;&nbsp;Print Application Form&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+                                </div>
+                            </div>
+                            </div>
+                            </section> }
                             </Fragment>: null }
                            {/* */}
                             <div className="bandwidth-faq">
@@ -154,14 +206,16 @@ const Admin = () => {
                                 <div id="ember1380" className="paypal-form ember-view">
                                     <form method="post" onSubmit={onSubmit} id="ember1385" className="ember-view">
                                         <div>
+
+                                           {helper && helper.session.apply_freeze == 0 && 
                                            <div className="row">
                                                 <div className="small-5 columns">
                                                     <div className="select-wrapper FloatLabel">
                                                         <div className="Select" >
-                                                            <select name="stage_id" defaultValue="" onChange={onChange} value={group.stage_id} className="select aurora-select">
+                                                            <select name="stage_id" onChange={onChange} value={applicant.stage_id} className="select aurora-select">
                                                                 <option value="" selected>-- Choose Admission Group -- </option>
-                                                                { helperData.stages.map((hp) => hp.status == 1 ?
-                                                                  <option value={hp.stage_id}>{hp.title.toUpperCase()}</option> : null
+                                                                { helper && helper.stages.map((hp) => hp.status == 1 && applicant.group_id == hp.group_id ?
+                                                                  <option value={parseInt(hp.stage_id)}>{hp.title.toUpperCase()}</option> : null
                                                                 )}
                                                             </select>
                                                         </div>
@@ -170,11 +224,11 @@ const Admin = () => {
                                                 <div className="small-4 columns">
                                                     <div className="select-wrapper FloatLabel">
                                                         <div className="Select" >
-                                                            <select name="apply_type" onChange={onChange} defaultValue="" value={group.apply_type} className="select aurora-select">
+                                                            <select name="apply_type" onChange={onChange} value={applicant.apply_type} className="select aurora-select">
                                                                 <option value="" selected>-- Choose Application Type --</option>
-                                                                { helperData.applyType.map((hp) => 
+                                                                { helper && helper.applytypes.map((hp) => 
                                                                 <Fragment>
-                                                                  {  hp.status == 1 && hp.stages.includes(parseInt(group.stage_id)) ? <option value={hp.type_id}>{hp.title}</option> : null }
+                                                                  {  hp.status == 1 && hp.stages.includes(parseInt(applicant.stage_id)) ? <option value={parseInt(hp.type_id)}>{hp.title}</option> : null }
                                                                 </Fragment>
                                                                 )}
                                                             </select>
@@ -183,14 +237,26 @@ const Admin = () => {
                                                 </div>
                                                 <div className="small-3 columns">
                                                     <button type="submit" className="Button  Button--fullWidth Button--green">
-                                                        <span className="Button--text">{applicant.stage_id != '' && applicant.apply_type != '' ? 'GOTO APPLICATION' : 'BEGIN ENROLMENT'} </span>
+                                                        <span className="Button--text">{applicant.stage_id && applicant.apply_type ? 'GOTO APPLICATION' : 'BEGIN ENROLMENT'} </span>
                                                     </button>
                                                 </div>
                                             </div>
+                                            }
+
+
+                                            {/* MAINTENANCE NOTE */}
+                                            { helper && helper.session.apply_freeze == 1 && 
+                                            <div className="row">
+                                                <div className="small-12 columns">
+                                                    <h2 className="text-danger"> * SYSTEM UNDER MAINTENANCE - APPLICATIONS SHALL RESUME SHORTLY !! </h2>
+                                                </div>
+                                            </div>
+                                            }
+
                                         </div>
                                     </form>
                                     <p className="small u-textAlignCenter u-grey">
-                                        * It takes just few minutes to complete your application processes, Good luck!.
+                                        <b>* It takes just few minutes to complete your application processes, Good luck!.</b>
                                     </p>
 
 

@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, fetchHRStaffDataHRS, deleteHRStaffDataHRS, postHRStaffDataHRS, loadHRSHelpers, stageAccountHRS, generateMailHRS, resetAccountHRS, } from '../../../../store/utils/ssoApi';
+import { fetchHRStaffDataHRS, deleteHRStaffDataHRS, postHRStaffDataHRS, loadHRSHelpers, stageAccountHRS, generateMailHRS, resetAccountHRS, fetchActiveStListHRS, upgradeRole, revokeRole } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
@@ -11,12 +11,17 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import parse from 'html-react-parser'
 import moment from 'moment';
+import Loader from '../../../../assets/img/loaderm.gif'
+
 
 // COMPONENT -VOUCHERS
 const HRStaff = ({view,data,recid}) => {
    
    const dispatch = useDispatch()
    const { sso } = useSelector(state => state)
+   const [ activity,setActivity ] = useState({})
+   const [ helper,setHelper ] = useState({ roles:[] });
+   
    const title = () => {
      switch(view){
        case 'list': return 'HRS STAFF';
@@ -31,15 +36,51 @@ const HRStaff = ({view,data,recid}) => {
         case 'edit': return <Form recid={recid}/>;
      } 
    }
-  
-  
 
+   const viewActiveStList = async (e) => {
+      e.preventDefault()
+      setActivity({...activity,stactive:true})
+      const rt = await fetchActiveStListHRS();
+      if(rt.success){
+        let dt = { content: rt.data, size:'md', show:true, page:'staffactive' }
+        dispatch(setModal(dt));
+      } else{  dispatch(updateAlert({show:true,message:rt.msg.toUpperCase(),type:'error'})) }
+      setActivity({...activity,stactive:false})
+   }
+
+   const viewRoles = async (e) => {
+      e.preventDefault()
+      //let dt = { content: helper && helper.roles, size:'md', show:true, page:'table' }
+      //dispatch(setModal(dt));
+      var output = ``;
+      if(helper && helper.roles){
+        for(let r of helper.roles){
+          output += `${r.arole_id} - ${r.role_name} ( ${r.app_name} )\n`
+        }
+        alert(output)
+      }
+   }
+
+   const helperData = async() => {
+      const hp = await loadHRSHelpers()
+      if(hp.success){
+        setHelper(hp.data)
+      } 
+   }
+
+    
+   useEffect(()=>{
+     helperData();
+   },[])
+  
    return (
     <div className="content-area card">
 	   <h3 className="sub-head bg-blueblack"> 
            { title() }
            { view == 'list' ?
             <div className="d-inline-block print-btn">
+                <Link to="#" className="btn btn-warning btn-sm mr-2 text-dark" onClick={viewRoles}><b>USER ROLES</b>&nbsp;&nbsp;</Link>
+                <Link to="#" className="btn btn-warning-alt btn-sm btn-icon mr-2 text-dark" onClick={viewActiveStList}>{ !activity.stactive ? <><em className="fa fa-sm fa-list-alt"></em>&nbsp;&nbsp;<b>ACTIVE STAFF</b></> : <>&nbsp;&nbsp;<img src={Loader} style={{height:'20px',margin:'0 auto'}}/> <b>LOADING ...</b>&nbsp;&nbsp;</>}</Link>
                 <Link to="/app/hrs?mod=hrstaff&view=add" className="btn btn-light-alt btn-sm btn-icon"><em className="fa fa-sm fa-plus"></em>&nbsp;&nbsp;<b>ADD STAFF</b></Link>
             </div> : null
            }
@@ -123,6 +164,34 @@ const List = () => {
     }else{ dispatch(updateAlert({show:true,message:rt.msg.toUpperCase(),type:'error'})) }
     setRef(null);
   }
+
+
+  const addRole = async (uid) => {
+    var role = window.prompt('Enter APP ROLE ID!')
+    if(role && role.trim()){
+      const rt = await upgradeRole(uid,role)
+      if(rt.success){
+        dispatch(updateAlert({show:true,message:`PRIVILEGE GRANTED!`,type:'success'}))
+      }else{ dispatch(updateAlert({show:true,message:rt.msg.toUpperCase(),type:'error'})) }
+    }else{
+      dispatch(updateAlert({show:true,message:'PROVIDE APP ROLE ID FOR ACCESS PRIVILEGE!',type:'error'}))
+    }
+    setRef(null);
+  }
+
+  const deleteRole = async (uid) => {
+    var role = window.prompt('Enter APP ROLE ID !')
+    if(role && role.trim()){
+      const rt = await revokeRole(uid,role)
+      if(rt.success){
+        dispatch(updateAlert({show:true,message:`PRIVILEGE REVOKED!`,type:'success'}))
+      }else{ dispatch(updateAlert({show:true,message:rt.msg.toUpperCase(),type:'error'})) }
+    }else{
+      dispatch(updateAlert({show:true,message:'PROVIDE APP ROLE ID FOR ACCESS DENIAL!',type:'error'}))
+    }
+    setRef(null);
+  }
+
    
   const restoreHRStaffData = () => {
     sso.databox.hrstaff && setHRStaff([...sso.databox.hrstaff]);
@@ -228,6 +297,8 @@ const List = () => {
                                     <MenuItem onClick={() => resetAccess(row.staff_no)}>RESET PASSWORD</MenuItem>
                                     { !row.inst_mail && <MenuItem onClick={() => genMail(row.staff_no)}>GENERATE EMAIL</MenuItem>}
                                     { !row.uid && <MenuItem onClick={() => stageAccess(row.staff_no)}>STAGE ACCESS</MenuItem> }
+                                    { row.uid && <MenuItem onClick={() => addRole(row.uid)}>ADD ROLE</MenuItem> }
+                                    { row.uid && <MenuItem onClick={() => deleteRole(row.uid)}>REMOVE ROLE</MenuItem> }
                                     <MenuItem onClick={() => delProfile(row.id)}>DELETE PROFILE</MenuItem>
                                     {/*
                                     <MenuItem onClick={handleClose}>VIEW REGISTRATION</MenuItem>
@@ -342,7 +413,7 @@ const Form = ({recid}) => {
                                 <select {...register("unit_id")} className="input-bordered">
                                 <option value="" disabled selected>--CHOOSE--</option>
                                   {helper && helper.units.map( row => 
-                                    <option value={row.id}>{row.long_name && row.long_name.toUpperCase()}</option>
+                                    <option value={row.id}>{row.title && row.title.toUpperCase()}</option>
                                   )}
                                 </select>
                             </div>

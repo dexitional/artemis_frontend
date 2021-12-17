@@ -9,7 +9,7 @@ const LoginLayout = ({children}) => {
       return (
         <Fragment>
            <header className="sc-egiSv iyWWIA"><a type="default" target="_self" className="sc-gKckTs kNJaHk sc-iCfLBT fxyNsI" href="#" rel="noopener noreferrer"><span className="sc-kDThTU bBpNfQ" /><img src={AdminLogo} className="sc-ksdxAp fdYigH" /><img src={AdminLogo} className="sc-hBURRC bfcEnS" /></a>
-              <p><span className="sc-bqiQRQ hUhAjW" style={{color:'#031b4e'}}>Check requirements?</span><a target="_blank" className="sc-gKckTs kNJaHk sc-iCfLBT fxyNsI" href="http://www.aucc.edu.gh/apply" rel="noopener noreferrer"><span className="sc-kDThTU bBpNfQ" />AUCC Admissions</a></p>
+              <p><span className="sc-bqiQRQ hUhAjW" style={{color:'#031b4e'}}>Check requirements?</span><a target="_blank" className="sc-gKckTs kNJaHk sc-iCfLBT fxyNsI" href="https://aucc.edu.gh/index.php/en/admissions/apply-now" rel="noopener noreferrer"><span className="sc-kDThTU bBpNfQ"/>AUCC Admissions</a></p>
            </header>
        
            <div className="sc-fFehDp kGvAFP">

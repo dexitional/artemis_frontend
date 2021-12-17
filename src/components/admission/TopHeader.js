@@ -17,7 +17,7 @@ const TopHeader = () => {
          setIsLoggedIn(false);
          dispatch(setStepCount(1));
          localStorage.removeItem('state');
-         history.push('/');
+         history.push('/applicant');
        }
     }
     return (

@@ -83,6 +83,8 @@ const Document = () => {
   const getInfo = () =>{
      var msg;
      switch(parseInt(applicant.apply_type)){
+       case 1:
+        msg = `<b>** Academic Certificate obtained.</b>`; break;
        case 2:
          msg = `<b>** Transcript from education & Copy of HND/Degree obtained.</b>`; break;
        case 3:
@@ -156,9 +158,10 @@ const Document = () => {
                             )}
                           </select>
                       </span>
-                      <span className="small-3 columns" style={{overflow:'hidden'}}>
-                          <label className="u-ml-0 label-title">PDF FILE</label>
-                          <input type="file" onChange={onChange} name="file" value={form.file} id="ember1134" style={{padding:'8px 2px 5px 18px ', border:'1px solid #ddd',background:'white',borderRadius:'3px'}} />
+                      <span className="small-3 columns" style={{margin:'28px 0 -5px',top:'20px',padding:'5px 5px 3px', border:'none',boxShadow:'0 0 0 2px #f1f1f1',background:'white',borderRadius:'3px',overflow:'hidden',cursor:'pointer'}}>
+                          <label className="u-ml-0 label-title" onClick={(e)=> document.querySelector('#docfile').click()}><span>SELECT PDF FILE</span>
+                          <input type="file" onChange={onChange} name="file" value={form.file} id="docfile" style={{display:'none'}} />
+                          </label>
                       </span>
                      
                       <span className="small-3 columns">
@@ -173,7 +176,7 @@ const Document = () => {
                 <tr key={i}>
                   <td colSpan={2}><small id="ember2105" className="ellipsis-text ember-view">{i+1}.&nbsp; <b>{getDocument(row.document_id).toUpperCase()}</b></small></td>
                   <td className="flex-row">
-                    {row.base64 ? <button onClick={(e) => viewFileRecord(i)} className="Button Button--green" title="View File"  style={{height:'2em',lineHeight:'1.2em'}}><span className="Icon--newWindow" /></button> : null } &nbsp;
+                    {/*row.base64 ? <button onClick={(e) => viewFileRecord(i)} className="Button Button--green" title="View File"  style={{height:'2em',lineHeight:'1.2em'}}><span className="Icon--newWindow" /></button> : null */} &nbsp;
                     <button onClick={(e) => delRecord(i)} className="Button Button--red" title="Delete File" style={{height:'2em',lineHeight:'1.2em'}}><span className="Icon--close" /></button>
                   </td>
                 </tr>

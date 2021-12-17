@@ -89,10 +89,7 @@ const StudentProfile = () => {
        dispatch(updateUser({user:{...userData}})) 
     },[userData])
 
-    useEffect(()=>{
-        
-    })
-	
+    
 	return (
 		<div className="row">
 		  <div className="main-content col-lg-8">

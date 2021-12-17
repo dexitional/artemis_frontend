@@ -7,12 +7,14 @@ import { convertBase64 } from '../../../store/utils/admissionUtil';
 import { helperData } from '../../../store/utils/helperData';
 import { convertPhoto } from '../../../store/utils/admissionApi';
 import Resizer from "react-image-file-resizer";
+import { loadAMSHelpers } from '../../../store/utils/ssoApi';
 
 const Profile = () => {
     
+    const [ helper,setHelper ] = useState({ countries:[],adm_programs:[] });
     const { step,applicant } = useSelector(state => state)
     const dispatch = useDispatch();
-    const required = ['title','lname','fname','mstatus','dob','gender','citizen_country','resident_country','home_region','religion','present_occupation','work_place','bond_status','disabled','phone','email','pobox_address','resident_address'];
+    const required = ['title','lname','fname','mstatus','dob','gender','citizen_country','resident_country','home_region','religion','present_occupation','work_place','bond_status','disabled','phone','email','pobox_address','resident_address','session_mode'];
     const [form,setForm] = useState({});
     const photoRef = useRef();
 
@@ -29,10 +31,6 @@ const Profile = () => {
        const f = e.target.files[0];
        if(f && f.type.match('image.*')){
           const base64 = await convertBase64(f);
-          // Initial Setup
-          //localStorage.setItem('photo', base64);
-          //dispatch(setUser({...applicant.user,photo:base64}))
-          
           // Resizing & Compression from Backend
           try {
             Resizer.imageFileResizer(
@@ -68,7 +66,15 @@ const Profile = () => {
         }   return false;
     },[form])
 
+    const helperLoader = async() => {
+        const hps = await loadAMSHelpers()
+        if(hps.success){
+          setHelper(hps.data)
+        } 
+    }
+
     useEffect(() => {
+       helperLoader()
        setForm({ ...applicant.profile })
     },[])
 
@@ -108,11 +114,25 @@ const Profile = () => {
                         <div className="form--inline ">
                        
                         <div>
+                            <hr/>
+                            <p className="u-ml-0 label-title">MODE OF STUDY</p>
+                            <div id="ember1133" className={ !form.session_mode ? "fleet-name-input is-required ember-view" : (isDirty('session_mode') ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}> 
+                                <select onChange={onChange} name="session_mode" value={form.session_mode} id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view">
+                                    <option selected disabled>-- Choose Study Mode --</option>
+                                    <option value="M">Morning</option>
+                                    <option value="A">Afternoon</option>
+                                    <option value="E">Evening</option>
+                                    <option value="W">Weekend</option>
+                                </select>
+                                { isDirty('session_mode') ? <label className="FloatLabel-label" htmlFor="ember1207">Select Mode of Study</label> :'' }
+                            </div>
+                            <hr/>
+
                             <p className="u-ml-0 label-title">Title</p>
                             <div id="ember1133" className={ !form.title ? "fleet-name-input is-required ember-view" : (isDirty('title') ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}> 
                                 <select id="ember1134" onChange={onChange} name="title" value={form.title} className="Input--floatLabel FloatLabel-input ember-text-field ember-view">
                                     <option selected disabled>-- Choose Title --</option>
-                                    { helperData.titles.map((hp) => 
+                                    { helperData.titles && helperData.titles.map((hp) => 
                                       <option value={hp.id}>{hp.title}</option>
                                     )}
                                 </select>
@@ -152,7 +172,7 @@ const Profile = () => {
                             <div id="ember1133" className={ !form.mstatus ? "fleet-name-input is-required ember-view" : (isDirty('mstatus') ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}> 
                                 <select onChange={onChange} name="mstatus" value={form.mstatus} id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view">
                                     <option selected disabled>-- Choose Marital Status --</option>
-                                    { helperData.marital.map((hp) => 
+                                    { helperData.marital && helperData.marital.map((hp) => 
                                      <option value={hp.id}>{hp.title}</option>
                                     )}
                                 </select>
@@ -164,8 +184,9 @@ const Profile = () => {
                                 <select onChange={onChange} name="citizen_country" value={form.citizen_country} id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view">
                                     <option selected disabled>-- Choose Country --</option>
                                     <option value="000">N/A</option>
-                                    <option value="AFG">Afghanistan</option>
-                                    <option value="GHA">Ghana</option>
+                                    { helper && helper.countries.map((hp) => 
+                                     <option value={hp.code_name}>{hp.title}</option>
+                                    )}
                                 </select>
                                 { isDirty('citizen_country') ? <label className="FloatLabel-label" htmlFor="ember1207">Select Country of citizenry</label> :'' }
                             </div>
@@ -175,8 +196,9 @@ const Profile = () => {
                                 <select onChange={onChange} name="resident_country" value={form.resident_country} id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view">
                                     <option selected disabled>-- Choose Country --</option>
                                     <option value="000">N/A</option>
-                                    <option value="AFG">Afghanistan</option>
-                                    <option value="GHA">Ghana</option>
+                                    { helper && helper.countries.map((hp) => 
+                                     <option value={hp.code_name}>{hp.title}</option>
+                                    )}
                                 </select>
                                 { isDirty('resident_country') ? <label className="FloatLabel-label" htmlFor="ember1207">Select Country of residence</label> :'' }
                             </div>
@@ -185,7 +207,7 @@ const Profile = () => {
                             <div id="ember1133" className={ !form.home_region ? "fleet-name-input is-required ember-view" : (isDirty('home_region') ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}> 
                                 <select onChange={onChange} name="home_region" value={form.home_region} id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view">
                                     <option selected disabled>-- Choose Region --</option>
-                                    { helperData.regions.map((hp) => 
+                                    { helperData.regions && helperData.regions.map((hp) => 
                                       <option value={hp.id}>{hp.title}</option>
                                     )}
                                 </select>
@@ -202,7 +224,7 @@ const Profile = () => {
                             <div id="ember1133" className={ !form.religion ? "fleet-name-input is-required ember-view" : (isDirty('religion') ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}>  
                                 <select onChange={onChange} name="religion" value={form.religion} id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view">
                                     <option selected disabled>-- Choose Region --</option>
-                                    { helperData.religions.map((hp) => 
+                                    { helperData.religions && helperData.religions.map((hp) => 
                                       <option value={hp.id}>{hp.title}</option>
                                     )}
                                 </select>
@@ -294,7 +316,7 @@ const Profile = () => {
 
 
                             <p className="u-ml-0 label-title">Phone Number</p>
-                            <span className="form-small-input">Please enter phone number with country code in this format:&nbsp;&nbsp;<b>+233-0277675089</b>.</span> 
+                            <span className="form-small-input">Please enter phone number with country code in this format:&nbsp;&nbsp;<b>233277675089</b>.</span> 
                             <div id="ember1133" className={ !form.phone ? "fleet-name-input is-required ember-view" : (isDirty('phone') ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}>  
                                 <input type="text" onChange={onChange} name="phone" value={form.phone} spellCheck="false" required placeholder="Enter Phone number" id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view" />
                                 { isDirty('phone') ? <label className="FloatLabel-label" htmlFor="ember1207">Phone Number is not valid</label> :'' }

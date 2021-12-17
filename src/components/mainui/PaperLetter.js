@@ -1,128 +1,151 @@
-import React from 'react'
+import React,{useState,useEffect,useRef} from 'react'
 import '../admission/FormPrint.css'
+import Logo from '../../assets/img/logo.png'
+import { useReactToPrint } from 'react-to-print';
+import { useSelector } from 'react-redux'
+import moment from 'moment'
+import ReactHtml from 'html-react-parser'
+import { ToWords } from 'to-words';
 
-const PaperTable = () => {
+
+const PaperLetter = () => {
+    const { sso } = useSelector(state=>state)
+    const { modal } = sso
+    const [ data, setData ] = useState({})
+    const printRef = useRef();
+    
+
+    const handlePrint = useReactToPrint({
+      content: () => printRef.current,
+    });
+
+    const output = `<div style="font-family:arial,times,helvetica;font-size:12pt">
+    <p><u class="sbody">ADMISSION TO THE ::program_name PROGRAMME (::admission_title)</u></p>
+    <p>Congratulations!</p>
+    <p>I am pleased to inform you that, upon review of your application and, on the basis of your ::cert_condition, you have been offered admission to Level ::start_level of the <b>::program_name</b> programme for the ::session_year Academic year.</p>
+    <p><b>Holders of Diploma/HND are to submit original copies of their certificate for verification, after which they may be exempted from the university of Ghana required course (offered at AUCC) for one semester. All other applicants will have to pass those required courses to complete their admission.</b></p>
+    <p>Your field of specialisation will be confirmed at the end of Level 200 following an orientation session where you will learn about all the available specialisations and the possible career opportunities available in each specialisation.</p>
+    <p>The programme fee per semester is <b>::fee_amount.</b> The fee must be paid through Cal Bank in the name of the <b>African University College of Communications (AUCC) into account number ::bank_account at any branch of Cal Bank.</b> After payment, the pay-in-slip must first be presented to the Accounts Officer at AUCC who will issue a receipt, a copy of which must be presented to the appropriate Secretariat of AUCC towards registration.</p>
+    <p><b>Please note that registration is ongoing and lectures is scheduled to begin on ::lecture_start.</b></p>
+    <p>Should you decide to withdraw from the programme within three weeks of registration, the University shall refund your fees to you less an administrative fee of 30%. No refunds will be made for withdrawals after the third week of registration.</p>
+    <p>All students are required to obey the rules and regulations of AUCC. A copy of the Student Handbook will be provided to you. Kindly note that AUCCs <b>Weekend School is held on Fridays and Saturdays</b>, and Management reserves the right to change sessions and courses when class sizes are not economically viable.</p>
+    <p>All correspondence in relation to your admission should be addressed to the Registrar and should include your reference number as above.</p>
+    <p>Congratulations once again. We look forward to personally welcoming you to our campus!</p>
+    <p>Yours faithfully,</p>
+    <p>&nbsp;</p>
+    </p>::signatory</p>
+    </div>
+    `
+    const loadPlacerData = (dt) => {
+        dt = dt.replace('::cert_condition',data && data.letter_condition)
+        dt = dt.replace('::start_level',data && (Math.ceil(data.start_semester%2) * 100))
+        dt = dt.replace(/::program_name/g,data && data.program_name)
+        dt = dt.replace('::session_year',data && data.academic_year)
+        dt = dt.replace('::signatory',data && data.signatory)
+        dt = dt.replace('::bank_account',data && data.bank_account)
+        dt = dt.replace('::admission_title',data && data.admission_title)
+        dt = dt.replace('::lecture_start',data && moment(data.cal_lecture_start).format('Do MMMM, YYYY'))
+        const toWords = new ToWords(
+            data && data.currency == 'USD' ?
+            {
+              localeCode: 'en-US',
+                converterOptions: {
+                  currency: true,
+                  ignoreDecimal: false,
+                  ignoreZeroCurrency: false,
+                  doNotAddOnly: true,
+                }
+            }: 
+            {
+              localeCode: 'en-GH',
+                converterOptions: {
+                  currency: true,
+                  ignoreDecimal: false,
+                  ignoreZeroCurrency: false,
+                  doNotAddOnly: true,
+                }
+            }
+        );
+        dt = dt.replace('::fee_amount',`${toWords.convert(data && data.amount || 0)} ${data && data.currency == 'GH' ? ' ( $'+data.amount+' )' : ' ( GH¢'+data.amount+' )' }`)
+        return dt
+    }
+
+    useEffect(()=>{
+        //handlePrint()
+        //loadGrades()
+        modal.content && setData({...modal.content.data});
+        console.log(modal)
+    },[])
+
     return (
-        <div className="print">
-    <div className="fade-bg" style={{background: 'url(/assets/img/green_logo.png) center 90% / 540px 650px no-repeat',display:'none'}}></div>
+     <>
+     <div className="row">
+        <div className="Box small-12 columns" style={{width:'900px', margin:'0px auto',float:'none',overflow:'hidden'}}>
+            <div className="small-12 columns u-pr-0 right">
+                <button onClick={handlePrint} className="Button u-floatRight u-mb-2">&nbsp;&nbsp;Print &nbsp;&nbsp;</button>
+            </div>
+        </div>
+     </div>
+    <div className="print" ref={printRef}>
+    <div className="fade-bg" style={{background: `url(${Logo}) center 50% / 650px 650px no-repeat`,display:'block',zIndex:10}}></div>
     <div className="cover">
-        <header>
-            <div className="left-head"><img src="/assets/img/green_logo.png" className="logo"/>
-                <div className="left-cover">
-                    <h2><span style={{fontSize:'32px',color:'#0243d2'}}>GREENWICH HALL</span><br/>COLLEGE OF HEALTH, KINTAMPO</h2>
-                    <h3 className="title-group">Online Nomination Form</h3>
-                </div>
-            </div>
-            <div className="right-head address">
-              <address>College of Health, Kintampo<br/>P.O. Box 34, Kintampo<br/>Bono Region - Ghana<br/>Greenwich Hall<br/><br/>Tel:+233 249 988 388<br/>
-                  ec@greenwich.cohk.live<br/><br/><span className="aurora-small">29/7/2021</span></address>
-            </div>
-        </header>
+       <br/><br/>
+       <header>
+           <div className="left-head">
+               <img src={Logo} className="logo"/>
+               <div className="left-cover">
+                    <h2><span style={{fontSize:'27.5px',color:'#b76117',letterSpacing:'0.07em'}}>AFRICAN UNIVERSITY</span><br/>COLLEGE OF COMMUNICATIONS</h2>
+                    <h2><span  style={{fontSize:'15px',color:'#666',letterSpacing:'0.35em',top:'-30px'}}>OFFER OF ADMISSION</span></h2>
+               </div>
+           </div>
+           <div className="right-head address">
+               {/*
+                <address>
+                    School of Graduate Studies<br/>
+                    Private Mail Bag<br/>
+                    University Post Office<br/>
+                    Kumasi-Ghana<br/><br/>
+
+                    Tel:+233 3220 60331<br/>
+                    Fax:+233 3220 60137<br/>
+                    Email: graduatestudies@knust.edu.gh<br/><br/>
+                    <span className="small">30/10/2020</span>
+                </address>
+                */}
+                <address>
+                    Admissions Office<br/>
+                    African University<br/>
+                    College of Communications <br/>
+                    Postal Box 982<br/>
+                    Adabrakah, Accra<br/>&nbsp;
+                    +233 3220 00001<br/>
+                    admissions@aucc.edu.gh<br/>
+                </address>
+           </div>
+       </header>
         <content>
-            <h3 className="center black"> Please Ensure That Accurate Information Is Provided Only To The Electoral Commision</h3><br/>
-           <section>
+            <section>
                 <table className="ptable">
-                    <tbody><tr>
-                        <td style={{minwidth: '200px'}}>
-                            <h3 className="title">Personal &amp; professional Information </h3>
+                    <tbody>
+                    <tr rowspan="2">
+                        <td style={{minwidth: '200px'}} colspan="2">
+                            <h4 className="title" style={{color:'rgb(183, 97, 23)'}}>Ref No: {data && data.serial}</h4>
+                            <h4 ><span style={{color:'rgb(183, 97, 23)',fontSize:'20px !important'}}>{data && data.fname+' '+data.lname}<br/><span style={{color:'#666'}}>{data && data.resident_address}</span></span></h4><br/>
+                            <span className="shead" style={{fontFamily:'arial,times,helvetica',fontSize:'12pt'}}>Dear {data && data.fname},</span><br/><br/>
                         </td>
-                        <td colspan="2">&nbsp;</td>
+                        <td align="right"><h4 className="title">{moment(data && data.created_at).format('MMMM DD, YYYY')}</h4><br/></td>
                     </tr>
                     <tr>
-                        <td rowspan="5"><img src="/.././photos/321a7736.png" style={{height: '200px', display: 'block'}}/></td>
-                        <td className="shead">Applicant ID:</td>
-                        <td className="sbody">321A7736</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Full Name:</td>
-                        <td className="sbody"><small><b>JOHN KWEKUCHER ACKAH</b></small></td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Aspirant Position:</td>
-                        <td className="sbody"><small><b>PRESIDENT</b></small></td>
+                        <td className="shead" colspan="3">
+                            {ReactHtml(loadPlacerData(data && data.template || ''))}
+                        </td>
                     </tr>
                    <tr>
-                        <td className="shead">Program of Study:</td>
-                        <td className="sbody">TELECOM</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Date of Birth:</td>
-                        <td className="sbody">2021-07-21</td>
-                    </tr>
-                    <tr>
-                        <td rowspan="5"></td>
-                        <td className="shead">Nationality:</td>
-                        <td className="sbody">GHANAIAN</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Hometown:</td>
-                        <td className="sbody">ENCHI</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Phone Number:</td>
-                        <td className="sbody">0277675089</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Home Address:</td>
-                        <td className="sbody">AKOTOKYIR</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Email Address:</td>
-                        <td className="sbody">BERMA@GMAIL.COM</td>
-                    </tr>
-                   
-                    <tr>
                         <td colspan="3">
-                            <hr/>
+                            <br/><br/><br/>
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan="2">
-                            <h3 className="title"> Principal Referees (Five)</h3>
-                        </td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td rowspan="10" className="shead">&nbsp;</td>
-                        <td className="shead">Name of Referee #1:</td>
-                        <td className="sbody">EBEN 1</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Phone Number :</td>
-                        <td className="sbody">0244650679</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Name of Referee #2:</td>
-                        <td className="sbody">EBEN 2</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Phone Number :</td>
-                        <td className="sbody">0244650679</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Name of Referee #3:</td>
-                        <td className="sbody">EBEN 3</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Phone Number :</td>
-                        <td className="sbody">0244650679</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Name of Referee #4:</td>
-                        <td className="sbody">EBEN 4</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Phone Number :</td>
-                        <td className="sbody">0244650679</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Name of Referee #5:</td>
-                        <td className="sbody">EBEN 5</td>
-                    </tr>
-                    <tr>
-                        <td className="shead">Phone Number :</td>
-                        <td className="sbody">0244650679</td>
-                    </tr>
+                    
 
                 </tbody>
                 </table>
@@ -130,7 +153,8 @@ const PaperTable = () => {
         </content>
     </div>
   </div>
+  </>
     )
 }
 
-export default PaperTable
+export default PaperLetter

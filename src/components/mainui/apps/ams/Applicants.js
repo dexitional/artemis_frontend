@@ -10,6 +10,11 @@ import Pager from '../../Pager';
 import applicantSlice, { setApplyMode, setChoice, setDocument, setEducation, setGrade, setGuardian, setProfile, setResult, setStage, setSubmitStatus, updateUser } from '../../../../store/admission/applicantSlice';
 import { setMeta, setStepCount } from '../../../../store/admission/stepSlice';
 import { getApplyTypeTitle, getStageTitle } from '../../../../store/utils/admissionUtil';
+import parse from 'html-react-parser'
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Loader from '../../../../assets/img/loaderm.gif'
 
 
 // COMPONENT -APPLICANTS
@@ -17,6 +22,20 @@ const Applicants = ({view,data,recid}) => {
    
    const dispatch = useDispatch()
    const { sso } = useSelector(state => state)
+   const [ activity,setActivity ] = useState({})
+   const [anchorEl, setAnchorEl] = React.useState(null);
+   const [ref, setRef] = React.useState(null);
+   const open = Boolean(anchorEl);
+   
+   const handleClick = (e,id) => {
+        setAnchorEl(e.currentTarget);
+        setRef(id);
+   };
+    const handleClose = () => {
+        setAnchorEl(null);
+        setRef(null);
+    };
+
    const title = () => {
      switch(view){
        case 'list': return 'APPLICANTS';
@@ -47,7 +66,7 @@ const Applicants = ({view,data,recid}) => {
         dispatch(setModal(dt));
         /**/
       }
-      
+      setRef(null);
    } 
 
 
@@ -57,9 +76,20 @@ const Applicants = ({view,data,recid}) => {
            { title() }
            { view == 'list' ?
             <div className="d-inline-block print-btn">
-                <Link onClick={(e) => showModal(e,1)} className="btn btn-dark-alt btn-sm btn-icon ml-1"><em className="fa fa-sm fa-book"></em>&nbsp;&nbsp;<b>MATURED</b></Link>
-                <Link onClick={(e) => showModal(e,2)} className="btn btn-dark-alt btn-sm btn-icon ml-1"><em className="fa fa-sm fa-book"></em>&nbsp;&nbsp;<b>INTERNATIONAL</b></Link>
-                <Link onClick={(e) => showModal(e,0)} className="btn btn-dark-alt btn-sm btn-icon ml-1"><em className="fa fa-sm fa-book"></em>&nbsp;&nbsp;<b>GENERAL </b></Link>
+                <Button id={`basic-button1`} className="mr-2" variant="contained" color='warning' aria-controls={`basic-menu1`} aria-haspopup="true" aria-expanded={ anchorEl && anchorEl == 1 ? 'true' : undefined} onClick={(e) => handleClick(e,1)}><b>BY CATEGORY</b>&nbsp;&nbsp;<i className="fa fa-bars"></i></Button>
+                <Menu id={`basic-menu1`} anchorEl={anchorEl} open={ref && ref == 1} onClose={handleClose} variant="outlined" MenuListProps={{'aria-labelledby': `basic-button1`}}> 
+                  <MenuItem onClick={(e) => showModal(e,0)}>{ !activity.mount ? <><em className="fa fa-sm fa-list-alt"></em>&nbsp;&nbsp;<b>ALL GENERAL</b></> : <>&nbsp;&nbsp;<img src={Loader} style={{height:'20px',margin:'0 auto'}}/></>}</MenuItem>
+                  <MenuItem onClick={(e) => showModal(e,1)}>{ !activity.reg ? <><em className="fa fa-sm fa-list-alt"></em>&nbsp;&nbsp;<b> ALL MATURED </b></> : <>&nbsp;&nbsp;<img src={Loader} style={{height:'20px',margin:'0 auto'}}/></>}</MenuItem>
+                  <MenuItem onClick={(e) => showModal(e,2)}>{ !activity.reg ? <><em className="fa fa-sm fa-list-alt"></em>&nbsp;&nbsp;<b> INTERNATIONAL </b></> : <>&nbsp;&nbsp;<img src={Loader} style={{height:'20px',margin:'0 auto'}}/></>}</MenuItem>
+                </Menu>
+
+                <Button id={`basic-button2`} variant="contained" color='warning' aria-controls={`basic-menu2`} aria-haspopup="true" aria-expanded={ anchorEl && anchorEl == 2 ? 'true' : undefined} onClick={(e) => handleClick(e,2)}><b>BY PROGRAM</b>&nbsp;&nbsp;<i className="fa fa-bars"></i></Button>
+                <Menu id={`basic-menu2`} anchorEl={anchorEl} open={ref && ref == 2} onClose={handleClose} variant="outlined" MenuListProps={{'aria-labelledby': `basic-button2`}}> 
+                  <MenuItem onClick={null}>{ !activity.mount ? <><em className="fa fa-sm fa-list-alt"></em>&nbsp;&nbsp;<b>ALL GENERAL</b></> : <>&nbsp;&nbsp;<img src={Loader} style={{height:'20px',margin:'0 auto'}}/></>}</MenuItem>
+                  <MenuItem onClick={null}>{ !activity.reg ? <><em className="fa fa-sm fa-list-alt"></em>&nbsp;&nbsp;<b> MATURED </b></> : <>&nbsp;&nbsp;<img src={Loader} style={{height:'20px',margin:'0 auto'}}/></>}</MenuItem>
+                  <MenuItem onClick={null}>{ !activity.reg ? <><em className="fa fa-sm fa-list-alt"></em>&nbsp;&nbsp;<b> INTERNATIONAL </b></> : <>&nbsp;&nbsp;<img src={Loader} style={{height:'20px',margin:'0 auto'}}/></>}</MenuItem>
+                </Menu>
+
             </div> : null
            }
 	   </h3>
@@ -201,27 +231,33 @@ const List = () => {
                     <table className="data-table dt-filter-init admin-tnx dataTable no-footer" id="DataTables_Table_0">
                         <thead>
                             <tr className="data-item data-head" role="row">
-                                <th className="data-col" rowspan="1" colspan="1">SERIAL </th>
+                                <th className="data-col w-25" rowspan="1" colspan="1">SERIAL </th>
                                 <th className="data-col w-25" rowspan="1" colspan="1">APPLICANT</th>
-                                <th className="data-col w-25" rowspan="1" colspan="1">APPLY GROUP</th>
-                                <th className="data-col" rowspan="1" colspan="1">GENDER</th>
-                                <th className="data-col" rowspan="1" colspan="1">CHOICE</th>
-                                <th className="data-col" rowspan="1" colspan="1">APPLIED ON</th>
-                                <th className="data-col" rowspan="1" colspan="1">STATUS</th>
+                                <th className="data-col w-25" rowspan="1" colspan="1">APPLY MODE</th>
+                                <th className="data-col w-25" rowspan="1" colspan="1">CHOICE</th>
+                                <th className="data-col w-25" rowspan="1" colspan="1">APPLIED ON</th>
+                                <th className="data-col w-25" rowspan="1" colspan="1">STATUS</th>
                             </tr>
                         </thead>
                         <tbody>
                           { appls.map((row) => 
                           <tr className="data-item odd" role="row">
                             <td className="data-col"><span className="lead tnx-id">#{ row.serial }</span></td>
-                            <td className="data-col"><span className="lead token-amount">{ row.name && row.name.toUpperCase() }</span></td>
+                            <td className="data-col">
+                              <span className="lead token-amount">{ row.name && row.name.toUpperCase() }</span>
+                              {row.gender ? parse(`<small style="color:#b76117;font-weight:bolder">  -- ${ row.gender == 'M' ? 'MALE':'FEMALE' } </small>`) : null }
+                            </td>
                             <td className="data-col"><span className="lead amount-pay">{ getType(row) && getType(row).toUpperCase() }</span></td>
-                            <td className="data-col"><span className="lead amount-pay">{ row.gender == 'M' ? 'MALE':'FEMALE' }</span></td>
-                            <td className="data-col"><span className="lead amount-pay">{ row.choice_name && row.choice_name.toUpperCase() }</span></td>
+                            <td className="data-col">
+                              <span className="lead amount-pay">{ row.choice_name && row.choice_name.toUpperCase() }</span>
+                              {row.major_name ? parse(`<small style="color:#b76117;font-weight:bolder">  -- ${row.major_name && row.major_name.toUpperCase()} </small>`) : null }
+                            </td>
                             <td className="data-col"><span className="lead amount-pay">{ row.started_at && moment(row.started_at).format('DD MMM YY, HH:MM').toUpperCase() }</span></td>
+                            { row.flag_submit == 1 &&
                             <td className="data-col d-flex">
-                                <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showFormModal(e,row.serial)}><b><em className="ti ti-sms"></em> VIEW FORM</b></Link>
-                            </td>   
+                                <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showFormModal(e,row.serial)}><b><em className="ti ti-sms"></em>FORM</b></Link><br/>
+                                <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showFormModal(e,row.serial)}><b><i className="fa fa-folder"></i></b></Link>
+                            </td>} 
                           </tr>
                           )}
                         </tbody>

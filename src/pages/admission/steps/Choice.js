@@ -4,9 +4,11 @@ import { setChoice } from '../../../store/admission/applicantSlice';
 import Session from '../Session';
 import { helperData } from '../../../store/utils/helperData';
 import { getProgram } from '../../../store/utils/admissionUtil';
+import { loadAMSHelpers } from '../../../store/utils/ssoApi';
 
 const Choice = () => {
- 
+
+    const [ helper,setHelper ] = useState({ countries:[],adm_programs:[] });
     const { step,applicant } = useSelector(state => state)
     const dispatch = useDispatch();
     const required = ['institute_type','institute_name','fname','mstatus','dob','gender','citizen_country','resident_country','home_region','religion','present_occupation','work_place','bond_status','disabled','phone','email','pobox_address','resident_address'];
@@ -14,7 +16,11 @@ const Choice = () => {
     const [ options, setOptions ] = useState([]);
 
     const onChange = (e) => {
-        setForm({...form,[e.target.name] : e.target.value });
+      var index = e.target.selectedIndex;
+      var optionElement = e.target.childNodes[index]
+      var program_id =  optionElement.dataset.program;
+      var major_id =  optionElement.dataset.major;
+      setForm({...form, option_id : e.target.value, program_id, major_id });
     }
 
     const onSubmit = (e) => {
@@ -24,7 +30,7 @@ const Choice = () => {
     const addRecord = (e) => {
       if(options.length < 2){ 
         const cm = window.confirm(`Add Program Choice ${options.length+1} ?`)
-        if(cm && form.program_id && form.program_id !== ''){
+        if(cm && form.option_id && form.option_id !== ''){
           setOptions([...options,form ])
           setForm({})
         }
@@ -49,7 +55,15 @@ const Choice = () => {
       }   return false;
     },[options])
 
+    const helperLoader = async() => {
+      const hps = await loadAMSHelpers()
+      if(hps.success){
+        setHelper(hps.data)
+      } 
+    }
+
     useEffect(() => {
+      helperLoader()
       setOptions([...applicant.choice])
     },[])
 
@@ -57,11 +71,6 @@ const Choice = () => {
       dispatch(setChoice([...options]))
     },[options])
 
-
-    useEffect(() => {
-      console.log(options);
-      console.log(form);
-    })
 
     return (
       <Session>
@@ -85,21 +94,21 @@ const Choice = () => {
               
               <tbody>
                 <tr>
-                  <td colSpan={5} style={{backgroundColor:'#fff8ef'}}>
-                      <span className="small-9 columns">
-                          <label className="u-ml-0 label-title">Select Program Choice </label>
-                          <select name="program_id" onChange={(e)=> onChange(e)} value={form.program_id} id="ember1134" className="aurora-select Input--floatLabel FloatLabel-input  ember-text-field ember-view">
+                  <td colSpan={6} style={{backgroundColor:'#fff8ef'}}>
+                      <span className="small-10 columns">
+                          <label className="u-ml-0 label-title">Select Program of Choice </label>
+                          <select name="program_id" onChange={(e)=> onChange(e)} value={form.option_id} id="ember1134" className="aurora-select Input--floatLabel FloatLabel-input  ember-text-field ember-view">
                             <option selected disabled>-- Select --</option>
-                            { helperData.programs.map((hp) => 
-                                <option value={hp.id}>{hp.short.toUpperCase()}</option>
+                            { helper && helper.adm_programs.map((hp) => 
+                                <option value={hp.id} data-program={hp.prog_id} data-major={hp.major_id}>{`${hp.program_name.toUpperCase()} ${hp.major_name ? '( '+hp.major_name.toUpperCase()+' )':''}`}</option>
                             )}
                           </select>
                       </span>
                      
-                      <span className="small-3 columns">
+                      <span className="small-2 columns">
                          <br/><label className="u-ml-0 label-title">&nbsp; </label>
                          <span className="headerText">
-                           <button className="Button Button--green" onClick={(e) => addRecord(e)} style={{height:'2em',lineHeight:'1.2em'}}><small><b>ADD CHOICE</b></small></button>
+                           <button className="Button Button--green" onClick={(e) => addRecord(e)} style={{height:'2em',lineHeight:'1.2em'}}><small><b>ADD</b></small></button>
                          </span>
                       </span>
                   </td>
@@ -107,7 +116,7 @@ const Choice = () => {
                { options.map((row,i) =>
                 i < 2 ?
                 <tr key={i}>
-                  <td colSpan={3}><small id="ember2105" className="ellipsis-text ember-view"><b>{(i+1)}. {getProgram(row.program_id) && getProgram(row.program_id).toUpperCase()}</b></small></td>
+                  <td colSpan={5}><small id="ember2105" className="ellipsis-text ember-view"><b>{(i+1)}. {getProgram(row.option_id,helper.adm_programs) && getProgram(row.option_id,helper.adm_programs).toUpperCase()}</b></small></td>
                   <td className="flex-row">
                     <button onClick={(e) => delRecord(i)} className="Button Button--red" title="Delete File" style={{height:'2em',lineHeight:'1.2em'}}><span className="Icon--close" /></button>
                   </td>

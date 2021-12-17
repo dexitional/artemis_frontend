@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import LoginLayout from '../../components/admission/LoginLayout';
 import { Link,useHistory } from 'react-router-dom';
 import { setIsLoggedIn, setIsModal, setMeta, setStepCount } from '../../store/admission/stepSlice';
-import { setAccount, setAdmission, setAdmitStatus, setApplyMode, setChoice, setDocument, setEducation, setGrade, setGuardian, setNotification, setProfile, setResult, setStage, setSubmitStatus, setUser, updateUser } from '../../store/admission/applicantSlice';
+import { setAccount, setAdmission, setAdmitStatus, setApplyMode, setChoice, setDocument, setEducation, setGrade, setGroupID, setGuardian, setNotification, setProfile, setResult, setSellType, setStage, setSubmitStatus, setUser, updateUser } from '../../store/admission/applicantSlice';
 import { useDispatch } from 'react-redux';
 import { verifyApplicant } from '../../store/utils/admissionApi';
 import { getApplyTypeTitle, getStage, getStageTitle } from '../../store/utils/admissionUtil';
@@ -50,6 +50,8 @@ const Login = () => {
               dispatch(setStepCount(rec.count));
               dispatch(setMeta(rec.meta));
               dispatch(setSubmitStatus(rec.flag_submit))
+              dispatch(setGroupID(rec.group_id))
+              dispatch(setSellType(rec.sell_type))
               // Setup User info
               const user = { serial:form.serial, pin:form.pin, photo: rec.user.photo, name: (rec.stage_id ? getStageTitle(rec.stage_id):'')+(rec.apply_type ? ' | '+getApplyTypeTitle(rec.apply_type):'')}
               dispatch(setUser(user));
@@ -104,7 +106,7 @@ const Login = () => {
     
     return (
        <LoginLayout>
-            <h6><small style={{fontSize:'11.5px',letterSpacing:'0.02em'}}><b>AFRICAN UNIVERSITY COLLEGE OF COMMUNICATIONS</b></small><hr/></h6>
+            <h2><small><b style={{fontSize:'8px!important',letterSpacing:'0.02em'}}>AUCC APPLICANTS PORTAL</b></small><hr/></h2>
             <form onSubmit={onSubmit} autoComplete="none">
 
                 <div className={ serialError ? "sc-giYgFv deECce do-u-mb--small is-invalid is-required" : "sc-giYgFv deECce do-u-mb--small is-required"}>

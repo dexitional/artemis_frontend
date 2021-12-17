@@ -9,6 +9,8 @@ export const applicantSlice  = createSlice({
        grade_value: 0,
        class_value: 0,
        flag_submit: 0,
+       group_id: '',
+       sell_type: 0,
        flag_admit: 0,
        profile:   { profile_id:'' },
        guardian:  { guardian_id:'' },
@@ -161,6 +163,12 @@ export const applicantSlice  = createSlice({
       setAccount: (state, { payload }) => {
         state.account = payload
       },
+      setGroupID: (state, { payload }) => {
+        state.group_id = payload
+      },
+      setSellType: (state, { payload }) => {
+        state.sell_type = payload
+      },
       updateAccount: (state, { payload }) => {
         state.account = {...state.account, payload }
       }
@@ -171,7 +179,7 @@ export const {
   setStage,setApplyMode,setSubmitStatus,setAdmitStatus,setProfile,setGuardian,setEducation,addEducation,delEducation,setResult,addResult,delResult,
   setChoice,addChoice,delChoice,setDocument,addDocument,delDocument,setReferee,addReferee,delReferee,setQualification,addQualification,
   delQualification,setNotification,setAdmission,updateAdmission,setAccount,updateAccount,updateProfile,updateGuardian,setUser,updateUser,
-  setGrade,addGrade,delGrade,setGradeValue,setClassValue,setEmployment,addEmployment,delEmployment
+  setGrade,addGrade,delGrade,setGradeValue,setClassValue,setEmployment,addEmployment,delEmployment,setGroupID,setSellType
 } = applicantSlice.actions;
 
 export default applicantSlice.reducer;

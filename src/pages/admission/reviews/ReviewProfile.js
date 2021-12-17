@@ -1,19 +1,31 @@
 import moment from 'moment';
-import React, { Fragment } from 'react'
+import React, { Fragment,useEffect,useState } from 'react'
 import { useSelector } from 'react-redux';
-import { getMarital, getRegion, getReligion, getTitle } from '../../../store/utils/admissionUtil';
+import { getMarital, getRegion, getReligion, getStudyMode, getTitle, getCountryTitle } from '../../../store/utils/admissionUtil';
+import { loadAMSHelpers } from '../../../store/utils/ssoApi';
 
 const ReviewProfile = ({tag,title,edit}) => {
-
+    
+    const [ helpers,setHelpers ] = useState({ countries:[],adm_programs:[] });
     const { applicant,helper } = useSelector(state => state)
     const { profile } =  applicant;
-
 
     const editRecord = () => {
         // const cm = window.confirm("Edit Data ?")
         // if(cm) edit(tag);
         edit(tag);
     }
+
+    const helperLoader = async() => {
+      const hps = await loadAMSHelpers()
+      if(hps.success){
+         setHelpers(hps.data)
+      } 
+    }
+
+    useEffect(() => {
+      helperLoader()
+    },[])
 
     return (
      <Fragment>
@@ -63,13 +75,13 @@ const ReviewProfile = ({tag,title,edit}) => {
             </tr>
             <tr>
                 <td className="date"><b>Citizen of Country</b></td>
-                <td className="date">{profile.citizen_country || '-- None --'}</td>
+                <td className="date">{getCountryTitle(profile.citizen_country,helpers.countries) || '-- None --'}</td>
                 <td className="date"><b>Phone Number</b></td>
                 <td className="date">{profile.phone || '-- None --'}</td>
             </tr>
             <tr>
                 <td className="date"><b>Country of Residence</b></td>
-                <td className="date">{profile.resident_country || '-- None --'}</td>
+                <td className="date">{getCountryTitle(profile.resident_country,helpers.countries) || '-- None --'}</td>
                 <td className="date"><b>E-mail address </b></td>
                 <td className="date">{profile.email || '-- None --'}</td>
             </tr>
@@ -88,8 +100,8 @@ const ReviewProfile = ({tag,title,edit}) => {
             <tr>
                 <td className="date"><b>Religion</b></td>
                 <td className="date">{getReligion(profile.religion) || '-- None --'}</td>
-                <td className="date">&nbsp;</td>
-                <td className="date">&nbsp;</td>
+                <td className="date">Study Mode</td>
+                <td className="date">{getStudyMode(profile.session_mode) || '-- None --'}</td>
             </tr>
         </tbody>
         </table>

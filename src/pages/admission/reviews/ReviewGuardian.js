@@ -27,25 +27,25 @@ const ReviewGuardian = ({tag,title,edit}) => {
                     <td className="date"><b>Title</b></td>
                     <td className="date">{getTitle(guardian.title)}</td>
                     <td className="date"><b>Occupation</b></td>
-                    <td className="date">{guardian.occupation}</td>
+                    <td className="date">{guardian.occupation || '-- None --'}</td>
                 </tr>
                 <tr>
                     <td className="date"><b>Surname</b></td>
                     <td className="date">{guardian.lname}</td>
                     <td className="date"><b>Phone Number</b></td>
-                    <td className="date">{guardian.phone}</td>
+                    <td className="date">{guardian.phone || '-- None --'}</td>
                 </tr>
                 <tr>
                     <td className="date"><b>Othername(s)</b></td>
                     <td className="date">{guardian.fname}</td>
                     <td className="date"><b>E-mail address </b></td>
-                    <td className="date">{guardian.email}</td>
+                    <td className="date">{guardian.email || '-- None --'}</td>
                 </tr>
                 <tr>
                     <td className="date"><b>Relation to Applicant</b></td>
                     <td className="date">{getRelation(guardian.relation)}</td>
                     <td className="date"><b>Address</b></td>
-                    <td className="date">{guardian.address}</td>
+                    <td className="date">{guardian.address || '-- None --'}</td>
                 </tr>
               </tbody>
             </table>

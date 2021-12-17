@@ -1234,7 +1234,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 .data-details-title {
   font-size: 14px;
   font-weight: 600;
-  color: rgb(37 57 146);
+  color: rgb(136, 44, 72);
   line-height: 20px;
   display: block;
 }
@@ -1268,7 +1268,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 .data-details-head {
   font-size: 13px;
   font-weight: 500;
-  color: rgb(37 57 146);
+  color: rgb(136, 44, 72);
   line-height: 20px;
   padding: 15px 20px 2px;
   width: 100%;
@@ -1288,7 +1288,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 
 .data-details-des .ti:not([data-toggle="tooltip"]),
 .data-details-des [class*="fa"]:not([data-toggle="tooltip"]) {
-  color: rgb(44, 128, 255);
+  color: rgb(136, 44, 72);
 }
 
 .data-details-des span:last-child:not(:first-child) {
@@ -1420,11 +1420,11 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
   border-radius: 4px;
   text-align: center;
   color: rgb(255, 255, 255);
-  background: rgba(44, 128, 255, 0.7);
+  background: rgba(255, 139, 44, 0.7);
 }
 
 .data-doc-actions li a:hover {
-  background: rgba(44, 128, 255, 0.9);
+  background: rgba(255, 139, 44, 0.7);
 }
 
 .data-vr-list {
@@ -1584,13 +1584,13 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 .pagination li a:hover,
 .pagination li a:focus {
   color: rgb(255, 255, 255);
-  background: rgb(44, 128, 255);
+  background: rgba(255, 139, 44, 0.9);
   box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 3px 0px;
 }
 
 .pagination li.active span {
   color: rgb(255, 255, 255);
-  background: rgb(44, 128, 255);
+  background: rgba(255, 139, 44, 0.7);
 }
 
 .user-list .dt-email,

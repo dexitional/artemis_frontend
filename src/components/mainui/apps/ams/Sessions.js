@@ -1,10 +1,11 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { deleteSession, fetchSessions, postSession, setDefaultSession } from '../../../../store/utils/ssoApi';
+import { deleteSession, fetchSessions, loadAMSHelpers, postSession, setDefaultSession } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import moment from 'moment';
 import { setSessions } from '../../../../store/admission/ssoSlice';
+import PaperLetter from '../../PaperLetter';
 
 
 const Sessions = ({view,data,recid}) => {
@@ -98,6 +99,7 @@ const List = () => {
 
    
    return (
+    <>
     <div className="card-innr">
     <div className="dataTables_wrapper dt-bootstrap4 no-footer">
         <div className="table-wrap">
@@ -150,6 +152,7 @@ const List = () => {
         </div>
     </div>
     </div>
+    </>
    )
 }
 
@@ -160,6 +163,7 @@ const Form = ({recid}) => {
     const history = useHistory();
     const { sso } = useSelector(state => state)
     const { register, handleSubmit,setValue, getValues, formState : { errors } } = useForm();
+    const [ helper,setHelper ] = useState({ letters:[] });
     
     const onSubmit = async data => {
       data.session_id = parseInt(recid) || 0;
@@ -179,7 +183,7 @@ const Form = ({recid}) => {
         if(dt){
           const dk = Object.keys(dt);
           dk.forEach( d => {
-              if(d == 'apply_start' || d == 'apply_end') return setValue(d,moment(dt[d]).format('YYYY-MM-DD'))
+              if(d == 'apply_start' || d == 'apply_end' || d == 'exam_start' || d == 'exam_end' || d == 'admission_date') return setValue(d,moment(dt[d]).format('YYYY-MM-DD'))
               return setValue(d,dt[d])
           })
         } 
@@ -190,8 +194,18 @@ const Form = ({recid}) => {
        const cm = window.confirm('Cancel Form ?')
        if(cm) history.push('/app/ams?mod=sessions&view=list')
     }
+
+    const helperData = async() => {
+        const hps = await loadAMSHelpers()
+        console.log(hps)
+        if(hps.success){
+          setHelper(hps.data)
+        } 
+    }
+
   
     useEffect(()=>{
+      helperData()
       formData();
     },[])
 
@@ -220,8 +234,8 @@ const Form = ({recid}) => {
                             <div className="input-item input-with-label">
                                 <label htmlFor="status" className="input-item-label">STATUS</label>
                                 <select {...register("status", { required: 'Please provide status !' })} className="input-bordered">
-                                   <option value={0}>Disabled</option>
-                                   <option value={1}>Enabled</option>
+                                   <option value={0}>DISABLED</option>
+                                   <option value={1}>ENABLED</option>
                                 </select>
                             </div>
                         </div>
@@ -236,6 +250,62 @@ const Form = ({recid}) => {
                             <div className="input-item input-with-label">
                                 <label htmlFor="apply_end" className="input-item-label">APPLICATION CLOSE DATE</label>
                                 <input {...register("apply_end", { required: 'Please provide application close date !' })}  className="input-bordered" type="date"/></div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="exam_start" className="input-item-label">ENTRANCE EXAM START DATE</label>
+                                <input {...register("exam_start", { required: 'Please provide exams start date !' })}  className="input-bordered" type="date"/></div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="exam_end" className="input-item-label">ENTRANCE EXAM CLOSE DATE</label>
+                                <input {...register("exam_end", { required: 'Please provide exams close date !' })}  className="input-bordered" type="date"/></div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="apply_freeze" className="input-item-label">HALT/FREEZE APPLICATION PROCEDURE</label>
+                                <select {...register("apply_freeze", { required: 'Please choose status !' })} className="input-bordered">
+                                   <option value={''} selected disabled>--CHOOSE--</option>
+                                   <option value={0}>DISABLED</option>
+                                   <option value={1}>ENABLED</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="admission_show" className="input-item-label">SHOW ADMISSION STATUS</label>
+                                <select {...register("admission_show", { required: 'Please choose status !' })} className="input-bordered">
+                                   <option value={''} selected disabled>--CHOOSE--</option>
+                                   <option value={0}>DISABLED</option>
+                                   <option value={1}>ENABLED</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="letter_id" className="input-item-label">ADMISSION LETTER TEMPLATE</label>
+                                <select {...register("letter_id", { required: 'Please choose Letter template !' })} className="input-bordered">
+                                   <option value={''} selected disabled>--CHOOSE--</option>
+                                   { helper && helper.letters.map((row,i) => 
+                                    <option value={row.id}>{row.title}</option>
+                                   )}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="admission_date" className="input-item-label">ADMISSION SESSION DATE</label>
+                                <input {...register("admission_date", { required: 'Please provide admission session date !' })}  className="input-bordered" type="date"/></div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="voucher_index" className="input-item-label">VOUCHER START INDEX</label>
+                                <input {...register("voucher_index", { required: 'Please enter voucher start index !' })} maxLength={8} minLength={8} className="input-bordered" type="text"/></div>
                         </div>
                     </div>
 

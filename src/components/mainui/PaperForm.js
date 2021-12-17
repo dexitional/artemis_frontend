@@ -62,7 +62,7 @@ const PaperForm = () => {
      <div className="row">
         <div className="Box small-12 columns" style={{width:'900px', margin:'0px auto',float:'none',overflow:'hidden'}}>
             <div className="small-6 columns u-pl-0">
-                <p className="u-mb-2"> <b>APPLICANT ID: {applicant.user.serial}</b> </p>
+                <p className="u-mb-2 d-none"> <b>APPLICANT ID: {applicant.user.serial}</b> </p>
             </div>
             <div className="small-6 columns u-pr-0">
                 <button onClick={handlePrint} className="Button u-floatRight u-mb-2">&nbsp;&nbsp;Print Form&nbsp;&nbsp;</button>

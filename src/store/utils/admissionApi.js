@@ -24,4 +24,13 @@ export const convertPhoto = async (data) => {
   return res.data;
 } 
 
+export const fetchAdmitedStudent = async (serial) => {
+  const res = await axios.get(`${API_URL}/admission/admitdata/${serial}`);
+  return res.data;
+} 
 
+
+export const sendAgreement = async (data) => {
+  const res = await axios.post(`${API_URL}/admission/agreeoffer`,data);
+  return res.data;
+} 

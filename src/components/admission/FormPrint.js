@@ -2,17 +2,19 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import '../../components/admission/FormPrint.css';
 import Logo from '../../assets/img/logo.png'
 import Mark from '../../assets/img/watermark.jpg'
-import { getMarital, getRegion, getStage, getTitle,getRelation,getCertType, getClass, getSitting, getProgram,getSubject, getGrade, getStageTitle, getApplyTypeTitle } from '../../store/utils/admissionUtil';
+import { getMarital, getRegion, getStage, getTitle,getRelation,getCertType, getClass, getSitting, getProgram,getSubject, getGrade, getStageTitle, getApplyTypeTitle, getStudyMode, getCountryTitle, getAdmissionGroupTitle } from '../../store/utils/admissionUtil';
 import moment from 'moment'
 import { useReactToPrint } from 'react-to-print';
 import AdminLayout from '../../components/admission/AdminLayout';
 import { useSelector,useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom';
 import { setPrevStep } from '../../store/admission/stepSlice'
+import { loadAMSHelpers } from '../../store/utils/ssoApi';
 
 
 const FormPrint = () => {
-
+  
+  const [ helpers,setHelpers ] = useState({ countries:[],adm_programs:[] });
   const { step,applicant } = useSelector(state => state);
   const dispatch = useDispatch()
   const printRef = useRef();
@@ -59,9 +61,17 @@ const FormPrint = () => {
      return false;
   }
 
+  const helperLoader = async() => {
+    const hps = await loadAMSHelpers()
+    if(hps.success){
+        setHelpers(hps.data)
+    } 
+  }
+
   
   useEffect(()=>{
-    handlePrint()
+    helperLoader()
+    setTimeout(()=>handlePrint(),1000)
     //loadGrades()
     setGrades([...applicant.grade]);
   },[])
@@ -92,7 +102,7 @@ const FormPrint = () => {
                <img src={Logo} className="logo"/>
                <div className="left-cover">
                     <h2><span style={{fontSize:'27.5px',color:'#b76117',letterSpacing:'0.07em'}}>AFRICAN UNIVERSITY</span><br/>COLLEGE OF COMMUNICATIONS</h2>
-                    <h3 className="title-group">Undergraduate Online Application Form</h3>
+                    <h3 className="title-group">{getAdmissionGroupTitle(applicant.stage_id)} {/*applicant.user.group_name*/} Online Application Form</h3>
                </div>
            </div>
            <div className="right-head address">
@@ -131,7 +141,7 @@ const FormPrint = () => {
                        <td colSpan={2}>&nbsp;</td>
                    </tr>
                    <tr>
-                       <td rowSpan={6}>
+                       <td rowSpan={7}>
                            <img src={applicant.user.photo ? applicant.user.photo : Logo } style={{height:'200px',display:'block'}} />
                        </td>
                        <td className="shead">Applicant ID:</td>
@@ -145,6 +155,10 @@ const FormPrint = () => {
                        <td className="shead">Application Type:</td>
                        <td className="sbody"><small><b>{getApplyTypeTitle(applicant.apply_type) && getApplyTypeTitle(applicant.apply_type).toUpperCase()}</b></small></td>
                    </tr>
+                   <tr>
+                       <td className="shead">Study Mode:</td>
+                       <td className="sbody"><small><b>{getStudyMode(applicant.profile.session_mode) && getStudyMode(applicant.profile.session_mode).toUpperCase()}</b></small></td>
+                   </tr>
                   <tr>
                        <td colSpan={2}><hr/></td>
                   </tr>
@@ -157,7 +171,7 @@ const FormPrint = () => {
                        <td className="sbody">{applicant.profile.lname && applicant.profile.lname.toUpperCase()}</td>
                    </tr>
                    <tr>
-                       <td rowSpan={['7','8'].includes(applicant.stage_id) ? '11':'9'}></td>
+                       <td rowSpan={['7','8'].includes(applicant.stage_id) ? '12':'10'}></td>
                        <td className="shead">Other Names:</td>
                        <td className="sbody">{applicant.profile.fname && applicant.profile.fname.toUpperCase()}</td>
                    </tr>
@@ -193,6 +207,11 @@ const FormPrint = () => {
                        <td className="shead">Residential Address:</td>
                        <td className="sbody">{applicant.profile.resident_address && applicant.profile.resident_address.toUpperCase()}</td>
                    </tr>
+                   <tr>
+                       <td className="shead">Country of Residence:</td>
+                       <td className="sbody">{getCountryTitle(applicant.profile.resident_country,helpers.countries) && getCountryTitle(applicant.profile.resident_country,helpers.countries).toUpperCase()}</td>
+                   </tr>
+                   
                    { ['7','8'].includes(applicant.stage_id) ? 
                    <Fragment>
                    <tr>
@@ -232,11 +251,11 @@ const FormPrint = () => {
                    </tr>
                    <tr>
                        <td className="shead">Email Address:</td>
-                       <td className="sbody">{applicant.guardian.email && applicant.guardian.email.toUpperCase()}</td>
+                       <td className="sbody">{applicant.guardian.email && applicant.guardian.email.toUpperCase() || '--NONE--'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Address:</td>
-                       <td className="sbody">{applicant.guardian.address && applicant.guardian.address.toUpperCase()}</td>
+                       <td className="sbody">{applicant.guardian.address && applicant.guardian.address.toUpperCase() || '--NONE--'}</td>
                    </tr>
                </table>
            </section>
@@ -369,8 +388,8 @@ const FormPrint = () => {
                    <tr><td colSpan="4">&nbsp;</td></tr>
                    <tr><td colSpan="4"><hr/></td></tr>
                    <tr>
-                       <td colSpan="3"><h3 className="title">  Examination Results Information</h3></td>
-                       <td>&nbsp;</td>
+                       <td colSpan="2"><h3 className="title">  Examination Results Information</h3></td>
+                       <td colSpan="2"><h3 className="title" style={{fontSize:'10px !important',borderColor:'#b76117',color:'#b76117',letterSpacing:'0.07em',padding:'5px 15px'}}>TOTAL AGGREGATE : {applicant.grade_value}</h3></td>
                    </tr>
                    { applicant.result.map((row,i) => 
                    <Fragment key={i}>
@@ -404,8 +423,8 @@ const FormPrint = () => {
                        <td className="shead">{getData(row.result_id,2) && getGrade(getData(row.result_id,2).grade)}</td>
                    </tr>
                    <tr>
-                       <td className="sbody">{getData(row.result_id,6) || getData(row.result_id,7) && 'Subject'}</td>
-                       <td className="sbody">{getData(row.result_id,6) || getData(row.result_id,7) && 'Grade'}</td>
+                       <td className="sbody">{getData(row.result_id,6) && 'Subject'}</td>
+                       <td className="sbody">{getData(row.result_id,6) && 'Grade'}</td>
                        <td className="shead">{getData(row.result_id,3) && getSubject(getData(row.result_id,3).subject).toUpperCase()}</td>
                        <td className="shead">{getData(row.result_id,3) && getGrade(getData(row.result_id,3).grade)}</td>
                    </tr>
@@ -437,7 +456,7 @@ const FormPrint = () => {
                    { applicant.choice.map((row,i) =>
                    <tr>
                        <td className="shead">&nbsp;&nbsp;&nbsp;Program Choice {i+1}: </td>
-                       <td colSpan="4" className="sbody">{getProgram(row.program_id) && getProgram(row.program_id).toUpperCase()}</td>
+                       <td colSpan="4" className="sbody">{getProgram(row.option_id,helpers.adm_programs) && getProgram(row.option_id,helpers.adm_programs).toUpperCase()}</td>
                    </tr>
                    )}
 

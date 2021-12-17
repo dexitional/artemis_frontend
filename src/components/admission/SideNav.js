@@ -10,7 +10,7 @@ const SideNav = () => {
     const location = useLocation();
     const dispatch = useDispatch();
     const history = useHistory();
-    const pathname = location.pathname.replace('/','');
+    const pathname = location.pathname.replace('/applicant','');
     
     const resumeAction = () => {
         dispatch(setIsAllowed(true));
@@ -30,7 +30,7 @@ const SideNav = () => {
         const cm = window.confirm('Logout of System?')
         if(cm){
            dispatch(setIsLoggedIn(false));
-           history.push('/')
+           history.push('/applicant')
         }  return false;
     }
 
@@ -55,14 +55,13 @@ const SideNav = () => {
                                         </div>
                                     </a>
                                     </li>
-                                    { pathname !== 'admission-session' && (applicant.stage_id != '' && applicant.apply_type != '') ? 
-                                    <li>
+                                    { (pathname !== 'admission-session' && applicant.stage_id && applicant.apply_type) &&
+                                    <li className="d-none">
                                         <a onClick={resumeAction} id="ember1292" className="addGroup ember-view">
                                             <span className="groupLink--left Icon Icon--plus" />
                                             <b><small>GOTO APPLICATION</small></b>
                                         </a>
                                     </li>
-                                    : null
                                     }
                                 </ul>
                             </div>

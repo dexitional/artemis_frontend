@@ -8,6 +8,7 @@ import StudentRegister from '../pages/StudentRegister';
 import StudentResult from '../pages/StudentResult';
 import PaperSlip from '../../PaperSlip';
 import StudentFees from '../pages/StudentFees';
+import ModalForm from './ModalForm';
 
 const StudentPageLoad = ({mod,view,data = {},recid}) => {
   const { sso } = useSelector( state => state)
@@ -35,6 +36,7 @@ const StudentPageLoad = ({mod,view,data = {},recid}) => {
     <>
       {switchPage()}
       <ModalPage />
+      {/*<ModalForm/>*/}
     </>
   )
 

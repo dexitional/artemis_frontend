@@ -42,7 +42,7 @@ const PaperRegList = () => {
            <section>
                 <h1 className="h1title fore">AFRICAN UNIVERSITY COLLEGE OF COMMUNICATIONS, ACCRA</h1>
                 <h2 className="h2title">{session.title}</h2>
-                <h3 className="h3title">LIST OF REGISTERED STUDENTS ({regdata && regdata.length})</h3>
+                <h3 className="h3title">{modal.title || ''}</h3>
                 <img src={Logo} style={{height:'90px', width:'90px',position:'relative',top:'-75px',left: '90px', margin:'0px auto -55px'}}/>
                 <hr className="divider"/>
                 <table className="stable">
@@ -57,7 +57,11 @@ const PaperRegList = () => {
 						regdata.map((row) =>
                         <tr class="tbody">
                             <td align="left">{row.indexno}</td>
-                            <td align="left">{row.fname} {row.mname} {row.lname}</td>
+                            <td align="left">
+                                <span>{row.fname} {row.mname} {row.lname} ( L{row.level} )</span><br/>
+                                <small style={{fontWeight:'bolder', color:''}}>( {row.program_name} {row.major_name && <span style={{fontWeight:'bolder', color:'#b76117'}}> -- {row.major_name}</span>})</small>
+                                
+                            </td>
                             <td align="center">{row.course_count}</td>
                             <td align="left">{moment(row.created_at).format('LLL').toUpperCase()}</td>
                         </tr>

@@ -159,19 +159,20 @@ export const helperData = {
     grades: [
       { id: 1, title: 'A', weight: 1, certType: 2 },
       { id: 2, title: 'B', weight: 2, certType: 2 },
-      { id: 3, title: 'C', weight: 3, certType: 2 },
-      { id: 4, title: 'D', weight: 4, certType: 2 },
-      { id: 5, title: 'E', weight: 5, certType: 2 },
-      { id: 6, title: 'F', weight: 6, certType: 2 },
+      { id: 3, title: 'C', weight: 4, certType: 2 },
+      { id: 4, title: 'D', weight: 7, certType: 2 },
+      { id: 5, title: 'E', weight: 8, certType: 2 },
+      { id: 6, title: 'F', weight: 9, certType: 2 },
       { id: 7, title: 'A1', weight: 1, certType: 1 },
       { id: 8, title: 'B2', weight: 2, certType: 1 },
       { id: 9, title: 'B3', weight: 3, certType: 1 },
       { id: 10, title: 'C4', weight: 4, certType: 1 },
-      { id: 11, title: 'C5', weight: 4, certType: 1 },
-      { id: 12, title: 'C6', weight: 4, certType: 1 },
-      { id: 13, title: 'D7', weight: 5, certType: 1 },
-      { id: 14, title: 'E8', weight: 6, certType: 1 },
-      { id: 15, title: 'F9', weight: 6, certType: 1 },
+      { id: 11, title: 'C5', weight: 5, certType: 1 },
+      { id: 12, title: 'C6', weight: 6, certType: 1 },
+      { id: 13, title: 'D7', weight: 7, certType: 1 },
+      { id: 14, title: 'E8', weight: 8, certType: 1 },
+      { id: 15, title: 'F9', weight: 9, certType: 1 },
+      { id: 0, title: '[ AWAITING ]', weight: 0, certType: 1 },
      
     ],
     
@@ -255,7 +256,7 @@ export const helperData = {
      { id: 77, title: 'Salesmanship', active: 1, isCore: false, isRequired: false },
      { id: 78, title: 'Sculpture', active: 1, isCore: false, isRequired: false },
      { id: 79, title: 'Shorthand', active: 1, isCore: false, isRequired: false },
-     { id: 80, title: 'Social Studies', active: 1, isCore: false, isRequired: false },
+     { id: 80, title: 'Social Studies', active: 1, isCore: true, isRequired: false },
      { id: 81, title: 'Store Keeping', active: 1, isCore: false, isRequired: false },
      { id: 82, title: 'Store Management', active: 1, isCore: false, isRequired: false },
      { id: 83, title: 'Technical Drawing', active: 1, isCore: false, isRequired: false },
@@ -297,7 +298,29 @@ export const helperData = {
       { type_id: 3, title: 'MATURED APPLICANT', stages:[3,5], status: 1 },
       { type_id: 4, title: 'IB/IGCSE/GCSE',stages:[4,6], status: 1 },
       { type_id: 5, title: 'DEGREE/OTHERS',stages:[7], status: 1 },
-    ]
+    ],
+
+    admissionGroups: [
+      { stage_id: 1, title: 'Certificate Program ',status: 0},
+      { stage_id: 2, title: 'Certificate Program ',status: 0 },
+      { stage_id: 3, title: 'Diploma Program ',status: 1 },
+      { stage_id: 4, title: 'Diploma Program ',status: 1 },
+      { stage_id: 5, title: 'Undergraduate ',status: 1 },
+      { stage_id: 6, title: 'Undergraduate ',status: 1 },
+      { stage_id: 7, title: 'Postgraduate ',status: 1 },
+    ],
+
+
+    renderView : (roles,user) => {
+		  var allowAccess = false;
+		  if(user.roles && user.roles.length > 0){
+        for(var row of user.roles){
+          const con = roles.includes(parseInt(row.arole_id))
+          if(con) allowAccess = con
+        }
+		  }
+		  return allowAccess;
+	  }
    
   }
                     

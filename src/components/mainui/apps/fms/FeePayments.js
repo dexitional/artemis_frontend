@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { generateIndexNo, deletePayment, fetchPaymentFMS, fetchPaymentsFMS, loadFMSHelpers, postPaymentFMS } from '../../../../store/utils/ssoApi';
+import { generateIndexNo, deletePayment, fetchPaymentFMS, fetchPaymentsFMS, loadFMSHelpers, postPaymentFMS, fetchStudentData } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
@@ -56,7 +56,6 @@ const FeePayments = ({view,data,recid}) => {
       }else{
         alert('Please provide a valid Student Reference Number')
       }
-      
    }
 
    return (
@@ -139,7 +138,6 @@ const List = () => {
     }else{
        // Error occurred
     }
-    
   }
 
    const fetchPayments = async () => {
@@ -227,17 +225,19 @@ const List = () => {
                           <tr className="data-item odd" role="row">
                             <td className="data-col">
                               <span className="lead tnx-id">
-                                {moment(row.paydate).format('DD-MMM-YYYY').toUpperCase()} 
+                                {moment(row.transdate).format('DD-MMM-YYYY').toUpperCase()} 
                               </span>
                             </td>
                             <td className="data-col center"><span className="lead amount-pay">{row.currency ? parse(`<b style="color:#b76117;font-weight:bolder">${row.currency} </b>`) : null }{row.amount }</span></td>
                             <td className="data-col center">
-                                <span className="lead token-amount">{row.name}</span>
+                                <span className="lead token-amount">{row.name && row.name.toUpperCase()}</span>
                                 {row.refno ? parse(`<small style="color:#b76117;font-weight:bolder">  -- ${row.refno} </small>`) : null }
                             </td>
                             <td className="data-col center">
-                                <small className="lead token-amount">REF: {row.reference}</small>
+                                {/*<small className="lead token-amount">REF: {row.reference}</small>*/}
+                                <small className="lead token-amount">TRANS ID: {row.transtag}</small>
                                 {row.paytype ? parse(`<small style="color:#b76117;font-weight:bolder"> PAY MODE: ${row.paytype} </small>`) : null }
+                                {row.feetype ? parse(`<br/><small class="token-amount"> PAY TAG: ${row.feetype} </small>`) : null }
                                 {row.tag ? parse(`<br/><small style="color:#b76117;font-weight:bolder"> SETTLEMENT: ${row.tag} </small>`) : null }
                             </td>
                             
@@ -275,11 +275,13 @@ const Form = ({recid}) => {
     const history = useHistory();
     const dispatch = useDispatch();
     const { sso } = useSelector(state => state)
-    const { register, handleSubmit,setValue, getValues, formState : { errors } } = useForm();
+    const { register, handleSubmit, setValue, getValues, formState : { errors } } = useForm();
     
     
     const onSubmit = async data => {
+      console.log(data)
       data.id = parseInt(recid) || 0;
+      
       const res = await postPaymentFMS(data);
       if(res.success){
          // Do something if passed
@@ -294,13 +296,28 @@ const Form = ({recid}) => {
       }
     }
 
+
+    const onChange = async data => {
+      const refno = data.target.value;
+      if(data.target.name == 'refno' && data.target.value.length >= 8){
+        const res = await fetchStudentData(refno);
+        console.log(res)
+        if(res.success){
+          const st = res.data;
+          //dispatch(updateAlert({show:true,message:`PAYMENT SAVED !`,type:'success'}))
+          alert(`STUDENT NAME:   ${st.name}${st.refno ? '\nSTUDENT ID:          '+st.refno:''}${st.indexno ? '\nINDEX NUMBER:    '+st.indexno:''}\nPROGRAM:             ${st.program_name}${st.major_name ? '\nMAJOR:                  '+st.major_name:''}${st.semester ? '\nYEAR:                      '+Math.ceil(st.semester/2):''}${st.doa ? '\nADMITTED ON:      '+moment(st.doa).format('MMMM YYYY').toUpperCase():''}${st.complete_status ? '\nSTATUS :                '+(st.complete_status == 0 ? 'ACTIVE STUDENT':'COMPLETED STUDENT'):''}`)
+        }
+      }
+      
+    }
+
     const formData = () => {
         const dt = sso.databox.payments.find( r => r.id == recid )
         console.log(dt)
         if(dt){
           const dk = Object.keys(dt);
           dk.forEach( d => {
-              if(d == 'paydate') return setValue(d,moment(dt[d]).format('YYYY-MM-DD'))
+              if(d == 'transdate') return setValue(d,moment(dt[d]).format('YYYY-MM-DD HH:mm:ss'))
               return setValue(d,dt[d])
           })
         } 
@@ -324,19 +341,24 @@ const Form = ({recid}) => {
       helperData();
       formData();
     },[])
+
+    useEffect(()=> {
+      //console.log(getValues('refno'))
+    })
   
 
     return (
     <div className="card-innr">
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form onSubmit={handleSubmit(onSubmit)} onChange={onChange}>
                     <div className="row">
                         { (errors.refno || errors.amount || errors.paydate || errors.reference )  &&
                         <div className="col-md-12">
                             <div className="alert alert-danger text-danger font-weight-bolder">
                                { errors.refno && <small><b>**  {errors.refno.message.toUpperCase()}<br/></b></small>}
                                { errors.amount && <small><b>**  {errors.amount.message.toUpperCase()}<br/></b></small>}
-                               { errors.paydate && <small><b>**  {errors.paydate.message.toUpperCase()}<br/></b></small>}
+                               { errors.transdate && <small><b>**  {errors.transdate.message.toUpperCase()}<br/></b></small>}
                                { errors.reference && <small><b>**  {errors.reference.message.toUpperCase()}<br/></b></small>}
+                               { errors.transtag && <small><b>**  {errors.transtag.message.toUpperCase()}<br/></b></small>}
                             </div>
                         </div>
                         }
@@ -349,14 +371,14 @@ const Form = ({recid}) => {
 
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
-                                <label htmlFor="tag" className="input-item-label">RECEIPT AMOUNT</label>
-                                <input {...register("amount", { required: 'Please Enter Receipt Amount!' })} className="input-bordered" type="text"/></div>
+                                <label htmlFor="transdate" className="input-item-label">TRANSACTION RECEIPT DATE & TIME <em><small>( YYYY-MM-DD HH:mm:ss )</small></em></label>
+                                <input {...register("transdate", { required: 'Please Enter Payment Receipt Date!' })} className="input-bordered" type="datetime"/></div>
                         </div>
 
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
-                                <label htmlFor="institute_email" className="input-item-label">RECEIPT DATE</label>
-                                <input {...register("paydate", { required: 'Please Enter Payment Receipt Date!' })} className="input-bordered" type="date"/></div>
+                                <label htmlFor="tag" className="input-item-label">RECEIPT AMOUNT</label>
+                                <input {...register("amount", { required: 'Please Enter Receipt Amount!' })} className="input-bordered" type="text"/></div>
                         </div>
 
                         <div className="col-md-6">
@@ -379,21 +401,44 @@ const Form = ({recid}) => {
                                 </select>
                             </div>
                         </div>
+                        {/*
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
                                 <label htmlFor="paytype" className="input-item-label">MODE OF PAYMENT </label>
                                 <select {...register("paytype")} className="input-bordered">
                                    <option value={'BANK'}>CASH AT BANK</option>
+                                   <option value={'SCHOLAR'}>SCHOLARSHIP</option>
                                    <option value={'MOMO'}>MTN MOMO</option>
                                    <option value={'ATMONEY'}>AIRTEL-TIGO CASH</option>
                                    <option value={'VODACASH'}>VODAFONE CASH</option>
                                 </select>
                             </div>
                         </div>
+                        */}
+
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
-                                <label htmlFor="reference" className="input-item-label">TRANSACTION REFERENCE</label>
-                                <input {...register("reference", { required: 'Please Enter Transaction Reference!' })} className="input-bordered" type="text"/></div>
+                                <label htmlFor="feetype" className="input-item-label">PAYMENT TAG </label>
+                                <select {...register("feetype")} className="input-bordered">
+                                   <option value={''} selected>--CHOOSE--</option>
+                                   <option value={'NORMAL'} selected>NORMAL PAYMENT</option>
+                                   <option value={'SCHOLARSHIP'}>SCHOLARSHIP</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                              <label htmlFor="transtag" className="input-item-label">BANK TRANSACTION ID</label>
+                              <input {...register("transtag", { required: 'Please Enter Bank Transaction ID!' })} className="input-bordered" type="text"/>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                              <label htmlFor="reference" className="input-item-label">TRANSACTION REFERENCE NOTE</label>
+                              <input {...register("reference", { required: 'Please Enter Transaction Reference!' })} className="input-bordered" type="text"/>
+                            </div>
                         </div>
                         
 

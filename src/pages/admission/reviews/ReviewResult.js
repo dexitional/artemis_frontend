@@ -50,7 +50,7 @@ const ReviewResult = ({tag,title,edit}) => {
                                 </tr>
                                 { grade.map((subj,j) =>  subj.result_id == row.result_id ? 
                                 <tr>
-                                    <td className="date"><b><small>{getSubject(subj.subject).toUpperCase()}</small></b></td>
+                                    <td className="date"><b><small style={{fontWeight:'bolder',fontSize:'13px',letterSpacing:'0.09em'}}>{getSubject(subj.subject).toUpperCase()}</small></b></td>
                                     <td className="date"><b>{getGrade(subj.grade)}</b></td>
                                 </tr>
                                 : null )}

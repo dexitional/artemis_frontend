@@ -1,10 +1,12 @@
-import React, { Fragment } from 'react'
+import React, { Fragment,useState,useEffect } from 'react'
 import { useSelector } from 'react-redux';
 import { getMonth,getCertType,getClass, getProgram } from '../../../store/utils/admissionUtil';
 import { helperData } from '../../../store/utils/helperData';
+import { loadAMSHelpers } from '../../../store/utils/ssoApi';
 
 const ReviewChoice = ({tag,title,edit}) => {
-
+    
+    const [ helpers,setHelpers ] = useState({ countries:[],adm_programs:[] });
     const { applicant,helper } = useSelector(state => state)
     const { choice } =  applicant;
 
@@ -14,7 +16,16 @@ const ReviewChoice = ({tag,title,edit}) => {
         edit(tag);
     }
 
-    console.log(choice);
+    const helperLoader = async() => {
+        const hps = await loadAMSHelpers()
+        if(hps.success){
+            setHelpers(hps.data)
+        } 
+    }
+
+    useEffect(() => {
+      helperLoader()
+    },[])
 
     return (
         <Fragment>
@@ -29,7 +40,7 @@ const ReviewChoice = ({tag,title,edit}) => {
               { choice.map((row,i) => 
                 <tr>
                     <td colSpan={1}> <h4>CHOICE {(i+1)}</h4></td>
-                    <td colSpan={3}> <h4>{getProgram(row.program_id) && getProgram(row.program_id).toUpperCase()}</h4></td>
+                    <td colSpan={3}> <h4>{getProgram(row.option_id,helpers.adm_programs) && getProgram(row.option_id,helpers.adm_programs).toUpperCase()}</h4></td>
                 </tr> 
               )}
               </tbody>

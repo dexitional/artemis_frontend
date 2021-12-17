@@ -11106,6 +11106,11 @@
     "regex-not" "^1.0.2"
     "safe-regex" "^1.1.0"
 
+"to-words@^3.0.1":
+  "integrity" "sha512-Erbm3RSoPUmGsSrLquuxaIzYO5n0NdXOq2+8yheGGJOVkB1kT59cDV//975Q2ltjB2+0uXy8DGSMeE8GAqmFUA=="
+  "resolved" "https://registry.npmjs.org/to-words/-/to-words-3.0.1.tgz"
+  "version" "3.0.1"
+
 "toidentifier@1.0.0":
   "integrity" "sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw=="
   "resolved" "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.0.tgz"
