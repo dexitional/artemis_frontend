@@ -115,12 +115,11 @@ const Profile = () => {
                        
                         <div>
                             <hr/>
-                            <p className="u-ml-0 label-title">MODE OF STUDY</p>
+                            <p className="u-ml-0 label-title">PREFFERED MODE OF STUDY</p>
                             <div id="ember1133" className={ !form.session_mode ? "fleet-name-input is-required ember-view" : (isDirty('session_mode') ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}> 
                                 <select onChange={onChange} name="session_mode" value={form.session_mode} id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view">
                                     <option selected disabled>-- Choose Study Mode --</option>
                                     <option value="M">Morning</option>
-                                    <option value="A">Afternoon</option>
                                     <option value="E">Evening</option>
                                     <option value="W">Weekend</option>
                                 </select>
@@ -316,9 +315,9 @@ const Profile = () => {
 
 
                             <p className="u-ml-0 label-title">Phone Number</p>
-                            <span className="form-small-input">Please enter phone number with country code in this format:&nbsp;&nbsp;<b>233277675089</b>.</span> 
+                            <span className="form-small-input">Please enter phone number starting with ' <b>0</b> ' in this format:&nbsp;&nbsp;<b>0277XXXXXX</b>.</span> 
                             <div id="ember1133" className={ !form.phone ? "fleet-name-input is-required ember-view" : (isDirty('phone') ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}>  
-                                <input type="text" onChange={onChange} name="phone" value={form.phone} spellCheck="false" required placeholder="Enter Phone number" id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view" />
+                                <input type="text" onChange={onChange} name="phone" maxLength={10} value={form.phone} spellCheck="false" required placeholder="Enter Phone number" id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view" />
                                 { isDirty('phone') ? <label className="FloatLabel-label" htmlFor="ember1207">Phone Number is not valid</label> :'' }
                             </div>
 

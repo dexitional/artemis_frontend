@@ -329,6 +329,46 @@ export const activateCalendar = async (id) => {
   return res.data;
 } 
 
+// INFORMER
+
+export const fetchInformerDataAIS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/informer${query}`);
+  return res.data;
+} 
+
+export const postInformerDataAIS = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/informer`,{...data});
+  return res.data;
+} 
+
+export const deleteInformer = async (id) => {
+  const res = await axios.delete(`${API_URL}/ais/informer/${id}`);
+  return res.data;
+} 
+
+
+
+// PROGRAM CHANGE
+
+export const fetchProgchangeDataAIS = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/progchange${query}`);
+  return res.data;
+} 
+
+export const postProgchangeDataAIS = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/progchange`,{...data});
+  return res.data;
+} 
+
+export const deleteProgchange = async (id) => {
+  const res = await axios.delete(`${API_URL}/ais/progchange/${id}`);
+  return res.data;
+} 
+
+export const approveProgchange = async (id,sno) => {
+  const res = await axios.get(`${API_URL}/ais/progchange/approve/${id}/${sno}`);
+  return res.data;
+} 
 
 
 

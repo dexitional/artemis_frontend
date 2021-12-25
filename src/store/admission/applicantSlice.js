@@ -125,10 +125,10 @@ export const applicantSlice  = createSlice({
         state.document = state.document.filter( (row,i) => i !== payload )
       },
       setReferee: (state, { payload }) => {
-        state.document = payload
+        state.referee = payload
       },
       addReferee: (state, { payload }) => {
-        state.education.push(payload)
+        state.referee.push(payload)
       },
       delReferee: (state, { payload }) => {
         state.referee = state.referee.filter( (row,i) => i !== payload )

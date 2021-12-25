@@ -17,10 +17,16 @@ const RoleAIS = ({data}) => {
 		  { title : 'Curriculum', desc: 'Curriculum Module', url: '/app/ais?mod=curriculum&view=list',icon:'fa-book', accessRoles: [15,21,22] },
 		  //{ title : 'Resits', desc: 'Resit Module', url: '/app/ais?mod=resits&view=list',icon:'fa-id-card-alt', accessRoles: [15,21,22] },
 		  { title : 'Calendar', desc: 'Academic Calendar Module', url: '/app/ais?mod=calendar&view=list',icon:'fa-book', accessRoles: [15] },
+		  { title : 'Informer', desc: 'Information Dispatcher Module', url: '/app/ais?mod=informer&view=list',icon:'fa-envelope', accessRoles: [15] },
+		  { title : 'Program Change', desc: 'Program Change Module', url: '/app/ais?mod=progchange&view=list',icon:'fa-envelope', accessRoles: [15] },
 		  //{ title : 'Schemes', desc: 'Academic Scheme Module', url: '/app/ais?mod=schemes&view=list',icon:'fa-book', accessRoles: [15] },
 		  //{ title : 'Settings', desc: 'Settings Module', url: '/app/ais?mod=settings&view=list',icon:'fa-cog', accessRoles: [15] },
 		  //{ title : 'Statistics', desc: 'Stats Module', url: '/app/ais?mod=statistics&view=list',icon:'fa-chart-bar', accessRoles: [15,21,22] },
-		 
+		  /* Program Change-[ Change of program ], 
+		     Transwift-[transcript-attestation-proficiency requests], 
+			 Utilities-[country,region,religion,]
+			 
+		   */
 	  ]
 
       return (

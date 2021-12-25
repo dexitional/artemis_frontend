@@ -22,11 +22,11 @@ const ReviewEmployment = ({tag,title,edit}) => {
             </div>
             <table>
                <tbody>
-                { education.map((row,i) => (
-                <span key={i}>
+                { employment.map((row,i) => (
+                <Fragment key={i}>
                 { row.employer_name != '' ?
                 <Fragment>
-                <tr><td colSpan={4}> <h4>{i+1}. Employment Record {i+1}</h4></td></tr> {/* If Tertiary*/}
+                <tr><td colSpan={4}> <h4> Employment Information #{i+1}</h4></td></tr> {/* If Tertiary*/}
                 <tr>
                     <td className="date"><b>Employer Name</b></td>
                     <td className="date"><b>Employer Address</b></td>
@@ -46,15 +46,15 @@ const ReviewEmployment = ({tag,title,edit}) => {
                     <td className="date"><b>End Year</b></td>
                 </tr>
                 <tr>
-                    <td className="date">{row.start_month}</td>
+                    <td className="date">{getMonth(row.start_month) ? getMonth(row.start_month).title : '-- None --'}</td>
                     <td className="date">{row.start_year}</td>
-                    <td className="date">{row.end_month }</td>
-                    <td className="date">{row.end_year}</td>
+                    <td className="date">{getMonth(row.end_month) ? getMonth(row.end_month).title : '-- None --'}</td>
+                    <td className="date">{row.end_year || '-- None --'}</td>
                 </tr>
                 </Fragment>
                 : null }
                
-                </span>
+                </Fragment>
                 ))} 
               </tbody>
            </table>

@@ -24,9 +24,21 @@ const Education = () => {
         let newrows = [...edurows];
         newrows[id] = {...newrows[id],[e.target.name] : e.target.value };
         setEdurows(newrows);
-       
     }
 
+    const onLoad = () => {
+        let dt = applicant.education
+        if(dt && dt.length > 0){
+           dt = dt.map((row) => {
+               if([2,5].includes(parseInt(applicant.apply_type))) return {...row, institute_type: 1}
+               if([1,4].includes(parseInt(applicant.apply_type))) return {...row, institute_type: 2}
+               return row
+           })
+        }
+        console.log(dt)
+        setEdurows(dt)
+    }
+    
     const years = () => {
        var yrs = [];
        for(var i = new Date().getFullYear();i >= 1920;i--){
@@ -65,8 +77,10 @@ const Education = () => {
         }   return false;
     },[edurows])
 
+
+
     useEffect(() => {
-        setEdurows(applicant.education)
+        onLoad()
     },[])
 
     useEffect(() => {
@@ -91,7 +105,7 @@ const Education = () => {
                       
                     <div key={i} className="small-12 columns u-textAlignLeft">
                         <div class="row" >
-                           <div className="small-9 columns"><h4>EDUCATION {i+1}</h4></div>
+                           <div className="small-9 columns"><h4>EDUCATION INFORMATION #{i+1}</h4></div>
                            <div className="small-3 columns"><button onClick={() => i === 0 ? addRecord() : delRecord(i) } class="Button Button--green" style={{height:'2em',lineHeight:'1.2em'}}><b>{i === 0 ? 'ADD NEW' : 'REMOVE'} </b></button></div>
                         </div><hr/>
                         <form autoComplete="off" id="ember1130" className="ember-view">
@@ -99,12 +113,12 @@ const Education = () => {
                             <div className="institute1" data-ref="inst1">
                                 <p className="u-ml-0 label-title">Institution Type</p>
                                 <div id="ember1133" className={ !edurows[i].institute_type ? "fleet-name-input is-required ember-view" : (isDirty('institute_type',i) ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}> 
-                                    <select name="institute_type" onChange={(e)=> onChange(e,i)} defaultValue="" value={edurows[i].institute_type} id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view">
+                                    <select name="institute_type" onChange={(e)=> onChange(e,i)} value={edurows[i].institute_type} id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view">
                                       <option value="" selected disabled>-- Choose Type --</option>
                                       { helperData.instituteType.map((hp) => 
                                       <Fragment>
-                                         { [2,5].includes(parseInt(applicant.apply_type)) && hp.id == 1 ? <option value={hp.id}>{hp.title}</option> : null } 
-                                         { [1,4].includes(parseInt(applicant.apply_type)) && hp.id == 2 ? <option value={hp.id}>{hp.title}</option> : null } 
+                                          { [2,5].includes(parseInt(applicant.apply_type)) && hp.id == 1 ? <option value={hp.id} selected={true}>{hp.title}</option> : null } 
+                                          { [1,4].includes(parseInt(applicant.apply_type)) && hp.id == 2 ? <option value={hp.id} selected={true}>{hp.title}</option> : null } 
                                        </Fragment> 
                                        )}
                                     </select>

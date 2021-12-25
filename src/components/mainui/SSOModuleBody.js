@@ -25,6 +25,8 @@ import Scoresheets from './apps/ais/Scoresheets';
 import MyScoresheets from './apps/ais/MyScoresheets';
 import Curriculum from './apps/ais/Curriculum';
 import Calendar from './apps/ais/Calendar';
+import Informer from './apps/ais/Informer';
+import Progchange from './apps/ais/Progchange';
 
 const SSOModuleBody = ({module,mod,view,data,recid}) => {
   const { sso } = useSelector( state => state)
@@ -55,6 +57,8 @@ const SSOModuleBody = ({module,mod,view,data,recid}) => {
       if(module == 'ais' && mod == 'myscoresheets') return <MyScoresheets view={view} data={data} recid={recid}/>
       if(module == 'ais' && mod == 'curriculum') return <Curriculum view={view} data={data} recid={recid}/>
       if(module == 'ais' && mod == 'calendar') return <Calendar view={view} data={data} recid={recid}/>
+      if(module == 'ais' && mod == 'informer') return <Informer view={view} data={data} recid={recid}/>
+      if(module == 'ais' && mod == 'progchange') return <Progchange view={view} data={data} recid={recid}/>
       // FMS Modules
       if(module == 'fms' && mod == 'studentbills') return <StudentBills view={view} data={data} recid={recid}/>
       if(module == 'fms' && mod == 'staccounts') return <StudentAccounts view={view} data={data} recid={recid}/>

@@ -4,7 +4,7 @@ import { getMonth,getCertType,getClass, getProgram } from '../../../store/utils/
 import { helperData } from '../../../store/utils/helperData';
 import { loadAMSHelpers } from '../../../store/utils/ssoApi';
 
-const ReviewChoice = ({tag,title,edit}) => {
+const ReviewEmployment = ({tag,title,edit}) => {
     
     const [ helpers,setHelpers ] = useState({ countries:[],adm_programs:[] });
     const { applicant,helper } = useSelector(state => state)
@@ -50,4 +50,4 @@ const ReviewChoice = ({tag,title,edit}) => {
     )
 }
 
-export default ReviewChoice
+export default ReviewEmployment

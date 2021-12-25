@@ -153,8 +153,8 @@ const Document = () => {
                           <label className="u-ml-0 label-title">Select Document Type </label>
                           <select name="document_id" onChange={(e)=> onChange(e)} value={form.document_id} id="ember1134" className="aurora-select  Input--floatLabel FloatLabel-input  ember-text-field ember-view">
                             <option selected disabled>-- Select --</option>
-                            { helperData.documents.map((hp) => 
-                               <option value={hp.id}>{hp.title.toUpperCase()}</option>
+                            { helperData.documents.map((hp,i) => 
+                               <option key={i} value={hp.id}>{hp.title.toUpperCase()}</option>
                             )}
                           </select>
                       </span>
@@ -174,7 +174,7 @@ const Document = () => {
                 </tr>
                 { docs.map((row,i) =>
                 <tr key={i}>
-                  <td colSpan={2}><small id="ember2105" className="ellipsis-text ember-view">{i+1}.&nbsp; <b>{getDocument(row.document_id).toUpperCase()}</b></small></td>
+                  <td colSpan={2}><small id="ember2105" className="ellipsis-text ember-view">{i+1}.&nbsp; <b>{getDocument(row.document_id) && getDocument(row.document_id).toUpperCase()}</b></small></td>
                   <td className="flex-row">
                     {/*row.base64 ? <button onClick={(e) => viewFileRecord(i)} className="Button Button--green" title="View File"  style={{height:'2em',lineHeight:'1.2em'}}><span className="Icon--newWindow" /></button> : null */} &nbsp;
                     <button onClick={(e) => delRecord(i)} className="Button Button--red" title="Delete File" style={{height:'2em',lineHeight:'1.2em'}}><span className="Icon--close" /></button>

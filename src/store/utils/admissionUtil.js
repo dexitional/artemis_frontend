@@ -14,6 +14,7 @@ import Result from '../../pages/admission/steps/Result';
 import { helperData } from '../utils/helperData'
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
+import Employment from '../../pages/admission/steps/Employment';
 
 
 
@@ -153,10 +154,10 @@ export const dbData = (applicant,meta) => {
   if(applicant.document) data.data.document = applicant.document
   if(applicant.choice) data.data.choice = applicant.choice
   
-  //if(applicant.employment) data.data.employment = applicant.employment
-  //if(applicant.qualification) data.data.qualification = applicant.qualification
-  //if(applicant.referee) data.data.referee = applicant.referee
-  
+  if(applicant.employment) data.data.employment = applicant.employment
+  if(applicant.qualification) data.data.qualification = applicant.qualification
+  if(applicant.referee) data.data.referee = applicant.referee
+  console.log(data)
   return data;
 
 } 
@@ -195,7 +196,7 @@ export const LoadStepPage = ({step}) => {
     case 'choice': return <Choice/>
     case 'document': return <Document/>
     case 'qualification': return <Qualification/>
-        //case 'employment': return <Employment/>
+    case 'employment': return <Employment/>
     case 'referee': return <Referee/>
     case 'review': return <Review/>
     case 'complete': return <Complete/>
@@ -310,11 +311,13 @@ export const getGradeValue = (subjects,dataset) => {
     return grade_value;
 } 
 
+/*
 export const getGradeByTotal = (total,schemeData) => {
   const scheme = JSON.parse(schemeData)
   let grade;
   if(scheme && scheme.length > 0){
     for(let s of scheme){
+      if(!total || total == '' || typeof total == NaN) total = 0
       if(total >= s.min && total <= s.max){
          grade = s.grade;
          break;
@@ -324,6 +327,14 @@ export const getGradeByTotal = (total,schemeData) => {
   if(grade) return grade;
   return 'N/A';
 } 
+*/
+
+export const getGradeByTotal = (num,schemeData) => {
+  const grades = JSON.parse(schemeData)
+  if(num == null || num == '' || typeof num == NaN) num = 0
+  const vs = grades && grades.find(row => row.min <= num && num <= row.max)
+  return (vs && vs.grade) || 'F';
+}
 
 
 
@@ -353,13 +364,10 @@ export const excelToJson = (fileName,callback) => {
       /* Convert array of arrays */
       //const data = XLSX.utils.sheet_to_csv(ws, { header: 1 });
       const data = XLSX.utils.sheet_to_json(ws);
-      console.log(data)
       return callback(data)
       
     };
     reader.readAsBinaryString(fileName);
-    //console.log(responseData)
-    //return responseData;
 }
 
 

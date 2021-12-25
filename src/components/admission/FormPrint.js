@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import '../../components/admission/FormPrint.css';
 import Logo from '../../assets/img/logo.png'
 import Mark from '../../assets/img/watermark.jpg'
-import { getMarital, getRegion, getStage, getTitle,getRelation,getCertType, getClass, getSitting, getProgram,getSubject, getGrade, getStageTitle, getApplyTypeTitle, getStudyMode, getCountryTitle, getAdmissionGroupTitle } from '../../store/utils/admissionUtil';
+import { getMarital, getRegion, getStage, getTitle,getRelation,getCertType, getClass, getSitting, getProgram,getSubject, getGrade, getStageTitle, getApplyTypeTitle, getStudyMode, getCountryTitle, getAdmissionGroupTitle, getMonth } from '../../store/utils/admissionUtil';
 import moment from 'moment'
 import { useReactToPrint } from 'react-to-print';
 import AdminLayout from '../../components/admission/AdminLayout';
@@ -76,9 +76,7 @@ const FormPrint = () => {
     setGrades([...applicant.grade]);
   },[])
 
-  useEffect(()=>{
-    console.log(grades)
-  },[grades])
+  
 
   return (
      <AdminLayout>
@@ -142,7 +140,7 @@ const FormPrint = () => {
                    </tr>
                    <tr>
                        <td rowSpan={7}>
-                           <img src={applicant.user.photo ? applicant.user.photo : Logo } style={{height:'200px',display:'block'}} />
+                           <img src={applicant.user.photo ? applicant.user.photo : Logo } style={{width:'200px',display:'block'}} />
                        </td>
                        <td className="shead">Applicant ID:</td>
                        <td className="sbody">{applicant.user.serial}</td>
@@ -321,8 +319,10 @@ const FormPrint = () => {
                    </Fragment> : null
                    }
 
-                   {/*
-                   {/* Referee }
+                   
+                   {/* Referee */ }
+                   { isTag('referee') ? 
+                   <Fragment>
                    <tr><td colSpan="4">&nbsp;</td></tr>
                    <tr>
                       <td colSpan="4">
@@ -330,17 +330,17 @@ const FormPrint = () => {
                       </td>
                    </tr>
                    <tr>
-                       <td colSpan="1" className="sbody">Referee Name</td>
-                       <td colSpan="3" className="sbody">Referee Address</td>
+                       <td colSpan="2" className="sbody">Referee Name</td>
+                       <td colSpan="2" className="sbody">Referee Address</td>
                    </tr>
-                   <tr>
-                       <td colSpan="1" className="shead">Dr. ACKAH FRANK KWEKUCHER</td>
-                       <td  colSPan="3" className="shead">PMB CROP SCIENCE DEPARTMENT, UCC. CAPE COAST GHANA</td>
+                   { applicant.referee.map((row,i) => 
+                   <tr key={i}>
+                       <td colSpan="2" className="shead">{getTitle(row.title)} {row.fname} {row.lname}</td>
+                       <td align="left" colSPan="2" className="shead">{row.address} - ({row.phone})</td>
                    </tr>
-                   <tr>
-                       <td colSpan="1" className="shead">Mr. MAWUENA SIEGFREID KOKU</td>
-                       <td  colSPan="3" className="shead">PMB MIS UCC CAPE COAST GHANA</td>
-                   </tr>
+                    )}
+                   </Fragment> : null }
+                   {/*
 
                    {/* Qualification }
                    <tr><td colSpan="4">&nbsp;</td></tr>
@@ -359,8 +359,11 @@ const FormPrint = () => {
                        <td colSpan="2" className="shead">KWAME NKRUMAH UNIVERSITY OF SCIENCE AND TECHNOLOGY</td>
                        <td className="shead">August, 2012</td>
                    </tr>
+                  */}
 
-                   {/* Employment }
+                   {/* Employment */}
+                   { isTag('employment') ? 
+                   <Fragment>
                    <tr><td colSpan="4">&nbsp;</td></tr>
                    <tr><td colSpan="4"><hr/></td></tr>
                    <tr>
@@ -373,13 +376,16 @@ const FormPrint = () => {
                        <td className="sbody">Employer Address</td>
                        <td className="sbody">Duration</td>
                    </tr>
+                  { applicant.employment.map((row,i) => 
                    <tr>
-                       <td className="shead">UNIVERSITY OF CAPE COAST</td>
-                       <td className="shead">SENIOR ICT ASSISTANT</td>
-                       <td className="shead">PMB UNIVERSITY OF CAPE COAST, GHANA</td>
-                       <td className="shead">February, 2018 - Till Date</td>
+                       <td className="shead">{row.employer_name}</td>
+                       <td className="shead">{row.job_title}</td>
+                       <td className="shead">{row.employer_address}</td>
+                       <td className="shead">{ getMonth(row.start_month).title }, {row.start_year} - { (!row.end_month && !row.end_year) ? 'Till Date':`${getMonth(row.start_month).title}, ${row.end_year}`}</td>
                    </tr>
-                   */}
+                    )}
+                   </Fragment> : null }
+                   
 
 
                    {/* Result */}

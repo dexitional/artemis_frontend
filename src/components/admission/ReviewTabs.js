@@ -6,7 +6,8 @@ import ReviewResult from '../../pages/admission/reviews/ReviewResult';
 import { useSelector, useDispatch } from 'react-redux'
 import { setNextStep,setActiveStep,stepSlice } from '../../store/admission/stepSlice'
 import ReviewChoice from '../../pages/admission/reviews/ReviewChoice';
-import ReviewEmployment from '../../pages/admission/reviews/ReviewChoice';
+import ReviewEmployment from '../../pages/admission/reviews/ReviewEmployment';
+import ReviewReferee from '../../pages/admission/reviews/ReviewReferee';
 
 const ReviewTabs = ({tag,title}) => {
     
@@ -26,7 +27,7 @@ const ReviewTabs = ({tag,title}) => {
         case 'choice': return <ReviewChoice tag={tag} title={title} edit={edit}/>; break;
         case 'document': return <ReviewProfile tag={tag} title={title} edit={edit}/>; break; // Not done    
         case 'qualification': return <ReviewProfile tag={tag} title={title} edit={edit}/>; break; // Not done
-        case 'referee': return <ReviewProfile tag={tag} title={title} edit={edit}/>; break;  // Not done
+        case 'referee': return <ReviewReferee tag={tag} title={title} edit={edit}/>; break;  // Not done
         case 'employment': return <ReviewEmployment tag={tag} title={title} edit={edit}/>; break; // Not done    
         default: return <ReviewProfile tag={tag} title={title} edit={edit}/>; break;
     }

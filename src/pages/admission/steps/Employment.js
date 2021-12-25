@@ -78,9 +78,9 @@ const Employment = () => {
             <div className="row">
             
               { edurows.map((rec,i) => ( 
-              <div className="small-12 columns u-textAlignLeft">
+              <div className="small-12 columns u-textAlignLeft"  key={i}>
                   <div class="row" >
-                      <div className="small-9 columns"><h4>EMPLOYMENT {i+1}</h4></div>
+                      <div className="small-9 columns"><h4>EMPLOYMENT INFORMATION #{i+1}</h4></div>
                       <div className="small-3 columns"><button onClick={() => i === 0 ? addRecord() : delRecord(i) } class="Button Button--green" style={{height:'2em',lineHeight:'1.2em'}}><b>{i === 0 ? 'ADD NEW' : 'REMOVE'} </b></button></div>
                   </div><hr/>
                   <form autoComplete="off" id="ember1130" className="ember-view">

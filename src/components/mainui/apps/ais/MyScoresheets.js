@@ -58,7 +58,7 @@ const MyScoresheets = ({view,data,recid}) => {
 const List = () => {
    
    const history = useHistory()
-   const [ sheets, setSheets ] = useState([])
+   const [ mysheets, setSheets ] = useState([])
    const { sso } = useSelector(state => state)
    const { user } = sso
    const dispatch = useDispatch();
@@ -93,7 +93,7 @@ const List = () => {
 
    const exportSheet = async (id) => {
         const rt = await loadAssessment(id)
-        const dt = sso.databox.sheets.find( r => r.id == id )
+        const dt = sso.databox.mysheets.find( r => r.id == id )
         var fileName,data = [];
         if(rt.success){
           if(rt.data && rt.data.length > 0){
@@ -149,7 +149,7 @@ const List = () => {
        if(ok){
           const res = await certifyAssessment(id);
           if(res.success){
-            const newsheets = sso.databox.sheets.map((sh) =>{
+            const newsheets = sso.databox.mysheets.map((sh) =>{
                 if(sh.id == id) return { ...sh,flag_certified:1 }
                 return sh
             })
@@ -166,7 +166,7 @@ const List = () => {
       if(ok){
          const res = await uncertifyAssessment(id);
          if(res.success){
-           const newsheets = sso.databox.sheets.map((sh) =>{
+           const newsheets = sso.databox.mysheets.map((sh) =>{
                if(sh.id == id) return { ...sh,flag_certified:0 }
                return sh
            })
@@ -185,7 +185,7 @@ const List = () => {
           if(rt.success && rt.data.length > 0){
               const res = await publishAssessment(id);
               if(res.success){
-                  const newsheets = sso.databox.sheets.map((sh) =>{
+                  const newsheets = sso.databox.mysheets.map((sh) =>{
                       if(sh.id == id) return { ...sh,flag_assessed:1 }
                       return sh
                   })
@@ -203,7 +203,7 @@ const List = () => {
 
 
     const viewScores = async (id) => {
-        const dt = sso.databox.sheets.find( r => r.id == id )
+        const dt = sso.databox.mysheets.find( r => r.id == id )
         const res = await loadAssessment(id);
         if(res.success && dt){
           //setActivity({...activity,reg:true})
@@ -220,7 +220,7 @@ const List = () => {
 
 
     const viewClass = async (id) => {
-        const dt = sso.databox.sheets.find( r => r.id == id )
+        const dt = sso.databox.mysheets.find( r => r.id == id )
         const res = await loadCourselist(id);
         if(res.success && dt){
           //setActivity({...activity,reg:true})
@@ -284,11 +284,10 @@ const List = () => {
    
 
     const restoreSheetData = () => {
-       sso.databox.sheets && setSheets([...sso.databox.sheets]);
+       sso.databox.mysheets && setSheets([...sso.databox.mysheets]);
     }
 
     const fetchSheetData = async () => {
-      console.log(user && user.user.staff_no)
       var query = `?sno=${user && user.user.staff_no}`;
       if(page >= 1) query += `&page=${page-1}`
       if(keyword != '') query += `&keyword=${keyword}`
@@ -330,8 +329,8 @@ const List = () => {
    },[])
 
    useEffect(() => {
-     dispatch(updateDatabox({sheets}));
-   },[sheets])
+     dispatch(updateDatabox({mysheets}));
+   },[mysheets])
 
    useEffect(() => {
      fetchSheetData()
@@ -363,7 +362,7 @@ const List = () => {
                             </tr>
                         </thead>
                         <tbody>
-                          { sheets.map((row) => 
+                          { mysheets.map((row) => 
                           <tr className="data-item odd" role="row">
                             <td className="data-col w-25">
                                 <small className="lead token-amount">{row.course_name} </small>  
@@ -458,7 +457,7 @@ const Form = ({recid}) => {
     }
 
     const formData = () => {
-        const dt = sso.databox.students.find( r => r.id == recid )
+        const dt = sso.databox.mysheets.find( r => r.id == recid )
         console.log(dt)
         if(dt){
           const dk = Object.keys(dt);

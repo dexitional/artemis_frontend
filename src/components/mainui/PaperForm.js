@@ -2,17 +2,19 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import '../../components/admission/FormPrint.css';
 import Logo from '../../assets/img/logo.png'
 import Mark from '../../assets/img/watermark.jpg'
-import { getMarital, getRegion, getStage, getTitle,getRelation,getCertType, getClass, getSitting, getProgram,getSubject, getGrade, getStageTitle, getApplyTypeTitle } from '../../store/utils/admissionUtil';
+import { getMarital, getRegion, getStage, getTitle,getRelation,getCertType, getClass, getSitting, getProgram,getSubject, getGrade, getStageTitle, getApplyTypeTitle, getMonth } from '../../store/utils/admissionUtil';
 import moment from 'moment'
 import { useReactToPrint } from 'react-to-print';
 import AdminLayout from '../admission/AdminLayout';
 import { useSelector,useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom';
 import { setPrevStep } from '../../store/admission/stepSlice'
+import { loadAMSHelpers } from '../../store/utils/ssoApi';
 
 
 const PaperForm = () => {
 
+  const [ helpers,setHelpers ] = useState({ countries:[],adm_programs:[] });
   const { step,applicant } = useSelector(state => state);
   const dispatch = useDispatch()
   const printRef = useRef();
@@ -50,9 +52,17 @@ const PaperForm = () => {
      return false;
   }
 
+  const helperLoader = async() => {
+    const hps = await loadAMSHelpers()
+    if(hps.success){
+        setHelpers(hps.data)
+    } 
+  }
+
   useEffect(()=>{
     //handlePrint()
     //loadGrades()
+    helperLoader()
     setGrades([...applicant.grade]);
   },[])
 
@@ -118,7 +128,7 @@ const PaperForm = () => {
                    </tr>
                    <tr>
                        <td rowSpan={6}>
-                           <img src={applicant.user.photo ? applicant.user.photo : Logo } style={{height:'200px',display:'block'}} />
+                           <img src={applicant.user.photo ? applicant.user.photo : Logo } style={{width:'192px',display:'block',marginRight:'25px'}} />
                        </td>
                        <td className="shead">Applicant ID:</td>
                        <td className="sbody">{applicant.user.serial}</td>
@@ -288,8 +298,9 @@ const PaperForm = () => {
                    </Fragment> : null
                    }
 
-                   {/*
-                   {/* Referee }
+                   {/* Referee */ }
+                   { isTag('referee') ? 
+                   <Fragment>
                    <tr><td colSpan="4">&nbsp;</td></tr>
                    <tr>
                       <td colSpan="4">
@@ -297,17 +308,17 @@ const PaperForm = () => {
                       </td>
                    </tr>
                    <tr>
-                       <td colSpan="1" className="sbody">Referee Name</td>
-                       <td colSpan="3" className="sbody">Referee Address</td>
+                       <td colSpan="2" className="sbody">Referee Name</td>
+                       <td colSpan="2" className="sbody">Referee Address</td>
                    </tr>
-                   <tr>
-                       <td colSpan="1" className="shead">Dr. ACKAH FRANK KWEKUCHER</td>
-                       <td  colSPan="3" className="shead">PMB CROP SCIENCE DEPARTMENT, UCC. CAPE COAST GHANA</td>
+                   { applicant.referee.map((row,i) => 
+                   <tr key={i}>
+                       <td colSpan="2" className="shead">{getTitle(row.title)} {row.fname} {row.lname}</td>
+                       <td align="left" colSPan="2" className="shead">{row.address} - ({row.phone})</td>
                    </tr>
-                   <tr>
-                       <td colSpan="1" className="shead">Mr. MAWUENA SIEGFREID KOKU</td>
-                       <td  colSPan="3" className="shead">PMB MIS UCC CAPE COAST GHANA</td>
-                   </tr>
+                    )}
+                   </Fragment> : null }
+                   {/*
 
                    {/* Qualification }
                    <tr><td colSpan="4">&nbsp;</td></tr>
@@ -326,8 +337,11 @@ const PaperForm = () => {
                        <td colSpan="2" className="shead">KWAME NKRUMAH UNIVERSITY OF SCIENCE AND TECHNOLOGY</td>
                        <td className="shead">August, 2012</td>
                    </tr>
+                  */}
 
-                   {/* Employment }
+                   {/* Employment */}
+                   { isTag('employment') ? 
+                   <Fragment>
                    <tr><td colSpan="4">&nbsp;</td></tr>
                    <tr><td colSpan="4"><hr/></td></tr>
                    <tr>
@@ -340,13 +354,16 @@ const PaperForm = () => {
                        <td className="sbody">Employer Address</td>
                        <td className="sbody">Duration</td>
                    </tr>
+                  { applicant.employment.map((row,i) => 
                    <tr>
-                       <td className="shead">UNIVERSITY OF CAPE COAST</td>
-                       <td className="shead">SENIOR ICT ASSISTANT</td>
-                       <td className="shead">PMB UNIVERSITY OF CAPE COAST, GHANA</td>
-                       <td className="shead">February, 2018 - Till Date</td>
+                       <td className="shead">{row.employer_name}</td>
+                       <td className="shead">{row.job_title}</td>
+                       <td className="shead">{row.employer_address}</td>
+                       <td className="shead">{ getMonth(row.start_month).title }, {row.start_year} - { (!row.end_month && !row.end_year) ? 'Till Date':`${getMonth(row.start_month).title}, ${row.end_year}`}</td>
                    </tr>
-                   */}
+                    )}
+                   </Fragment> : null }
+                   
 
 
                    {/* Result */}
@@ -413,9 +430,8 @@ const PaperForm = () => {
                    )}
                    </Fragment> : null }
 
-
                     {/* Choice */}
-                   <tr><td colSpan="4"><hr/></td></tr>
+                    <tr><td colSpan="4"><hr/></td></tr>
                    <tr>
                        <td colSpan="3"><h3 className="title"> University Enrollment Information</h3></td>
                        <td>&nbsp;</td>
@@ -423,9 +439,15 @@ const PaperForm = () => {
                    { applicant.choice.map((row,i) =>
                    <tr>
                        <td className="shead">&nbsp;&nbsp;&nbsp;Program Choice {i+1}: </td>
-                       <td colSpan="4" className="sbody">{getProgram(row.program_id) && getProgram(row.program_id).toUpperCase()}</td>
+                       <td colSpan="4" className="sbody">{getProgram(row.option_id,helpers.adm_programs) && getProgram(row.option_id,helpers.adm_programs).toUpperCase()}</td>
                    </tr>
                    )}
+
+
+
+                   {/* Declaration */}
+                   <tr><td colSpan="4">&nbsp;</td></tr>
+                   <tr><td colSpan="4"><br/></td></tr>
    
                </table>
            </section>
