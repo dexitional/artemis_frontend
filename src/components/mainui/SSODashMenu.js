@@ -84,7 +84,7 @@ const SSODashMenu = () => {
 							{/*
 							<div class="gaps-2x"></div>
 							*/}
-							<img src={Staff} className="dash-photo" style={{display: 'block', alignSelf: 'top'}} />
+							<img src={`https://portal.aucc.edu.gh/api/photos/?tag=00000000`} className="dash-photo" style={{display: 'block', alignSelf: 'top',height:'215px'}} />
 							</div>
 						</div>
 					</div>

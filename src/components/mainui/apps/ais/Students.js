@@ -179,7 +179,7 @@ const List = () => {
             <div id="DataTables_Table_0_wrapper" className="dataTables_wrapper dt-bootstrap4 no-footer">
                 <div className="table-wrap ">
                     { !isLoading ? 
-                    <table className="admin-tnx dataTable no-footer  table-responsive" id="DataTables_Table_0">
+                    <table className="admin-tnx dataTable no-footer table-responsive" id="DataTables_Table_0">
                         <thead>
                             <tr className="data-item data-head" role="row">
                                 <th className="data-col" rowspan="1" colspan="1">INDEX NUMBER</th>

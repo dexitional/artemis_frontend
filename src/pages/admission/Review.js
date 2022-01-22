@@ -5,18 +5,22 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setNextStep, stepSlice } from '../../store/admission/stepSlice'
 import ReviewTabs from '../../components/admission/ReviewTabs'
 import { setAdmitStatus, setSubmitStatus } from '../../store/admission/applicantSlice';
+import { submitApplication } from '../../store/utils/admissionApi';
 
 const Review = () => {
     const [ active, setActive ] = useState('profile');
     const history = useHistory();
-    const { step } = useSelector(state => state)
+    const { step,applicant } = useSelector(state => state)
     const dispatch = useDispatch()
 
-    const finalize = () => {
+    const finalize = async () => {
         const cm = window.confirm("Finalize & Submit Aplication Form ?")
         if(cm){
-            dispatch(setNextStep())
-            dispatch(setSubmitStatus(1))
+            const res = await submitApplication({ serial:applicant.user.serial,status:1 });
+            if(res.success){
+              dispatch(setSubmitStatus(1))
+              dispatch(setNextStep())
+            }
         } 
     }
     

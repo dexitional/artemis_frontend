@@ -39,7 +39,7 @@ const FormPrint = () => {
   }
   
   const getData = (id,index) => {
-    var dt = grades.filter( r => r.result_id == id)
+    var dt = grades && grades.filter( r => r.result_id == id)
     if(dt.length > 0){
       return dt[index];
     }

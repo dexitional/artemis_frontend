@@ -1,18 +1,19 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { deleteSession, fetchSessions, postSession, setDefaultSession } from '../../../../store/utils/ssoApi';
+import { deleteEntrance, fetchEntrance, loadEntrance, postEntrance } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import moment from 'moment';
-import { setSessions } from '../../../../store/admission/ssoSlice';
+import { setDatabox, updateDatabox } from '../../../../store/admission/ssoSlice';
+import { helperData } from '../../../../store/utils/helperData';
 
 
-const Sessions = ({view,data,recid}) => {
+const Entrance = ({view,data,recid}) => {
    const title = () => {
      switch(view){
-       case 'list': return 'ADMISSION SESSIONS';
-       case 'add': return 'CREATE NEW SESSION';
-       case 'edit': return 'EDIT SESSION';
+       case 'list': return 'ENTRANCE EXAMS RESULTS';
+       case 'add': return 'ADD RESULT';
+       case 'edit': return 'EDIT RESULT';
      }
    }
    const content = () => {
@@ -28,7 +29,7 @@ const Sessions = ({view,data,recid}) => {
            { title() }
            { view == 'list' ?
             <div className="d-inline-block print-btn">
-                <Link to="/app/ams?mod=sessions&view=add" className="btn btn-light-alt btn-sm btn-icon"><em className="fa fa-sm fa-plus"></em>&nbsp;&nbsp;<b>CREATE SESSION</b></Link>
+                <Link to="/app/ams?mod=entrance&view=add" className="btn btn-light-alt btn-sm btn-icon"><em className="fa fa-sm fa-plus"></em>&nbsp;&nbsp;<b>ADD RESULT</b></Link>
             </div> : null
            }
 	   </h3>
@@ -39,41 +40,38 @@ const Sessions = ({view,data,recid}) => {
 
 
 const List = () => {
-   const [ sess, setSess ] = useState([])
+   const [ entrance, setEntrance ] = useState([])
    const { sso } = useSelector(state => state)
    const dispatch = useDispatch();
-   const fetchSessionData = async () => {
-      const res = await fetchSessions();
-      if(res.success) setSess([...res.data]);
+   const fetchEntranceData = async () => {
+      const res = await fetchEntrance();
+      if(res.success) setEntrance([...res.data]);
    }
-   const restoreSessionData = () => {
-      setSess([...sso.sessions]);
+   const restoreEntranceData = () => {
+      setEntrance([ ...sso.databox.entrance ]);
    }
    const deleteRecord = async (e,id) => {
       e.preventDefault()
       const cm = window.confirm('Delete record ?')
       if(cm) {
-        const resp = await deleteSession(id)
+        const resp = await deleteEntrance(id)
         if(resp.success){
-           const ss = sess.filter(s => s.session_id != id)
-           console.log(ss)
-           setSess([...ss ])
-           console.log(ss)
+           const ss = entrance.filter(s => s.serial != id)
+           setEntrance([...ss ])
         }else{
            alert('ACTION FAILED!')
         }
       }
    }
-   const setDefault = async (e,id) => {
-     e.preventDefault()
-     const cm = window.confirm('Set Default ?')
-     if(cm) {
-        const resp = await setDefaultSession(id)
+   const viewResult = async (e,id) => {
+         e.preventDefault()
+     
+        const resp = await loadEntrance(id)
         console.log(resp);
         if(resp.success){
             //const ss = sess.filter(s => s !== id)
-            const ss = sess.map(s => {
-                if(s.session_id == id){
+            const ss = entrance.map(s => {
+                if(s.serial == id){
                     let sx = {...s }
                     sx.status = 1
                     return sx;
@@ -83,22 +81,20 @@ const List = () => {
                     return sx;
                 }
             })
-            setSess([...ss])
+            setEntrance([...ss])
             console.log(ss)
-        }else{
-            alert('ACTION FAILED!')
-        }
+       
      }
    }
 
    useEffect(() => {
-     restoreSessionData()
-     fetchSessionData()
+     restoreEntranceData()
+     fetchEntranceData()
    },[])
 
    useEffect(() => {
-     dispatch(setSessions([...sess]));
-   },[sess])
+     dispatch(updateDatabox({ entrance }));
+   },[entrance])
 
 
    
@@ -110,42 +106,34 @@ const List = () => {
                 <div className="table-wrap">
                     <table className="data-table dt-filter-init admin-tnx dataTable no-footer" id="DataTables_Table_0">
                         <thead>
+                            {/*
                             <tr className="data-item data-head" role="row">
-                                <th className="data-col" rowspan="1" colspan="1">SESSION ID </th>
-                                <th className="data-col w-25" rowspan="1" colspan="1">SESSION TITLE</th>
-                                <th className="data-col" rowspan="1" colspan="1">APPLY START</th>
-                                <th className="data-col" rowspan="1" colspan="1">APPLY END</th>
+                                <th className="data-col w-25" rowspan="1" colspan="1">APPLICANT </th>
+                                <th className="data-col" rowspan="1" colspan="1">AGE</th>
+                                <th className="data-col" rowspan="1" colspan="1">TAKEN SUBJECTS</th>
+                                <th className="data-col" rowspan="1" colspan="1">SUBMITTED ON</th>
                                 <th className="data-col" rowspan="1" colspan="1">STATUS</th>
-                                <th className="data-col" rowspan="1" colspan="1">&nbsp;</th>
+                            </tr>*/}
+                            <tr className="data-item data-head" role="row">
+                                <th className="data-col w-25" rowspan="1" colspan="1">APPLICANT </th>
+                                <th className="data-col" rowspan="1" colspan="1">SUBJECT</th>
+                                <th className="data-col" rowspan="1" colspan="1">SCORE & GRADE</th>
+                                <th className="data-col" rowspan="1" colspan="1">SUBMITTED ON</th>
+                                <th className="data-col" rowspan="1" colspan="1">STATUS</th>
                             </tr>
                         </thead>
                         <tbody>
-                          { sess.map((row) => 
+                          { entrance.map((row) => 
                           <tr className="data-item odd" role="row">
-                            <td className="data-col"><span className="lead tnx-id"># {row.session_id}</span></td>
-                            <td className="data-col"><span className="lead token-amount">{row.title && row.title.toUpperCase()}</span></td>
-                            <td className="data-col"><span className="lead amount-pay">{moment(row.apply_start).format('ddd, MMM DD, YYYY').toUpperCase()}</span></td>
-                            <td className="data-col"><span className="lead user-info">{moment(row.apply_end).format('ddd, MMM DD, YYYY').toUpperCase()}</span></td>
+                            <td className="data-col"><span className="lead token-amount">{ row.name && row.name.toUpperCase() }</span></td>
+                            <td className="data-col"><span className="lead amount-pay">{ moment().diff(row.dob,'years') }</span></td>
+                            <td className="data-col"><span className="lead user-info">{ row.subjects_taken }</span></td>
+                            <td className="data-col"><span className="lead user-info">{ moment(row.created_at).format('ddd, MMM DD, YYYY').toUpperCase() }</span></td>
                             <td className="data-col d-flex">
-                                { row.status == 0 ? <Link className={`badge badge-sm ${row.status == 0 ? 'badge-success text-white' : 'badge-dark badge-outline text-dark'}`} onClick={ e => setDefault(e,row.session_id)}><b>SET DEFAULT</b></Link>: <span className="badge badge-sm badge-outline badge-dark text-dark"><b>DEFAULT</b></span>}
-                                <Link className={`badge badge-sm badge-success text-white`} to={`/app/ams?mod=sessions&view=edit&recid=${row.session_id}`}><b><em className="ti ti-pencil"></em></b></Link>
-                                <Link className={`badge badge-sm badge-danger text-white`} onClick={ e => deleteRecord(e,row.session_id)}><b><em className="ti ti-trash"></em></b></Link>
+                                <Link className={`badge badge-sm badge-dark badge-outline text-dark}`} onClick={ e => viewResult(e,row.serial) }><b>VIEW RESULTS</b></Link>
+                                <Link className={`badge badge-sm badge-success text-white`} to={`/app/ams?mod=entrance&view=edit&recid=${row.serial}`}><b><em className="ti ti-pencil"></em></b></Link>
+                                <Link className={`badge badge-sm badge-danger text-white`} onClick={ e => deleteRecord(e,row.serial)}><b><em className="ti ti-trash"></em></b></Link>
                             </td>   
-                            <td className="data-col">
-                                {/*
-                                <div className="relative d-inline-block">
-                                    <a href="#" className="btn btn-light-alt btn-xs btn-icon toggle-tigger"><em className="ti ti-more-alt"></em></a>
-                                    <div className="toggle-className dropdown-content dropdown-content-top-left">
-                                        <ul className="dropdown-list">
-                                            <li><a href="#"><em className="ti ti-eye"></em> View Leave form</a></li>
-                                            <li><a href="#"><em className="ti ti-check-box"></em> Edit Leave Form</a></li>
-                                            <li><a href="#"><em className="ti ti-na"></em> Cancel Leave</a></li>
-                                            <li><a href="#"><em className="ti ti-trash"></em> Delete Leave</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                */}
-                            </td>
                           </tr>
                           )}
                         </tbody>
@@ -167,12 +155,12 @@ const Form = ({recid}) => {
     const { register, handleSubmit,setValue, getValues, formState : { errors } } = useForm();
     
     const onSubmit = async data => {
-      data.session_id = parseInt(recid) || 0;
+      data.id = parseInt(recid) || 0;
       console.log(data);
-      const res = await postSession(data);
+      const res = await postEntrance(data);
       if(res.success){
          // Do something if passed
-         history.push('/app/ams?mod=sessions&view=list')
+         history.push('/app/ams?mod=entrance&view=list')
       } else{
          // Show error messages
          alert("ACTION FAILED!")
@@ -180,7 +168,7 @@ const Form = ({recid}) => {
     }
 
     const formData = () => {
-        const dt = sso.sessions.find( r => r.session_id == recid )
+        const dt = sso.databox.entrance.find( r => r.id == recid )
         if(dt){
           const dk = Object.keys(dt);
           dk.forEach( d => {
@@ -193,7 +181,7 @@ const Form = ({recid}) => {
     const cancelForm = (e) => {
        e.preventDefault();
        const cm = window.confirm('Cancel Form ?')
-       if(cm) history.push('/app/ams?mod=sessions&view=list')
+       if(cm) history.push('/app/ams?mod=entrance&view=list')
     }
   
     useEffect(()=>{
@@ -217,31 +205,28 @@ const Form = ({recid}) => {
                         
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
-                                <label htmlFor="title" className="input-item-label">TITLE</label>
-                                <input {...register("title", { required: 'Please enter session title !' })} className="input-bordered" type="text"/></div>
+                                <label htmlFor="title" className="input-item-label">APPLICANT ID / SERIAL NUMBER</label>
+                                <input {...register("serial", { required: 'Please enter serial !' })} className="input-bordered" type="text"/></div>
                         </div>
 
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
-                                <label htmlFor="status" className="input-item-label">STATUS</label>
-                                <select {...register("status", { required: 'Please provide status !' })} className="input-bordered">
-                                   <option value={0}>Disabled</option>
-                                   <option value={1}>Enabled</option>
+                                <label htmlFor="title" className="input-item-label">MARKS OBTAINED</label>
+                                <input {...register("score", { required: 'Please enter Score !' })} className="input-bordered" type="text"/></div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="subject_id" className="input-item-label">SUBJECT TAKEN</label>
+                                <select {...register("subject_id")} className="input-bordered">
+                                  <option value="" disabled selected>--NONE--</option>
+                                  {helperData && helperData.subjects.map( row => 
+                                    <option value={row.id}>{row.title && row.title.toUpperCase()}</option>
+                                  )}
                                 </select>
                             </div>
                         </div>
 
-                        <div className="col-md-6">
-                            <div className="input-item input-with-label">
-                                <label htmlFor="apply_start" className="input-item-label">APPLICATION OPENING DATE</label>
-                                <input {...register("apply_start", { required: 'Please provide application open date !' })} className="input-bordered" type="date"/></div>
-                        </div>
-
-                        <div className="col-md-6">
-                            <div className="input-item input-with-label">
-                                <label htmlFor="apply_end" className="input-item-label">APPLICATION CLOSE DATE</label>
-                                <input {...register("apply_end", { required: 'Please provide application close date !' })}  className="input-bordered" type="date"/></div>
-                        </div>
                     </div>
 
                     <div className="gaps-1x"></div>
@@ -264,4 +249,4 @@ const Form = ({recid}) => {
 }
 
 
-export default Sessions
+export default Entrance

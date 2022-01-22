@@ -6,7 +6,7 @@ import { useDispatch,useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import StepPage from '../../components/admission/StepPage';
 import Profile from './steps/Profile';
-import { setStepCount } from '../../store/admission/stepSlice';
+import { setIsAllowed, setStepCount } from '../../store/admission/stepSlice';
 
 
 const Session = ({children}) => {
@@ -15,13 +15,15 @@ const Session = ({children}) => {
     const pageRef = useRef();
     const dispatch = useDispatch();
 
+    
     const exitSession = () => {
-       const cm = window.confirm('Exit Application Session ?')
-       if(cm) {
-          dispatch(setStepCount(1));
+       const cm = window.confirm('Quit Application Session?')
+       if(cm){
+          dispatch(setIsAllowed(false));
           history.push('admission-dash')
-       }
+        } return false;
     }
+
     
     useEffect(() => {
       if(!step.isAllowed){

@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import LoginLayout from '../../components/admission/LoginLayout';
 import { Link,useHistory } from 'react-router-dom';
 import { setIsLoggedIn, setIsModal, setMeta, setStepCount } from '../../store/admission/stepSlice';
-import { setAccount, setAdmission, setAdmitStatus, setApplyMode, setChoice, setDocument, setEducation, setGrade, setGroupID, setGuardian, setNotification, setProfile, setResult, setSellType, setStage, setSubmitStatus, setUser, updateUser } from '../../store/admission/applicantSlice';
+import { setAccount, setAdmission, setAdmitStatus, setApplyMode, setChoice, setDocument, setEducation, setEmployment, setGrade, setGroupID, setGuardian, setNotification, setProfile, setReferee, setResult, setSellType, setStage, setSubmitStatus, setUser, updateUser } from '../../store/admission/applicantSlice';
 import { useDispatch } from 'react-redux';
 import { verifyApplicant } from '../../store/utils/admissionApi';
 import { getApplyTypeTitle, getStage, getStageTitle } from '../../store/utils/admissionUtil';
@@ -15,14 +15,7 @@ const Login = () => {
     const [ authenticate,setAuthenticate ] = useState(false)
     const dispatch = useDispatch();
     const history = useHistory();
-    /*
-    const users = [
-        { serial:'12345678', pin:'test1234', name:'Applicant Test 1'},
-        { serial:'87654321', pin:'test4321', name:'Applicant Test 2'},
-    ]
     
-    
-    */
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -67,8 +60,8 @@ const Login = () => {
               } 
               if(rec.data.choice) dispatch(setChoice(rec.data.choice))
               if(rec.data.document) dispatch(setDocument(rec.data.document))
-              //if(rec.data.referee) dispatch(setReferee(rec.data.referee))
-              //if(rec.data.employment) dispatch(setEmployment(rec.data.employment))
+              if(rec.data.referee) dispatch(setReferee(rec.data.referee))
+              if(rec.data.employment) dispatch(setEmployment(rec.data.employment))
               //if(rec.data.qualification) dispatch(setQualification(rec.data.qualification))
               // dispatch(updateUser(user));
               
@@ -83,7 +76,12 @@ const Login = () => {
               // Reset Authentication Flag
               setAuthenticate(false);
               // Redirect to Dashboard
-              history.push('admission-dash');
+              if(rec.flag_admit && rec.flag_admit == 1){
+                history.push('admission-status'); // Goto Admission Status Page
+              }else{
+                history.push('admission-dash'); // Goto Application Guide Page 
+              }
+              
           }else{
             setAuthenticate(false);
             alert(ap.msg.toUpperCase())

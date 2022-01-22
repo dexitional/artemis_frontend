@@ -25,7 +25,7 @@ const ReviewEducation = ({tag,title,edit}) => {
             <table>
            
                 { education.map((row,i) => (
-                <span key={i}>
+                <Fragment key={i}>
                 { row.institute_type == 1 ?
                 <tbody>
                 <tr><td colSpan={4}> <h4>{i+1}. University or College Degree/Diploma Information</h4></td></tr> {/* If Tertiary*/}
@@ -60,7 +60,7 @@ const ReviewEducation = ({tag,title,edit}) => {
                 </tbody>
                 }
 
-                </span>
+                </Fragment>
                 ))}
            </table>
         </Fragment>

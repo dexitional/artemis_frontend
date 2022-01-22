@@ -95,75 +95,75 @@ const Status = () => {
                         
                         { applicant.flag_admit == 1 ?
                         <Fragment>
-                        <ul role="tablist" className="Tabs"/>
-                        <div className="Tabs-content Tabs-content--box">
-                            { (data && data.accepted === null)  && <>
-                            <div role="tabpanel" className="Tabs-pane is-active">
-                                    <h4 className="u-mb-3">OFFER OF ADMISSION</h4>
-                                    <p>Congratulations you have been offered admission into our institution to offer a <b>{data && data.program_name}</b>.<br/> Please "<b>ACCEPT</b>" or "<b>DECLINE</b>" offer to enable further processing.</p>
-                                    <div id="ember1380" className="paypal-form ember-view">
-                                        <form method="post" action="" id="ember1385" className="ember-view">
-                                            <div>
-                                            <div className="row">
+                            <ul role="tablist" className="Tabs"/>
+                            <div className="Tabs-content Tabs-content--box">
+                                { (data && data.accepted === null)  && <>
+                                <div role="tabpanel" className="Tabs-pane is-active">
+                                        <h4 className="u-mb-3">OFFER OF ADMISSION</h4>
+                                        <p>Congratulations you have been offered admission into our institution to offer a <b>{data && data.program_name}</b>.<br/> Please "<b>ACCEPT</b>" or "<b>DECLINE</b>" offer to enable further processing.</p>
+                                        <div id="ember1380" className="paypal-form ember-view">
+                                            <form method="post" action="" id="ember1385" className="ember-view">
+                                                <div>
+                                                <div className="row">
+                                                        <div className="small-6 columns">
+                                                            <button onClick={acceptOffer} className="Button  Button--fullWidth Button--green " data-ember-action data-ember-action-1386={1386}>
+                                                                <b className="Button--text">ACCEPT ADMISSION OFFER</b>
+                                                            </button>
+                                                        </div>
+                                                        <div className="small-6 columns">
+                                                            <button onClick={declineOffer}className="Button  Button--fullWidth Button--red " data-ember-action data-ember-action-1386={1386}>
+                                                                <b className="Button--text">DECLINE ADMISSION OFFER</b>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                </div>
+                                <hr/>
+                                </> }
+
+                                <div role="tabpanel" className="Tabs-pane is-active">
+                                        <h4 className="u-mb-3">ADMISSION STATUS</h4>
+                                        <p>This is a preview of your provisional admission letter and proposed school fees structure.</p>
+                                        <div id="ember1380" className="paypal-form ember-view">
+                                            <form method="post" action="" id="ember1385" className="ember-view">
+                                                <div className="row">
                                                     <div className="small-6 columns">
-                                                        <button onClick={acceptOffer} className="Button  Button--fullWidth Button--green " data-ember-action data-ember-action-1386={1386}>
-                                                            <b className="Button--text">ACCEPT ADMISSION OFFER</b>
+                                                        <button onClick={viewLetter} className="Button  Button--fullWidth Button--green " data-ember-action data-ember-action-1386={1386}>
+                                                            <b className="Button--text">VIEW PROVISIONAL ADMISSION LETTER</b>
                                                         </button>
                                                     </div>
                                                     <div className="small-6 columns">
-                                                        <button onClick={declineOffer}className="Button  Button--fullWidth Button--red " data-ember-action data-ember-action-1386={1386}>
-                                                            <b className="Button--text">DECLINE ADMISSION OFFER</b>
+                                                        <button onClick={viewBill} className="Button  Button--fullWidth Button--green " data-ember-action data-ember-action-1386={1386}>
+                                                            <b className="Button--text">VIEW PROPOSED FEES STRUCTURE</b>
                                                         </button>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </form>
+                                            </form>
+                                        </div>
                                     </div>
                             </div>
-                            <hr/>
+
+                            { data && data.accepted == 1 && <>
+                            <div className="Box">
+                            <div className="bandwidth-faq">
+                                    <h4>FRESHMAN ( ADMITTED STUDENT ) INSTRUCTIONS</h4>
+                                    <div className="bandwith-faq-answer">
+                                        <p>Freshmen are advised to follow the procedure for stress-free enrolment into our wonderful institution:
+                                            <ol>
+                                                <li><b>FEES PAYMENT</b>: You are reminded to pay your fees before the <b>stated deadline</b> else your <b>offer of admission</b> might be revoked and awarded to a different applicant. School fees can be paid at the selected banks and bank account below the freshman instructions section.</li><br/>
+                                                {/*<li><b>MEDICAL EXAMINATION</b>: You are required to take a medical examination and declared fit to undertake the program of study by a qualified health practitioner. You are required to present a current <b>chest X-Ray</b> film ( not later than a month ) to eligibility.</li><br/>*/}
+                                                <li><b>COURSE REGISTRATION</b>: You are required to <b>register</b> your mounted course for <b>the semester</b> to enable effective assessment by lecturers and department. <b>Failure to register courses is an automatic forfeitment of admission.</b> </li><br/>
+                                                {/*<li><b>HALL REGISTRATION:</b> You are required to to enroll at your hall of affiliation for a room. Please note and pay the hall charges and dues into the required hall account<b></b></li><br/>
+                                                <li><b>DEPARMENT/FACULTY & ASSOCIATIONS REGISTRATION</b>: We believe in social-life enhancement at AUCC, So students are at liberty to be affiliated to association groups on campus. However, SRC is a mandatory association that has every student as member automatically. </li>*/}
+                                            </ol>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
                             </> }
-
-                            <div role="tabpanel" className="Tabs-pane is-active">
-                                    <h4 className="u-mb-3">ADMISSION STATUS</h4>
-                                    <p>This is a preview of your provisional admission letter and proposed school fees structure.</p>
-                                    <div id="ember1380" className="paypal-form ember-view">
-                                        <form method="post" action="" id="ember1385" className="ember-view">
-                                            <div className="row">
-                                                <div className="small-6 columns">
-                                                    <button onClick={viewLetter} className="Button  Button--fullWidth Button--green " data-ember-action data-ember-action-1386={1386}>
-                                                        <b className="Button--text">VIEW PROVISIONAL ADMISSION LETTER</b>
-                                                    </button>
-                                                </div>
-                                                <div className="small-6 columns">
-                                                    <button onClick={viewBill} className="Button  Button--fullWidth Button--green " data-ember-action data-ember-action-1386={1386}>
-                                                        <b className="Button--text">VIEW PROPOSED FEES STRUCTURE</b>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                        </div>
-
-                        { data && data.accepted == 1 && <>
-                        <div className="Box">
-                           <div className="bandwidth-faq">
-                                <h4>FRESHMAN ( ADMITTED STUDENT ) INSTRUCTIONS</h4>
-                                <div className="bandwith-faq-answer">
-                                    <p>Freshmen are advised to follow the procedure for stress-free enrolment into our wonderful institution:
-                                        <ol>
-                                            <li><b>FEES PAYMENT</b>: You are reminded to pay your fees before the <b>stated deadline</b> else your <b>offer of admission</b> might be revoked and awarded to a different applicant. School fees can be paid at the selected banks and bank account below the freshman instructions section.</li><br/>
-                                            {/*<li><b>MEDICAL EXAMINATION</b>: You are required to take a medical examination and declared fit to undertake the program of study by a qualified health practitioner. You are required to present a current <b>chest X-Ray</b> film ( not later than a month ) to eligibility.</li><br/>*/}
-                                            <li><b>COURSE REGISTRATION</b>: You are required to <b>register</b> your mounted course for <b>the semester</b> to enable effective assessment by lecturers and department. <b>Failure to register courses is an automatic forfeitment of admission.</b> </li><br/>
-                                            {/*<li><b>HALL REGISTRATION:</b> You are required to to enroll at your hall of affiliation for a room. Please note and pay the hall charges and dues into the required hall account<b></b></li><br/>
-                                            <li><b>DEPARMENT/FACULTY & ASSOCIATIONS REGISTRATION</b>: We believe in social-life enhancement at AUCC, So students are at liberty to be affiliated to association groups on campus. However, SRC is a mandatory association that has every student as member automatically. </li>*/}
-                                        </ol>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <br/>
-                        </> }
 
                         </Fragment> :
                         

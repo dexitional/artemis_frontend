@@ -281,7 +281,7 @@ const Form = ({recid}) => {
     
     const onSubmit = async data => {
       data.id = parseInt(recid) || 0;
-      const sentToServer = { id: data.id, cal_register_start:data.cal_register_start, cal_register_end:data.cal_register_end, cal_lecture_start:data.cal_lecture_start, cal_lecture_end:data.cal_lecture_end, cal_entry_start:data.cal_entry_start, cal_entry_end:data.cal_entry_end, academic_year:data.academic_year, academic_sem:data.academic_sem, cal_register_hold:data.cal_register_hold, status:data.status, tag:data.tag, title:data.title }
+      const sentToServer = { id: data.id, cal_orient_start:data.cal_orient_start, cal_orient_end:data.cal_orient_end, cal_register_start:data.cal_register_start, cal_register_end:data.cal_register_end, cal_lecture_start:data.cal_lecture_start, cal_lecture_end:data.cal_lecture_end, cal_entry_start:data.cal_entry_start, cal_entry_end:data.cal_entry_end, academic_year:data.academic_year, academic_sem:data.academic_sem, cal_register_hold:data.cal_register_hold, status:data.status, tag:data.tag, title:data.title }
       console.log(data); 
       console.log(sentToServer); 
       const res = await postCalDataAIS(sentToServer);
@@ -305,7 +305,7 @@ const Form = ({recid}) => {
         if(dt){
           const dk = Object.keys(dt);
           dk.forEach( d => {
-              if(d == 'cal_register_start' || d == 'cal_register_end' || d == 'cal_lecture_start' || d == 'cal_lecture_end' || d == 'cal_exam_start' || d == 'cal_exam_end' || d == 'cal_entry_start' || d == 'cal_entry_end') return setValue(d,moment(dt[d]).format('YYYY-MM-DD'))
+              if(d == 'cal_register_start' || d == 'cal_register_end' || d == 'cal_lecture_start' || d == 'cal_lecture_end' || d == 'cal_exam_start' || d == 'cal_exam_end' || d == 'cal_entry_start' || d == 'cal_entry_end' || d == 'cal_orient_start' || d == 'cal_orient_end') return setValue(d,moment(dt[d]).format('YYYY-MM-DD'))
               return setValue(d,dt[d])
           })
         } 
@@ -381,6 +381,17 @@ const Form = ({recid}) => {
                             <div className="input-item input-with-label">
                                 <label htmlFor="cal_register_end" className="input-item-label">REGISTRATION END DATE</label>
                                 <input {...register("cal_register_end", { required: 'Please provide registration end date !' })}  className="input-bordered" type="date"/></div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="cal_orient_start" className="input-item-label">ORIENTATION START DATE</label>
+                                <input {...register("cal_orient_start", { required: 'Please provide orientation start date !' })}  className="input-bordered" type="date"/></div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="cal_orient_end" className="input-item-label">ORIENTATION END DATE</label>
+                                <input {...register("cal_orient_end", { required: 'Please provide orientation end date !' })}  className="input-bordered" type="date"/></div>
                         </div>
 
                         <div className="col-md-6">

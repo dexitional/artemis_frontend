@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import '../../components/admission/FormPrint.css';
 import Logo from '../../assets/img/logo.png'
 import Mark from '../../assets/img/watermark.jpg'
-import { getMarital, getRegion, getStage, getTitle,getRelation,getCertType, getClass, getSitting, getProgram,getSubject, getGrade, getStageTitle, getApplyTypeTitle, getMonth } from '../../store/utils/admissionUtil';
+import { getMarital, getRegion, getStage, getTitle,getRelation,getCertType, getClass, getSitting, getProgram,getSubject, getGrade, getStageTitle, getApplyTypeTitle, getMonth, getCountryTitle, getStudyMode } from '../../store/utils/admissionUtil';
 import moment from 'moment'
 import { useReactToPrint } from 'react-to-print';
 import AdminLayout from '../admission/AdminLayout';
@@ -30,22 +30,33 @@ const PaperForm = () => {
       if(res && res.length > 0){
         var data = []
         for(var i = 0; i < res.length; i++){
-          console.log(`${res[i].result_id}`)
           var dt = applicant.grade.filter( r => r.result_id == res[i].result_id)
-          console.log(dt);
-          if(dt.length > 0) data.push(dt);
-        } setGrades([...data])
+          if(dt.length > 0) data = [...dt,...data ];
+        } 
+        if(data.length > 0) setGrades([...data])
       }
   }
   
+  /*
   const getData = (id,index) => {
     var dt = grades.filter( r => r.result_id == id)
-    if(dt.length > 0){
+    console.log(dt)
+    if(dt && dt.length > 0){
       return dt[index];
+    }
+    return null;
+  }*/
+  
+  const getData = (id,index) => {
+    var dt = grades.filter( r => r.result_id == id)
+    if(dt.length > 0 && dt[index]){
+      console.log(index,dt[index])
+      return dt[index] || {};
     }
     return null;
   }
   
+
   const isTag = (tg) => {
      const tag = step.meta.find(t => t.tag == tg);
      if(tag) return true;
@@ -59,11 +70,13 @@ const PaperForm = () => {
     } 
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     //handlePrint()
-    //loadGrades()
+    loadGrades()
     helperLoader()
-    setGrades([...applicant.grade]);
+    //setGrades([...applicant.grade]);
+    console.log(applicant.grade)
+    console.log(applicant.result)
   },[])
 
   
@@ -127,8 +140,8 @@ const PaperForm = () => {
                        <td colSpan={2}>&nbsp;</td>
                    </tr>
                    <tr>
-                       <td rowSpan={6}>
-                           <img src={applicant.user.photo ? applicant.user.photo : Logo } style={{width:'192px',display:'block',marginRight:'25px'}} />
+                       <td rowSpan={7}>
+                           <img src={applicant.user.photo ? applicant.user.photo : Logo } style={{width:'200px',display:'block'}} />
                        </td>
                        <td className="shead">Applicant ID:</td>
                        <td className="sbody">{applicant.user.serial}</td>
@@ -140,6 +153,10 @@ const PaperForm = () => {
                    <tr>
                        <td className="shead">Application Type:</td>
                        <td className="sbody"><small><b>{getApplyTypeTitle(applicant.apply_type) && getApplyTypeTitle(applicant.apply_type).toUpperCase()}</b></small></td>
+                   </tr>
+                   <tr>
+                       <td className="shead">Study Mode:</td>
+                       <td className="sbody"><small><b>{getStudyMode(applicant.profile.session_mode) && getStudyMode(applicant.profile.session_mode).toUpperCase()}</b></small></td>
                    </tr>
                   <tr>
                        <td colSpan={2}><hr/></td>
@@ -153,7 +170,7 @@ const PaperForm = () => {
                        <td className="sbody">{applicant.profile.lname && applicant.profile.lname.toUpperCase()}</td>
                    </tr>
                    <tr>
-                       <td rowSpan={['7','8'].includes(applicant.stage_id) ? '11':'9'}></td>
+                       <td rowSpan={['7','8'].includes(applicant.stage_id) ? '12':'10'}></td>
                        <td className="shead">Other Names:</td>
                        <td className="sbody">{applicant.profile.fname && applicant.profile.fname.toUpperCase()}</td>
                    </tr>
@@ -171,7 +188,7 @@ const PaperForm = () => {
                    </tr>
                    <tr>
                        <td className="shead">Home Region:</td>
-                       <td className="sbody">{getRegion(applicant.profile.home_region)}</td>
+                       <td className="sbody">{getRegion(applicant.profile.home_region) || '-- NONE --'}</td>
                    </tr>
                   <tr>
                        <td className="shead">Phone Number:</td>
@@ -183,12 +200,17 @@ const PaperForm = () => {
                    </tr>
                    <tr>
                        <td className="shead">Postal Address:</td>
-                       <td className="sbody">{applicant.profile.pobox_address && applicant.profile.pobox_address.toUpperCase()}</td>
+                       <td className="sbody">{applicant.profile.pobox_address && applicant.profile.pobox_address.toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Residential Address:</td>
-                       <td className="sbody">{applicant.profile.resident_address && applicant.profile.resident_address.toUpperCase()}</td>
+                       <td className="sbody">{applicant.profile.resident_address && applicant.profile.resident_address.toUpperCase() || '-- NONE -- '}</td>
                    </tr>
+                   <tr>
+                       <td className="shead">Country of Residence:</td>
+                       <td className="sbody">{getCountryTitle(applicant.profile.resident_country,helpers.countries) && getCountryTitle(applicant.profile.resident_country,helpers.countries).toUpperCase()}</td>
+                   </tr>
+                   
                    { ['7','8'].includes(applicant.stage_id) ? 
                    <Fragment>
                    <tr>
@@ -212,7 +234,7 @@ const PaperForm = () => {
                            &nbsp;
                        </td>
                        <td className="shead">Name:</td>
-                       <td className="sbody">{applicant.guardian.title && getTitle(applicant.guardian.title).toUpperCase()} {(applicant.guardian.fname && applicant.guardian.fname.toUpperCase())+' '+(applicant.guardian.lname && applicant.guardian.lname.toUpperCase())}</td>
+                       <td className="sbody">{applicant.guardian.title && getTitle(applicant.guardian.title)} {((applicant.guardian.fname && applicant.guardian.lname) && (applicant.guardian.fname+' '+applicant.guardian.lname)).toUpperCase()}</td>
                    </tr>
                    <tr>
                        <td className="shead">Relation to Applicant:</td>
@@ -228,11 +250,11 @@ const PaperForm = () => {
                    </tr>
                    <tr>
                        <td className="shead">Email Address:</td>
-                       <td className="sbody">{applicant.guardian.email && applicant.guardian.email.toUpperCase()}</td>
+                       <td className="sbody">{applicant.guardian.email && applicant.guardian.email.toUpperCase() || '--NONE--'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Address:</td>
-                       <td className="sbody">{applicant.guardian.address && applicant.guardian.address.toUpperCase()}</td>
+                       <td className="sbody">{applicant.guardian.address && applicant.guardian.address.toUpperCase() || '--NONE--'}</td>
                    </tr>
                </table>
            </section>
@@ -363,7 +385,7 @@ const PaperForm = () => {
                    </tr>
                     )}
                    </Fragment> : null }
-                   
+                   {JSON.stringify()}
 
 
                    {/* Result */}
@@ -372,14 +394,14 @@ const PaperForm = () => {
                    <tr><td colSpan="4">&nbsp;</td></tr>
                    <tr><td colSpan="4"><hr/></td></tr>
                    <tr>
-                       <td colSpan="3"><h3 className="title">  Examination Results Information</h3></td>
-                       <td>&nbsp;</td>
+                       <td colSpan="2"><h3 className="title">  Examination Results Information</h3></td>
+                       <td colSpan="2"><h3 className="title" style={{fontSize:'10px !important',borderColor:'#b76117',color:'#b76117',letterSpacing:'0.07em',padding:'5px 15px'}}>TOTAL AGGREGATE : {applicant.grade_value}</h3></td>
                    </tr>
                    { applicant.result.map((row,i) => 
                    <Fragment key={i}>
                    <tr>
                       <td colSpan="4">
-                          <h3 className="black"><u>Results {i+1}</u></h3>
+                          <h3 className="black"><u>Results {i+1} </u></h3>
                       </td>
                    </tr>
                    <tr>
@@ -391,39 +413,40 @@ const PaperForm = () => {
                    <tr>
                        <td className="sbody">Exams Year</td>
                        <td className="shead">{row.exam_year}</td>
-                       <td className="shead">{getData(row.result_id,0) && getSubject(getData(row.result_id,0).subject).toUpperCase()}</td>
-                       <td className="shead">{getData(row.result_id,0) && getGrade(getData(row.result_id,0).grade)}</td>
+                       <td className="shead">{getData(row.result_id,0) ? getSubject(getData(row.result_id,0).subject).toUpperCase() : ''}</td>
+                       <td className="shead">{getData(row.result_id,0) ? getGrade(getData(row.result_id,0).grade) : ''}</td>
                    </tr>
                    <tr>
                        <td className="sbody">Exams Sitting</td>
                        <td className="shead">{getSitting(row.exam_sitting)}</td>
-                       <td className="shead">{getData(row.result_id,1) && getSubject(getData(row.result_id,1).subject).toUpperCase()}</td>
-                       <td className="shead">{getData(row.result_id,1) && getGrade(getData(row.result_id,1).grade)}</td>
+                       <td className="shead">{getData(row.result_id,1) ? getSubject(getData(row.result_id,1).subject).toUpperCase() : ''}</td>
+                       <td className="shead">{getData(row.result_id,1) ? getGrade(getData(row.result_id,1).grade) : ''}</td>
                    </tr>
                    <tr>
                        <td className="sbody">Index Number</td>
                        <td className="shead">{row.index_number}</td>
-                       <td className="shead">{getData(row.result_id,2) && getSubject(getData(row.result_id,2).subject).toUpperCase()}</td>
-                       <td className="shead">{getData(row.result_id,2) && getGrade(getData(row.result_id,2).grade)}</td>
+                       <td className="shead">{getData(row.result_id,2) ? getSubject(getData(row.result_id,2).subject).toUpperCase() : ''}</td>
+                       <td className="shead">{getData(row.result_id,2) ? getGrade(getData(row.result_id,2).grade) : ''}</td>
                    </tr>
                    <tr>
-                       <td className="sbody">{getData(row.result_id,6) || getData(row.result_id,7) && 'Subject'}</td>
-                       <td className="sbody">{getData(row.result_id,6) || getData(row.result_id,7) && 'Grade'}</td>
-                       <td className="shead">{getData(row.result_id,3) && getSubject(getData(row.result_id,3).subject).toUpperCase()}</td>
-                       <td className="shead">{getData(row.result_id,3) && getGrade(getData(row.result_id,3).grade)}</td>
+                       <td className="sbody">{(getData(row.result_id,6) || getData(row.result_id,7)) && 'Subject'}</td>
+                       <td className="sbody">{(getData(row.result_id,6) || getData(row.result_id,7)) && 'Grade'}</td>
+                       <td className="shead">{getData(row.result_id,3) ? getSubject(getData(row.result_id,3).subject).toUpperCase() : ''}</td>
+                       <td className="shead">{getData(row.result_id,3) ? getGrade(getData(row.result_id,3).grade) : ''}</td>
                    </tr>
                    <tr>
-                       <td className="shead">{getData(row.result_id,6) && getSubject(getData(row.result_id,6).subject).toUpperCase()}</td>
-                       <td className="shead">{getData(row.result_id,6) && getGrade(getData(row.result_id,6).grade)}</td>
-                       <td className="shead">{getData(row.result_id,4) && getSubject(getData(row.result_id,4).subject).toUpperCase()}</td>
-                       <td className="shead">{getData(row.result_id,4) && getGrade(getData(row.result_id,4).grade)}</td>
+                       <td className="shead">{getData(row.result_id,6) ? getSubject(getData(row.result_id,6).subject).toUpperCase() : ''}</td>
+                       <td className="shead">{getData(row.result_id,6) ? getGrade(getData(row.result_id,6).grade) : ''}</td>
+                       <td className="shead">{getData(row.result_id,4) ? getSubject(getData(row.result_id,4).subject).toUpperCase() : ''}</td>
+                       <td className="shead">{getData(row.result_id,4) ? getGrade(getData(row.result_id,4).grade) : ''}</td>
                    </tr>
                    <tr>
-                       <td className="shead">{getData(row.result_id,7) && getSubject(getData(row.result_id,7).subject).toUpperCase()}</td>
-                       <td className="shead">{getData(row.result_id,7) && getGrade(getData(row.result_id,7).grade)}</td>
-                       <td className="shead">{getData(row.result_id,5) && getSubject(getData(row.result_id,5).subject).toUpperCase()}</td>
-                       <td className="shead">{getData(row.result_id,5) && getGrade(getData(row.result_id,5).grade)}</td>
+                       <td className="shead">{getData(row.result_id,7) ?  getSubject(getData(row.result_id,7).subject).toUpperCase() : ''}</td>
+                       <td className="shead">{getData(row.result_id,7) ? getGrade(getData(row.result_id,7).grade) : ''}</td>
+                       <td className="shead">{getData(row.result_id,5) ? getSubject(getData(row.result_id,5).subject).toUpperCase() : ''}</td>
+                       <td className="shead">{getData(row.result_id,5) ? getGrade(getData(row.result_id,5).grade) : ''}</td>
                    </tr>
+                  
                    <tr><td colSpan="4">&nbsp;</td></tr>
                    </Fragment>
 

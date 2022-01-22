@@ -285,7 +285,7 @@ export const getGradeValue = (subjects,dataset) => {
         if(sj && !sj.isCore) elective.push(row)
       }
       if(coreRequired.length == 3){
-        core_val = core.reduce((ac,val) => ac+val.weight,0) || 0
+        core_val = coreRequired.reduce((ac,val) => ac+val.weight,0) || 0
       }else{
         if(core.length > 0){
           core = core.sort((a, b) => a.weight - b.weight);
@@ -293,7 +293,7 @@ export const getGradeValue = (subjects,dataset) => {
           for(var i = 0; i < core.length;i++){
             if(i < 3) mcore.push(core[i])
           }
-          if(mcore.length > 0) core_val = core.reduce((ac,val) => ac+val.weight,0) || 0
+          if(mcore.length > 0) core_val = mcore.reduce((ac,val) => ac+val.weight,0) || 0
         }
       }
       if(elective.length > 0){
@@ -306,6 +306,8 @@ export const getGradeValue = (subjects,dataset) => {
       }
       if(subjects.length >= 7 && elective.length >= 3 && core.length >= 3){
         grade_value = core_val+elective_val;
+      }else{
+        return 0;
       }
     }
     return grade_value;

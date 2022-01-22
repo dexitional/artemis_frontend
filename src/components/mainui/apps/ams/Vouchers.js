@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, loadAMSHelpers, } from '../../../../store/utils/ssoApi';
+import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, loadAMSHelpers, sellVoucher, } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setModal, setVouchers } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
@@ -29,8 +29,7 @@ const Vouchers = ({view,data,recid}) => {
   
    const showModal = async (e,id) => {
       e.preventDefault()
-      const row = sso.sessions.find(s => s.status == 1);
-      const resp = await fetchVouchers(row.session_id,`?sell_type=${id}`)
+      const resp = await fetchVouchers(`?sell_type=${id}`)
       if(resp.success){
         var sub_title;
         switch(id){
@@ -107,6 +106,27 @@ const List = () => {
         // Send to server for recovery mail template
         const resp = await recoverVoucher({serial,email})
         if(resp.success) alert('VOUCHER SENT BY MAIL!') 
+      }
+   }
+
+   const sell = async (e,serial) => {
+      e.preventDefault();
+      const name = window.prompt('Please Enter Name of Buyer!')
+      if(name && name.trim() != ''){
+        const phone = window.prompt('Please Enter Phone Number of Buyer!')
+        if(phone && phone.trim() != '' && phone.length == 10){
+          const resp = await sellVoucher ({serial,name,phone})
+          console.log(resp)
+          if(resp.success){
+            const message = `VOUCHER SOLD TO ${name}, DETAILS ARE :\n\nSERIAL: ${resp.data.serial}\nPIN: ${resp.data.pin}`
+            alert(message)
+            fetchVoucherData()
+          }
+        }else{
+          alert('Please Enter 10-digit Phone Number')
+        }
+      }else{
+        alert('Please Provide Buyer Full Name')
       }
    }
 
@@ -199,7 +219,7 @@ const List = () => {
                             <td className="data-col d-flex">
                                 { row.sold_at ? <small className="badge badge-sm badge-outline badge-dark text-dark"><b>SOLD</b></small> : null }
                                 { row.used_at ? <small className="badge badge-sm badge-outline badge-dark text-dark"><b>USED</b></small> : null }
-                                
+                                { !row.sold_at ? <Link className={`badge badge-sm badge-success text-dark`} onClick={ e => sell(e,row.serial)}><b><em className="ti ti-sms"></em> SELL</b></Link> : null }
                                 <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => recover(e,row.serial)}><b><em className="ti ti-sms"></em> RECOVER</b></Link>
                                 <Link className={`badge badge-sm badge-danger text-white`} onClick={ e => deleteRecord(e,row.serial)}><b><em className="ti ti-trash"></em></b></Link>
                             </td>   

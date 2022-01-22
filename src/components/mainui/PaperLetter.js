@@ -1,6 +1,7 @@
 import React,{useState,useEffect,useRef} from 'react'
 import '../admission/FormPrint.css'
 import Logo from '../../assets/img/logo.png'
+import Signature from '../../assets/img/signature.png'
 import { useReactToPrint } from 'react-to-print';
 import { useSelector } from 'react-redux'
 import moment from 'moment'
@@ -45,6 +46,9 @@ const PaperLetter = () => {
         dt = dt.replace('::bank_account',data && data.bank_account)
         dt = dt.replace('::admission_title',data && data.admission_title)
         dt = dt.replace('::lecture_start',data && moment(data.cal_lecture_start).format('Do MMMM, YYYY'))
+        dt = dt.replace('::register_start',data && moment(data.cal_register_start).format('Do MMMM, YYYY'))
+        dt = dt.replace('::register_end',data && moment(data.cal_register_end).format('Do MMMM, YYYY'))
+        dt = dt.replace('::orient_start',data && moment(data.cal_orient_start).format('Do MMMM, YYYY'))
         const toWords = new ToWords(
             data && data.currency == 'USD' ?
             {
@@ -66,7 +70,10 @@ const PaperLetter = () => {
                 }
             }
         );
+        
+        dt = dt.replace('::signature', `<img src=${Signature} width='150px' height='50px' />`)
         dt = dt.replace('::fee_amount',`${toWords.convert(data && data.amount || 0)} ${data && data.currency == 'GH' ? ' ( $'+data.amount+' )' : ' ( GH¢'+data.amount+' )' }`)
+        dt = dt.replace('::discount_amount',`${toWords.convert(data && (data.amount - (data.discount || 0)) || 0)} ${data && data.currency == 'GH' ? ' ( $'+(data.amount - (data.discount || 0))+' )' : ' ( GH¢'+(data.amount - (data.discount || 0))+' )' }`)
         return dt
     }
 

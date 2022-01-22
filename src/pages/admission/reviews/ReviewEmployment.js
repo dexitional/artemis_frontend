@@ -25,7 +25,7 @@ const ReviewEmployment = ({tag,title,edit}) => {
                 { employment.map((row,i) => (
                 <Fragment key={i}>
                 { row.employer_name != '' ?
-                <Fragment>
+                <Fragment key={i}>
                 <tr><td colSpan={4}> <h4> Employment Information #{i+1}</h4></td></tr> {/* If Tertiary*/}
                 <tr>
                     <td className="date"><b>Employer Name</b></td>

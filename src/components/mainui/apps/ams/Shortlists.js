@@ -1,13 +1,13 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchApplicants, fetchApplicant, loadAMSHelpers, fetchSortedApplicants, } from '../../../../store/utils/ssoApi';
+import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchApplicants, fetchApplicant, loadAMSHelpers, fetchSortedApplicants, admitApplicant, fetchDocuments, } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import moment from 'moment';
 import { setApplicants, setCurrentPage, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import PaperTable from '../../PaperTable';
 import Pager from '../../Pager';
-import applicantSlice, { setApplyMode, setChoice, setDocument, setEducation, setGrade, setGuardian, setProfile, setResult, setStage, setSubmitStatus, updateUser } from '../../../../store/admission/applicantSlice';
+import applicantSlice, { setApplyMode, setChoice, setDocument, setEducation, setEmployment, setGrade, setGuardian, setProfile, setReferee, setResult, setStage, setSubmitStatus, updateUser } from '../../../../store/admission/applicantSlice';
 import { setMeta, setStepCount } from '../../../../store/admission/stepSlice';
 import { getApplyTypeTitle, getStageTitle } from '../../../../store/utils/admissionUtil';
 import parse from 'html-react-parser'
@@ -90,7 +90,7 @@ const Shortlists = ({view,data,recid}) => {
     <div className="content-area card">
 	   <h3 className="sub-head bg-blueblack"> 
            { title() }
-           { view == 'list' ?
+           { /*view == 'list' ?
             <div className="d-inline-block print-btn">
                 <Button id={`basic-button1`} className="mr-2" variant="contained" color='warning' aria-controls={`basic-menu1`} aria-haspopup="true" aria-expanded={ anchorEl && anchorEl == 1 ? 'true' : undefined} onClick={(e) => handleClick(e,1)}><b>BY CATEGORY</b>&nbsp;&nbsp;<i className="fa fa-bars"></i></Button>
                 <Menu id={`basic-menu1`} anchorEl={anchorEl} open={ref && ref == 1} onClose={handleClose} variant="outlined" MenuListProps={{'aria-labelledby': `basic-button1`}}> 
@@ -105,9 +105,8 @@ const Shortlists = ({view,data,recid}) => {
                     <MenuItem onClick={(e) => null}>{ !activity['regp'+row.id] ? <><em className="fa fa-sm fa-list-alt"></em>&nbsp;&nbsp;<b> {row.short} </b></> : <>&nbsp;&nbsp;<img src={Loader} style={{height:'20px',margin:'0 auto'}}/></>}</MenuItem>
                   )}
                 </Menu>
-
             </div> : null
-           }
+            */}
 	   </h3>
         {content()}
 	</div>
@@ -165,8 +164,8 @@ const List = () => {
            } 
            if(rec.data.choice) dispatch(setChoice(rec.data.choice))
            if(rec.data.document) dispatch(setDocument(rec.data.document))
-           //if(rec.data.referee) dispatch(setReferee(rec.data.referee))
-           //if(rec.data.employment) dispatch(setEmployment(rec.data.employment))
+           if(rec.data.referee) dispatch(setReferee(rec.data.referee))
+           if(rec.data.employment) dispatch(setEmployment(rec.data.employment))
            //if(rec.data.qualification) dispatch(setQualification(rec.data.qualification))
            let dt = { size:'md', show:true, page:'form' }
            dispatch(setModal(dt));
@@ -174,10 +173,25 @@ const List = () => {
         
     } 
 
-    const admitApplicant = (e,serial) => {
-      e.preventDefault()
-      history.push(`/app/ams?mod=shortlists&view=admit&recid=${serial}`)
+    const admit = (e,serial) => {
+        e.preventDefault()
+        history.push(`/app/ams?mod=shortlists&view=admit&recid=${serial}`)
     }
+
+    const getDocs = async (e,serial) => {
+        e.preventDefault()
+        const resp = await fetchDocuments(serial)
+        if(resp.success){
+          e.preventDefault()
+          const data = resp.docs
+          console.log(data)
+          const content = { title:'Applicant Documents', data }
+          let dz = { content, size:'md', show:true, page:'docs' }
+          dispatch(setModal(dz));
+        }else{
+          dispatch(updateAlert({show:true,message:`NO DOCUMENTS UPLOADED!`,type:'error'}))
+        }
+    } 
 
    // Search & Pagination
    const [ page, setPage ] = React.useState(1);
@@ -186,18 +200,16 @@ const List = () => {
    const [ isLoading, setIsLoading ] = React.useState(false);
 
    const fetchSortData = async () => {
-      if(sid){
-        var query = ``;
-        if(page >= 0) query += `?page=${page-1}`
-        if(keyword != '') query += `&keyword=${keyword}`
-        const res = await fetchSortedApplicants(sid && sid.session_id,query);
-        if(res.success){
-           setIsLoading(false)
-           setSorted([...res.data.data]);// Page Data
-           setCount(res.data.totalPages)// Total Pages
-        }
+      var query = ``;
+      if(page >= 0) query += `?page=${page-1}`
+      if(keyword != '') query += `&keyword=${keyword}`
+      const res = await fetchSortedApplicants(query);
+      if(res.success){
+          setIsLoading(false)
+          setSorted([...res.data.data]);// Page Data
+          setCount(res.data.totalPages)// Total Pages
       }
-    }
+   }
    
    const onSearchChange = async (e) => {
      setKeyword(e.target.value)
@@ -270,8 +282,8 @@ const List = () => {
                             </td>
                             <td className="data-col">
                               <small className="lead tnx-id">{ row.applytype }</small>
-                              {row.grade_value ? parse(`<small style="color:#b76117;font-weight:bolder">-- Aggregate: ${row.grade_value} </small>`) : null }
-                              {row.class_value ? parse(`<small style="color:#b76117;font-weight:bolder">-- Class: ${row.class_value} </small>`) : null }
+                              {row.grade_value ? parse(`<small style="color:#b76117;font-weight:bolder">-- AGGREGATE: ${row.grade_value} </small>`) : null }
+                              {row.class_value ? parse(`<small style="color:#b76117;font-weight:bolder">-- CLASS: ${row.class_value} </small>`) : null }
                             </td>
                             
                             <td className="data-col"><span className="lead amount-pay">{ getType(row) && getType(row).toUpperCase() }</span></td>
@@ -283,9 +295,9 @@ const List = () => {
                             { true &&
                             <td className="data-col">
                               <div className="d-flex">
-                                <Link className={`badge badge-sm badge-success text-white`} onClick={ e => admitApplicant(e,row.serial)}><b><em className="ti ti-sms"></em>ADMIT</b></Link><br/>
-                                <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showFormModal(e,row.serial)}><b><i className="fa fa-file-alt"></i></b></Link><br/>
-                                <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showFormModal(e,row.serial)}><b><i className="fa fa-folder"></i></b></Link>
+                                <Link className={`badge badge-sm badge-success text-white`} onClick={ e => admit(e,row.serial) }><b><em className="ti ti-sms"></em>ADMIT</b></Link><br/>
+                                <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showFormModal(e,row.serial) }><b><i className="fa fa-file-alt"></i></b></Link><br/>
+                                <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => getDocs(e,row.serial) }><b><i className="fa fa-folder"></i></b></Link>
                               </div>
                             </td>} 
                           </tr>
@@ -316,24 +328,29 @@ const Form = ({recid}) => {
   const [ options, setOptions ] = useState([]);
 
   const onChange = (e) => {
-    var index = e.target.selectedIndex;
-    var optionElement = e.target.childNodes[index]
-    var program_id =  optionElement.dataset.program;
-    var major_id =  optionElement.dataset.major;
-    setForm({...form, option_id : e.target.value, program_id, major_id });
+   if(['option_id'].includes(e.target.name)){
+      var index = e.target.selectedIndex;
+      var optionElement = e.target.childNodes[index]
+      var program_id =  optionElement.dataset.program;
+      var major_id =  optionElement.dataset.major;
+      setForm({...form,option_id : e.target.value, program_id, major_id });
+    }else{
+       setForm({...form,[e.target.name]:e.target.value });  
+    }
   }
   
-  const onSubmit = async data => {
+  const onSubmit = async e => {
+    e.preventDefault()
+    var data = { start_semester:form.start_semester, program_id:form.program_id, major_id:form.major_id, serial:form.serial, stage_id: form.stage_id, apply_type:form.apply_type, session_id:form.session_id, group_id:form.group_id, sell_type:form.sell_type, session_mode:form.session_mode }
     data.id = parseInt(recid) || 0;
-    //const res = await postPaymentFMS(data);
-    var res;
+    console.log(data)
+    const res = await admitApplicant(data);
     if(res.success){
        // Do something if passed
        dispatch(updateAlert({show:true,message:`APPLICANT ADMITTED!`,type:'success'}))
        setTimeout(() => {
          history.push('/app/ams?mod=shortlists&view=list')
-
-        },2000)
+       },2000)
     } else{
        // Show error messages
        dispatch(updateAlert({show:true,message:`${res.msg.toUpperCase()}`,type:'error'}))
@@ -386,26 +403,23 @@ const Form = ({recid}) => {
                   <div className="row">
                      
                       <div className="col-md-6 alert">
-                          <div className="text-dark"><b>APPLICANT FULL NAME:  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{form.name && form.name.toUpperCase()}</b></div>
-                          <div className="text-dark"><b>APPLICANT FIRST CHOICE:  &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;{form.choice_name1}</b></div>
-                          <div className="text-dark"><b>APPLICANT SECOND CHOICE: &nbsp;&nbsp;&nbsp;&nbsp;{form.choice_name2}</b></div>
+                          <div className="text-dark"><b>APPLICANT FULL NAME:  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="input-item-label">{form.name && form.name.toUpperCase()}</span></b></div>
+                          <div className="text-dark"><b>APPLICANT FIRST CHOICE:  &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<span className="input-item-label">{form.choice_name1}</span></b></div>
+                          <div className="text-dark"><b>APPLICANT SECOND CHOICE: &nbsp;&nbsp;&nbsp;&nbsp;<span className="input-item-label">{form.choice_name2}</span></b></div>
                       </div>
                       <div className="col-md-6 alert">
-                          <div className="text-dark"><b>APPLICATION MODE:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{getType(form) && getType(form).toUpperCase()}</b></div>
-                          <div className="text-dark"><b>ADMISSION GROUP:  &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;{form.applytype && form.applytype.toUpperCase()}</b></div>
-                          {form.grade_value && <div className="text-dark"><b>AGGREGATE: &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;{form.choice_name2}</b></div>}
-                          {form.class_value && <div className="text-dark"><b>CLASS OBTAINED:     &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;{form.choice_name2}</b></div>}
+                          <div className="text-dark"><b>APPLICATION MODE:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="input-item-label">{getType(form) && getType(form).toUpperCase()}</span></b></div>
+                          <div className="text-dark"><b>ADMISSION GROUP:  &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<span className="input-item-label">{form.applytype && form.applytype.toUpperCase()}</span></b></div>
+                          {form.grade_value && <div className="text-dark"><b>AGGREGATE: &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span className="input-item-label">{form.grade_value}</span></b></div>}
+                          {form.class_value && <div className="text-dark"><b>CLASS OBTAINED:     &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span className="input-item-label">{form.class_value}</span></b></div>}
                       </div>
-                      
                       <Divider/>
-
-                      
-                     
+         
                       <div className="col-md-9">
                           <div className="input-item input-with-label">
-                              <label htmlFor="choice_id" className="input-item-label">ADMIT APPLICANT INTO</label>
-                              <select onChange={(e)=> onChange(e)} value={form.option_id} className="input-bordered">
-                                <option value="" disabled selected>--NONE--</option>
+                              <label htmlFor="option_id" className="input-item-label">ADMIT APPLICANT INTO</label>
+                              <select onChange={(e)=> onChange(e)} name="option_id" value={form.option_id} className="input-bordered">
+                                <option value="" disabled selected>--CHOOSE--</option>
                                 { helper && helper.adm_programs.map((hp) => 
                                 <option value={hp.id} data-program={hp.prog_id} data-major={hp.major_id}>{`${hp.program_name.toUpperCase()} ${hp.major_name ? '( '+hp.major_name.toUpperCase()+' )':''}`}</option>
                                 )}
@@ -414,11 +428,11 @@ const Form = ({recid}) => {
                       </div>
                       <div className="col-md-3">
                           <div className="input-item input-with-label">
-                              <label htmlFor="tag" className="input-item-label">ACADEMIC START YEAR</label>
+                              <label htmlFor="start_semester" className="input-item-label">ACADEMIC START YEAR</label>
                               <select onChange={(e)=> onChange(e)} name="start_semester" value={form.start_semester} className="input-bordered">
-                                <option value="" disabled selected>--NONE--</option>
-                                <option value={1} disabled selected>YEAR ONE(1)</option>
-                                <option value={3} disabled selected>YEAR TWO(2)</option>
+                                <option value="" disabled selected>--CHOOSE--</option>
+                                <option value={1}>YEAR ONE(1)</option>
+                                <option value={3}>YEAR TWO(2)</option>
                               </select>
                           </div>
                       </div>

@@ -67,10 +67,10 @@ const SideNav = () => {
                             </div>
                         </div>
 
-                        { pathname !== 'admission-session' && pathname !== 'admission-print' ? 
+                        { pathname !== '/admission-session' && pathname !== '/admission-print' ? 
                         <div className="side-nav-section manage open-section">
                             <div id="ember680" className="ember-view">
-                                <h5 role="button">APPLICANT MENU</h5>
+                                <h5 role="button">APPLICANT MENU </h5>
                                 <ul>
                                     <li><Link to="admission-dash" id="ember748" className="fleetPathActive ember-view">Application Guide</Link></li>
                                     <li><Link to="admission-notices" id="ember686" className="ember-view"> App Notifications { applicant.notification.length > 0 ? <span id="ember691" className="trailingLabelBox__beta--blue ember-view">{applicant.notification.length}</span> : null }</Link></li>
@@ -84,8 +84,8 @@ const SideNav = () => {
                         <div className="side-nav-section open-section">
                             <h5>Account</h5>
                             <ul>
-                                { pathname !== 'admission-session' && pathname !== 'admission-print'? <li><Link onClick={exitApp} id="ember871" className="ember-view">Logout</Link></li>:''}   
-                                { ['admission-session','admission-print'].includes(pathname) ? <li><Link onClick={exitSession} id="ember871" className="ember-view"><b>Exit Session </b></Link></li>:''} 
+                                { pathname !== '/admission-session' && pathname !== '/admission-print'? <li><Link onClick={exitApp} id="ember871" className="ember-view">Logout</Link></li>:''}   
+                                { ['/admission-session','/admission-print'].includes(pathname) ? <li><Link onClick={exitSession} id="ember871" className="ember-view"><b>Exit Session </b></Link></li>:''} 
                             </ul>
                         </div>
                        

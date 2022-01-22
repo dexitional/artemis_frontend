@@ -27,6 +27,8 @@ import Curriculum from './apps/ais/Curriculum';
 import Calendar from './apps/ais/Calendar';
 import Informer from './apps/ais/Informer';
 import Progchange from './apps/ais/Progchange';
+import Letters from './apps/ams/Letters';
+import Entrance from './apps/ams/Entrance';
 
 const SSOModuleBody = ({module,mod,view,data,recid}) => {
   const { sso } = useSelector( state => state)
@@ -37,10 +39,10 @@ const SSOModuleBody = ({module,mod,view,data,recid}) => {
       if(module == 'ams' && mod == 'vouchers') return <Vouchers view={view} data={data} recid={recid}/>
       if(module == 'ams' && mod == 'applicants') return <Applicants view={view} data={data} recid={recid}/>
       if(module == 'ams' && mod == 'shortlists') return <Shortlists view={view} data={data} recid={recid}/>
-      if(module == 'ams' && mod == 'letters') return <Sessions view={view} data={data} recid={recid}/>
+      if(module == 'ams' && mod == 'letters') return <Letters view={view} data={data} recid={recid}/>
       if(module == 'ams' && mod == 'matriculants') return <Matriculants view={view} data={data} recid={recid}/>
       if(module == 'ams' && mod == 'bills') return <Sessions view={view} data={data} recid={recid}/>
-      if(module == 'ams' && mod == 'exams') return <Sessions view={view} data={data} recid={recid}/>
+      if(module == 'ams' && mod == 'entrance') return <Entrance view={view} data={data} recid={recid}/>
       if(module == 'ams' && mod == 'programs') return <Sessions view={view} data={data} recid={recid}/>
       if(module == 'ams' && mod == 'modes') return <Sessions view={view} data={data} recid={recid}/>
       if(module == 'ams' && mod == 'notices') return <Sessions view={view} data={data} recid={recid}/>

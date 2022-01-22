@@ -159,7 +159,7 @@ const Document = () => {
                           </select>
                       </span>
                       <span className="small-3 columns" style={{margin:'28px 0 -5px',top:'20px',padding:'5px 5px 3px', border:'none',boxShadow:'0 0 0 2px #f1f1f1',background:'white',borderRadius:'3px',overflow:'hidden',cursor:'pointer'}}>
-                          <label className="u-ml-0 label-title" onClick={(e)=> document.querySelector('#docfile').click()}><span>SELECT PDF FILE</span>
+                          <label className="u-ml-0 label-title" onClick={(e)=> document.querySelector('#docfile').click()}><span>PICK PDF FILE</span>
                           <input type="file" onChange={onChange} name="file" value={form.file} id="docfile" style={{display:'none'}} />
                           </label>
                       </span>

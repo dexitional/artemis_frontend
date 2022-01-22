@@ -331,13 +331,15 @@ const Form = ({recid}) => {
                                 <label htmlFor="receiver" className="input-item-label">ASSIGNED GROUP/RECEIPIENTS</label>
                                 <select {...register("receiver")} className="input-bordered">
                                    <option value="ALL">BOTH STUDENTS & STAFF</option>
-                                   <option value="STUDENT">STUDENTS (ACTIVE ONLY)</option>
+                                   <option value="STUDENT">ALL STUDENTS (ACTIVE ONLY)</option>
+                                   <option value="UNDERGRAD">UNDERRADUATE STUDENTS (ACTIVE ONLY)</option>
+                                   <option value="POSTGRAD">POSTGRADUATE STUDENTS (ACTIVE ONLY)</option>
                                    <option value="STAFF">STAFF (ALL STAFF)</option>
-                                   <option value="HEAD">HEADS</option>
-                                   <option value="DEAN">DEANS</option>
-                                   <option value="ASSESOR">ASSESSORS</option>
-                                   <option value="FRESHER">FRESHERS</option>
-                                   <option value="APPLICANT">APPLICANTS</option>
+                                   <option value="HEAD">HEADS OF DEPARTMENTS</option>
+                                   <option value="DEAN">DEANS OF SCHOOLS</option>
+                                   <option value="ASSESOR">ASSESSORS/LECTURERS</option>
+                                   <option value="FRESHER">ADMITTED FRESHERS</option>
+                                   <option value="APPLICANT">ADMISSION APPLICANTS</option>
                                 </select>
                             </div>
                         </div>

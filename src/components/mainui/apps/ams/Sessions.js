@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import { deleteSession, fetchSessions, loadAMSHelpers, postSession, setDefaultSession } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import moment from 'moment';
-import { setSessions } from '../../../../store/admission/ssoSlice';
+import { setSessions, updateAlert } from '../../../../store/admission/ssoSlice';
 import PaperLetter from '../../PaperLetter';
 
 
@@ -163,7 +163,8 @@ const Form = ({recid}) => {
     const history = useHistory();
     const { sso } = useSelector(state => state)
     const { register, handleSubmit,setValue, getValues, formState : { errors } } = useForm();
-    const [ helper,setHelper ] = useState({ letters:[] });
+    const [ helper,setHelper ] = useState({ letters:[], calendars:[] });
+    const dispatch = useDispatch()
     
     const onSubmit = async data => {
       data.session_id = parseInt(recid) || 0;
@@ -171,10 +172,14 @@ const Form = ({recid}) => {
       const res = await postSession(data);
       if(res.success){
          // Do something if passed
-         history.push('/app/ams?mod=sessions&view=list')
+         dispatch(updateAlert({show:true,message:`SESSION SAVED !`,type:'success'}))
+         setTimeout(() => {
+            history.push('/app/ams?mod=sessions&view=list')
+         },2000)
+         
       } else{
          // Show error messages
-         alert("ACTION FAILED!")
+         dispatch(updateAlert({show:true,message:`SAVED FAILED !`,type:'error'}))
       }
     }
 
@@ -300,6 +305,18 @@ const Form = ({recid}) => {
                             <div className="input-item input-with-label">
                                 <label htmlFor="admission_date" className="input-item-label">ADMISSION SESSION DATE</label>
                                 <input {...register("admission_date", { required: 'Please provide admission session date !' })}  className="input-bordered" type="date"/></div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="letter_id" className="input-item-label">STARTING ACADEMIC SESSION/CALENDAR</label>
+                                <select {...register("academic_session_id", { required: 'Please Academic Calendar !' })} className="input-bordered">
+                                   <option value={''} selected disabled>--CHOOSE--</option>
+                                   { helper && helper.calendars.map((row,i) => 
+                                    <option value={row.id}>{row.title} - {row.tag == 'MAIN' ? 'SEPTEMBER & MAIN STREAM':'JANUARY & SUB STREAM'}</option>
+                                   )}
+                                </select>
+                            </div>
                         </div>
 
                         <div className="col-md-6">

@@ -105,7 +105,7 @@ const Profile = () => {
                 </div>
             </div>
             
-
+ 
             {/* Step Content 1 - Personal Information */}
             <div className="row">
                 <div className="small-12 columns u-textAlignLeft">
@@ -315,7 +315,7 @@ const Profile = () => {
 
 
                             <p className="u-ml-0 label-title">Phone Number</p>
-                            <span className="form-small-input">Please enter phone number starting with ' <b>0</b> ' in this format:&nbsp;&nbsp;<b>0277XXXXXX</b>.</span> 
+                            <span className="form-small-input">Please enter phone number starting with ' <b>0</b> ' in this format for example:&nbsp;&nbsp;<b>0270000000</b>.</span> 
                             <div id="ember1133" className={ !form.phone ? "fleet-name-input is-required ember-view" : (isDirty('phone') ? "fleet-name-input FloatLabel is-required ember-view validateFail is-active": "fleet-name-input FloatLabel ember-view validatePass is-active")}>  
                                 <input type="text" onChange={onChange} name="phone" maxLength={10} value={form.phone} spellCheck="false" required placeholder="Enter Phone number" id="ember1134" className="Input--floatLabel FloatLabel-input  ember-text-field ember-view" />
                                 { isDirty('phone') ? <label className="FloatLabel-label" htmlFor="ember1207">Phone Number is not valid</label> :'' }

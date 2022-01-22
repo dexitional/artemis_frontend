@@ -15,7 +15,7 @@ export const applicantSlice  = createSlice({
        profile:   { profile_id:'' },
        guardian:  { guardian_id:'' },
        education: [{ education_id:'' }],
-       result:    [{ result_id: `${moment().unix()}-sess` }],
+       result:    [{ result_id: '' }],
        grade:     [],
        choice:    [],
        document:  [],

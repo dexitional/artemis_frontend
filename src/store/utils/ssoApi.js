@@ -49,7 +49,7 @@ export const setDefaultSession = async (id) => {
 
 // VOUCHERS ENDPOINT CALLS
 
-export const fetchVouchers = async (id,query = '') => {
+export const fetchVouchers = async (query = '') => {
   const res = await axios.get(`${API_URL}/ams/vouchers${query}`);
   return res.data;
 } 
@@ -74,11 +74,16 @@ export const resendVoucherBySms = async (data) => {
   return res.data;
 } 
 
+export const sellVoucher = async (data) => {
+  const res = await axios.post(`${API_URL}/ams/sellvoucher`,{...data});
+  return res.data;
+}
+
 
 // APPLICANTS ENDPOINT CALLS
 
-export const fetchApplicants = async (id,query = '') => {
-  const res = await axios.get(`${API_URL}/ams/applicants/${id}${query}`);
+export const fetchApplicants = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ams/applicants${query}`);
   return res.data;
 } 
 
@@ -87,17 +92,98 @@ export const  fetchApplicant = async (serial) => {
   return res.data;
 } 
 
-// SORTED APPLICANTS ENDPOINT CALLS
-
-export const fetchSortedApplicants = async (id,query = '') => {
-  const res = await axios.get(`${API_URL}/ams/sorted/${id}${query}`);
+export const  fetchDocuments = async (serial) => {
+  const res = await axios.get(`${API_URL}/ams/getdocs/${serial}`);
   return res.data;
 } 
+
+export const  addSortApplicant = async (serial) => {
+  const res = await axios.get(`${API_URL}/ams/addtosort/${serial}`);
+  return res.data;
+} 
+
+// SORTED APPLICANTS ENDPOINT CALLS
+
+export const fetchSortedApplicants = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ams/sorted${query}`);
+  return res.data;
+} 
+
+export const admitApplicant = async (data) => {
+  const res = await axios.post(`${API_URL}/ams/admitnow`,{...data});
+  return res.data;
+} 
+
+
+// MATRICULANTS ENDPOINT CALLS
+
+export const fetchFreshers = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ams/freshers${query}`);
+  return res.data;
+} 
+
+export const fetchFreshersData = async () => {
+  const res = await axios.get(`${API_URL}/ams/fresherlist`);
+  return res.data;
+} 
+
+export const  removeFresherData = async (serial) => {
+  const res = await axios.get(`${API_URL}/ams/deletefresher/${serial}`);
+  return res.data;
+} 
+
+
+// LETTERS ENDPOINT CALLS
+
+export const fetchLetters = async () => {
+  const res = await axios.get(`${API_URL}/ams/letters`);
+  return res.data;
+} 
+
+export const postLetter = async (data) => {
+  const res = await axios.post(`${API_URL}/ams/letters`,{...data});
+  return res.data;
+} 
+
+export const deleteLetter = async (id) => {
+  const res = await axios.delete(`${API_URL}/ams/letters/${id}`);
+  return res.data;
+} 
+
+export const setDefaultLetter = async (id) => {
+  const res = await axios.put(`${API_URL}/ams/setletter/${id}`);
+  return res.data;
+} 
+
+
+// ENTRANCE EXAMS ENDPOINT CALLS
+
+export const fetchEntrance = async () => {
+  const res = await axios.get(`${API_URL}/ams/entrance`);
+  return res.data;
+} 
+
+export const postEntrance = async (data) => {
+  const res = await axios.post(`${API_URL}/ams/entrance`,{...data});
+  return res.data;
+} 
+
+export const deleteEntrance = async (id) => {
+  const res = await axios.delete(`${API_URL}/ams/entrance/${id}`);
+  return res.data;
+} 
+
+export const loadEntrance = async (id) => {
+  const res = await axios.get(`${API_URL}/ams/loadentrance/${id}`);
+  return res.data;
+} 
+
+
 
 // STUDENT PORTAL ENDPOINT CALLS
 
 export const fetchStudentData = async (refno) => {
-  const res = await axios.get(`${API_URL}/student/fetchstudentdata/${refno}`);
+  const res = await axios.get(`${API_URL}/student/fetchstudentdata/${encodeURIComponent(refno)}`);
   return res.data;
 } 
 
@@ -195,17 +281,17 @@ export const postStudentDataAIS = async (data) => {
 } 
 
 export const resetAccount = async (refno) => {
-  const res = await axios.get(`${API_URL}/ais/resetpwd/${refno}`);
+  const res = await axios.get(`${API_URL}/ais/resetpwd/${encodeURIComponent(refno)}`);
   return res.data;
 } 
 
 export const generateMail = async (refno) => {
-  const res = await axios.get(`${API_URL}/ais/genmail/${refno}`);
+  const res = await axios.get(`${API_URL}/ais/genmail/${encodeURIComponent(refno)}`);
   return res.data;
 } 
 
 export const stageAccount = async (refno) => {
-  const res = await axios.get(`${API_URL}/ais/setupaccess/${refno}`);
+  const res = await axios.get(`${API_URL}/ais/setupaccess/${encodeURIComponent(refno)}`);
   return res.data;
 } 
 

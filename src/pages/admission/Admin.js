@@ -27,7 +27,7 @@ const Admin = () => {
              var meta;
              var defaultMeta = step.defaultMeta;
              if(at == '1'){ // WASSCE/SSCE/GCE APPLICANT
-                meta = defaultMeta.filter(r => !['referee','qualification','employment','document'].includes(r.tag))
+                meta = defaultMeta.filter(r => !['referee','qualification','employment'].includes(r.tag))  //'document'
                 dispatch(setMeta([...sortMeta(meta)]))
              
             }else if(at == '2'){ // DIPLOMA/DEGREE (UG) APPLICANT
@@ -121,7 +121,7 @@ const Admin = () => {
                             <h3 className="heading">APPLICATION GUIDE<hr/></h3>
                             { applicant.stage_id && applicant.apply_type ?
                             <Fragment>
-                            <p className="u-floatRight u-mb-2">COMPLETED <b>STEP {step.step}</b> out of <b>STEP {step.count}</b></p>
+                            <p className="u-floatRight u-mb-2">RECENTLY ON <b>STEP {step.step}</b> out of <b>STEP {step.count}</b></p>
                             <div id="ember1331" className="bandwidth-meter-calculated-tooltip u-ml-1 tooltip-wrap multiline ember-view"/>
                              <p className="u-mb-2"></p>
                             <div className="bandwidth-meter-graph u-mb-2">
@@ -130,7 +130,7 @@ const Admin = () => {
                                     <span className="bandwidth-meter-graph-tooltip-target" />
                                 </div>
                             </div>
-                            <p><b>Current Step is <span style={applicant.flag_submit <= 0 ? {color:'rgb(183 97 23)'} : {color:'green'}}>{getStepData(step,step.step) && getStepData(step,step.step).title}</span> .</b> <em>( Application submitted! You can review and edit before deadline for final submission !  )</em></p><hr/>
+                            <p><b>Current Step is <span style={applicant.flag_submit <= 0 ? {color:'rgb(183 97 23)'} : {color:'green'}}>{getStepData(step,step.step) && getStepData(step,step.step).title}</span>.</b> <em>( {applicant.flag_submit <= 0 ? 'Application in session! Please do well to submit all required information for finalization.':'Application submitted! You can review and edit before deadline for final submission !'}  )</em></p><hr/>
                             
                             {applicant.flag_submit > 0 &&
                             <section className="Box">
@@ -198,73 +198,79 @@ const Admin = () => {
                         </div>
 
                         {/*  ENROLMENT */}
-                        <ul role="tablist" className="Tabs"/>
-                        <div className="Tabs-content Tabs-content--box">
-                            <div role="tabpanel" className="Tabs-pane is-active">
-                                <h3 className="u-mb-3 heading">Configure Application Mode</h3>
-                                <p>To start your application procedure, you are required to choose <b>admission group</b> and <b>application type</b> for your defined application form.</p>
-                                <div id="ember1380" className="paypal-form ember-view">
-                                    <form method="post" onSubmit={onSubmit} id="ember1385" className="ember-view">
-                                        <div>
-
-                                           {helper && helper.session.apply_freeze == 0 && 
-                                           <div className="row">
-                                                <div className="small-5 columns">
-                                                    <div className="select-wrapper FloatLabel">
-                                                        <div className="Select" >
-                                                            <select name="stage_id" onChange={onChange} value={applicant.stage_id} className="select aurora-select">
-                                                                <option value="" selected>-- Choose Admission Group -- </option>
-                                                                { helper && helper.stages.map((hp) => hp.status == 1 && applicant.group_id == hp.group_id ?
-                                                                  <option value={parseInt(hp.stage_id)}>{hp.title.toUpperCase()}</option> : null
-                                                                )}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="small-4 columns">
-                                                    <div className="select-wrapper FloatLabel">
-                                                        <div className="Select" >
-                                                            <select name="apply_type" onChange={onChange} value={applicant.apply_type} className="select aurora-select">
-                                                                <option value="" selected>-- Choose Application Type --</option>
-                                                                { helper && helper.applytypes.map((hp) => 
-                                                                <Fragment>
-                                                                  {  hp.status == 1 && hp.stages.includes(parseInt(applicant.stage_id)) ? <option value={parseInt(hp.type_id)}>{hp.title}</option> : null }
-                                                                </Fragment>
-                                                                )}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="small-3 columns">
-                                                    <button type="submit" className="Button  Button--fullWidth Button--green">
-                                                        <span className="Button--text">{applicant.stage_id && applicant.apply_type ? 'GOTO APPLICATION' : 'BEGIN ENROLMENT'} </span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            }
 
 
-                                            {/* MAINTENANCE NOTE */}
-                                            { helper && helper.session.apply_freeze == 1 && 
+                        
+                        { !applicant.flag_admit || applicant.flag_admit == 0 ?
+                        <>
+                            <ul role="tablist" className="Tabs"/>
+                            <div className="Tabs-content Tabs-content--box">
+                                <div role="tabpanel" className="Tabs-pane is-active">
+                                    <h3 className="u-mb-3 heading">Configure Application Mode</h3>
+                                    <p>To start your application procedure, you are required to choose <b>admission group</b> and <b>application type</b> for your defined application form.</p>
+                                    <div id="ember1380" className="paypal-form ember-view">
+                                        <form method="post" onSubmit={onSubmit} id="ember1385" className="ember-view">
+                                            <div>
+
+                                            {helper && helper.session.apply_freeze == 0 && 
                                             <div className="row">
-                                                <div className="small-12 columns">
-                                                    <h2 className="text-danger"> * SYSTEM UNDER MAINTENANCE - APPLICATIONS SHALL RESUME SHORTLY !! </h2>
+                                                    <div className="small-5 columns">
+                                                        <div className="select-wrapper FloatLabel">
+                                                            <div className="Select" >
+                                                                <select name="stage_id" onChange={onChange} value={applicant.stage_id} className="select aurora-select">
+                                                                    <option value="" selected disabled >-- Choose Admission Group -- </option>
+                                                                    { helper && helper.stages.map((hp) => hp.status == 1 && applicant.group_id == hp.group_id ?
+                                                                    <option value={parseInt(hp.stage_id)}>{hp.title.toUpperCase()}</option> : null
+                                                                    )}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="small-4 columns">
+                                                        <div className="select-wrapper FloatLabel">
+                                                            <div className="Select" >
+                                                                <select name="apply_type" onChange={onChange} value={applicant.apply_type} className="select aurora-select">
+                                                                    <option value="" selected disabled >-- Choose Application Type --</option>
+                                                                    { helper && helper.applytypes.map((hp) => 
+                                                                    <Fragment>
+                                                                    {  hp.status == 1 && hp.stages.includes(parseInt(applicant.stage_id)) ? <option value={parseInt(hp.type_id)}>{hp.title}</option> : null }
+                                                                    </Fragment>
+                                                                    )}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="small-3 columns">
+                                                        <button type="submit" className="Button  Button--fullWidth Button--green">
+                                                            <span className="Button--text">{applicant.stage_id && applicant.apply_type ? 'GOTO APPLICATION' : 'BEGIN ENROLMENT'} </span>
+                                                        </button>
+                                                    </div>
                                                 </div>
+                                                }
+
+
+                                                {/* MAINTENANCE NOTE */}
+                                                { helper && helper.session.apply_freeze == 1 && 
+                                                <div className="row">
+                                                    <div className="small-12 columns">
+                                                        <h2 className="text-danger"> * SYSTEM UNDER MAINTENANCE - APPLICATIONS SHALL RESUME SHORTLY !! </h2>
+                                                    </div>
+                                                </div>
+                                                }
+
                                             </div>
-                                            }
-
-                                        </div>
-                                    </form>
-                                    <p className="small u-textAlignCenter u-grey">
-                                        <b>* It takes just few minutes to complete your application processes, Good luck!.</b>
-                                    </p>
+                                        </form>
+                                        <p className="small u-textAlignCenter u-grey">
+                                            <b>* It takes just few minutes to complete your application processes, Good luck!.</b>
+                                        </p>
 
 
+                                    </div>
                                 </div>
+                            
                             </div>
-                           
-                        </div>
-                
+                        </>
+                        : null}
                     </section>
                     </div>
                 

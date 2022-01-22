@@ -233,7 +233,7 @@ const List = () => {
                           { bills.map((row) => 
                           <tr className="data-item odd" role="row">
                             <td className="data-col">
-                              <span className="lead tnx-id"> {row.narrative} 
+                              <span className="lead tnx-id"> {row.narrative} <small className="input-item-label"><b>( {row.session_tag == 'MAIN' ? 'SEPT/MAIN STREAM':'JAN/SUB STREAM'} )</b></small>
                               {row.tag ? parse(`<br/><small style="color:#b76117;font-weight:bolder"> -- ${row.tag.toUpperCase()} </small>`) : null } 
                               {row.bid ? parse(` <small style="color:#555;font-weight:bolder"> -- BILL ID: ${row.bid}</small>`) : null }
                               </span>
@@ -281,7 +281,7 @@ const List = () => {
 // COMPONENT - FORM
 const Form = ({recid}) => {
     const [ loading,setLoading ] = useState(false);
-    const [ helper,setHelper ] = useState({ programs:[],sessions:[]});
+    const [ helper,setHelper ] = useState({ programs:[],sessions:[],bankacc:[] });
     const history = useHistory();
     const dispatch = useDispatch();
     const { sso } = useSelector(state => state)
@@ -290,7 +290,6 @@ const Form = ({recid}) => {
     
     const onSubmit = async data => {
       data.bid = parseInt(recid) || 0;
-      console.log(data)
       const res = await postBillFMS(data);
       if(res.success){
          // Do something if passed
@@ -370,8 +369,8 @@ const Form = ({recid}) => {
 
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
-                                <label htmlFor="discount" className="input-item-label">BILL DISCOUNT</label>
-                                <input {...register("discount", { required: 'Please enter Discount amount !' })} className="input-bordered" type="text"/></div>
+                                <label htmlFor="discount" className="input-item-label">BILL DISCOUNT <small>( * required for admissions * )</small></label>
+                                <input {...register("discount")} className="input-bordered" type="text"/></div>
                         </div>
 
 
@@ -381,6 +380,18 @@ const Form = ({recid}) => {
                                 <select {...register("currency")} className="input-bordered">
                                    <option value={'GHC'}>GHC</option>
                                    <option value={'USD'}>USD</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="bankacc_id" className="input-item-label">ATTACHED PAYMENT ACCOUNT <small>( * required for admissions * )</small></label>
+                                <select {...register("bankacc_id")} className="input-bordered">
+                                  <option value="" disabled selected>--NONE--</option>
+                                  {helper && helper.bankacc.map( row => 
+                                    <option value={row.id}>{row.account_name && row.account_name.toUpperCase()}</option>
+                                  )}
                                 </select>
                             </div>
                         </div>
@@ -397,7 +408,7 @@ const Form = ({recid}) => {
 
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
-                                <label htmlFor="prog_id" className="input-item-label">TARGET PROGRAMME</label>
+                                <label htmlFor="prog_id" className="input-item-label">BILL TARGET PROGRAMME</label>
                                 <select {...register("prog_id")} className="input-bordered">
                                   <option value="" disabled selected>--NONE--</option>
                                   {helper && helper.programs.map( row => 
@@ -407,22 +418,30 @@ const Form = ({recid}) => {
                             </div>
                         </div>
 
+                       
+                        
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="group_code" className="input-item-label">BILL TARGET GROUP CODE</label>
+                                <input {...register("group_code", { required: 'Please enter Group code !' })} className="input-bordered" type="text"/></div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="discount_code" className="input-item-label">BILL DISCOUNT GROUP CODE</label>
+                                <input {...register("discount_code", { required: 'Please enter Discount Group code !' })} className="input-bordered" type="text"/></div>
+                        </div>
+
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
                                 <label htmlFor="session_id" className="input-item-label">ACADEMIC SESSION</label>
                                 <select {...register("session_id")} className="input-bordered">
                                   <option value="" disabled selected>--NONE--</option>
                                   {helper && helper.sessions.map( row => 
-                                    <option value={row.id}>{row.academic_year}</option>
+                                    <option value={row.id}>{ row.title+' - '+(row.tag == 'MAIN' ? 'SEPT/MAIN STREAM':'JAN/SUB STREAM') }</option>
                                   )}
                                 </select>
                             </div>
-                        </div>
-                        
-                        <div className="col-md-6">
-                            <div className="input-item input-with-label">
-                                <label htmlFor="group_code" className="input-item-label">TARGET GROUP CODE</label>
-                                <input {...register("group_code", { required: 'Please enter Group code !' })} className="input-bordered" type="text"/></div>
                         </div>
 
                         <div className="col-md-6">

@@ -318,9 +318,7 @@ export const helperData = {
           const con = roles.includes(parseInt(row.arole_id))
           if(con) allowAccess = con
         }
-		  }
-		  return allowAccess;
+		  } return allowAccess;
 	  }
-   
   }
                     

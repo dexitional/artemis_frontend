@@ -10,7 +10,7 @@ import { setIsLoggedIn, setIsModal, setMeta, setStepCount } from '../../store/ad
 import '../../components/admission/AdminLayout.css';
 import { saveApplication, submitApplication } from '../../store/utils/admissionApi';
 import { dbData, getApplyTypeTitle, getStageTitle, isCompleteStep, isReviewStep } from '../../store/utils/admissionUtil';
-import { setAccount, setAdmission, setAdmitStatus, setApplyMode, setChoice, setDocument, setEducation, setEmployment, setGrade, setGuardian, setNotification, setProfile, setResult, setStage, setSubmitStatus, setUser, updateUser } from '../../store/admission/applicantSlice';
+import { setAccount, setAdmission, setAdmitStatus, setApplyMode, setChoice, setDocument, setEducation, setEmployment, setGrade, setGuardian, setNotification, setProfile, setReferee, setResult, setStage, setSubmitStatus, setUser, updateUser } from '../../store/admission/applicantSlice';
 import ModalPage from '../mainui/ModalPage';
 
 const AdminLayout = ({children}) => {
@@ -30,13 +30,10 @@ const AdminLayout = ({children}) => {
 
     const mustSubmit = async () => {
         if(isReviewStep(step)){
-            console.log(applicant)
             const res = await saveApplication(dbData(applicant,step.meta))
             if(res.success){
               const rec = res.data;
-              console.log("Applicant Data saved!")
-              console.log(res.data)
-               // Format Data fields for Forms
+              // Format Data fields for Forms
               if(rec.data.profile){
                 rec.data.profile.dob = moment(rec.data.profile.dob).format('YYYY-MM-DD')
               }
@@ -48,7 +45,7 @@ const AdminLayout = ({children}) => {
               dispatch(setMeta(rec.meta));
               dispatch(setSubmitStatus(rec.flag_submit))
               // Setup User info
-              const user = { photo: rec.user.photo, name: (rec.stage_id ? getStageTitle(rec.stage_id):'')+(rec.apply_type ? ' | '+getApplyTypeTitle(rec.apply_type):'')}
+              const user = { photo:rec.user.photo, name:(rec.stage_id ? getStageTitle(rec.stage_id):'')+(rec.apply_type ? ' | '+getApplyTypeTitle(rec.apply_type):'')}
               dispatch(updateUser(user));
               // Setup Notifications
               dispatch(setNotification(rec.notification));
@@ -62,7 +59,7 @@ const AdminLayout = ({children}) => {
               } 
               if(rec.data.choice) dispatch(setChoice(rec.data.choice))
               if(rec.data.document) dispatch(setDocument(rec.data.document))
-              //if(rec.data.referee) dispatch(setReferee(rec.data.referee))
+              if(rec.data.referee) dispatch(setReferee(rec.data.referee))
               if(rec.data.employment) dispatch(setEmployment(rec.data.employment))
               //if(rec.data.qualification) dispatch(setQualification(rec.data.qualification))
               // dispatch(updateUser(user));
@@ -75,11 +72,7 @@ const AdminLayout = ({children}) => {
             }
 
         }else if(isCompleteStep(step)){
-            const res = await submitApplication(applicant.user.serial,applicant.flag_submit);
-            if(res.success){
-              console.log("Applicant Submitted saved!")
-              console.log(res.data)
-            }
+          const res = await submitApplication({serial:applicant.user.serial,status:applicant.flag_submit});
         } 
     }
 

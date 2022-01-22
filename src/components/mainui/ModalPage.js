@@ -2,9 +2,11 @@ import React, { useState,useEffect } from 'react'
 import { Button,Modal,TabContainer,Tabs,Tab,Col,Row,Nav } from 'react-bootstrap'
 import { useDispatch,useSelector } from 'react-redux'
 import { updateModal } from '../../store/admission/ssoSlice'
+import PaperAdmitList from './PaperAdmitList'
 import PaperBill from './PaperBill'
 import PaperClassList from './PaperClassList'
 import PaperCourseResult from './PaperCourseResult'
+import PaperDocs from './PaperDocs'
 import PaperForm from './PaperForm'
 import PaperLetter from './PaperLetter'
 import PaperMiniProfile from './PaperMiniProfile'
@@ -45,6 +47,8 @@ const ModalPage = () => {
       if(modal && modal.page == 'courseres') return  <PaperCourseResult /> // Course Results Printout
       if(modal && modal.page == 'classlist') return  <PaperClassList /> // Class List Printout
       if(modal && modal.page == 'miniprofile') return  <PaperMiniProfile /> // Staff Mini Profile Printout
+      if(modal && modal.page == 'admitlist') return  <PaperAdmitList /> // Admission List Printout
+      if(modal && modal.page == 'docs') return  <PaperDocs /> // Applicant Submitted Docs Printout
  
  
       
