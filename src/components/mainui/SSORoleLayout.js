@@ -1,4 +1,4 @@
-import React, { Component }  from 'react';
+import React, { Component, useState }  from 'react';
 import '../../assets/css/ui-vendor.css';
 import '../../assets/css/ui-style.css';
 import SSOTopNav from './SSOTopNav';
@@ -15,7 +15,12 @@ const SSORoleLayout = ({location:{data}}) => {
 	
 	const { sso } = useSelector( state => state );
 	const history = useHistory();
-
+    const [ isMobile,setIsMobile ] = useState(false) 
+	  
+	const setMobile = (bool) => {
+	  setIsMobile(bool)
+	}
+	
 	if(!sso.isLoggedIn){
 	   history.push('/account/ssoLogin');
 	}
@@ -24,8 +29,8 @@ const SSORoleLayout = ({location:{data}}) => {
 	  <div>
 		{/* Header */}
 		<div className="topbar-wrap">
-		   <SSOTopNav/>
-		   <SSONavbar/>
+		   <SSOTopNav isMobile={isMobile} setMobile={setMobile} />
+		   <SSONavbar isMobile={isMobile} setMobile={setMobile} />
         </div>
 
 		{/* Content */}

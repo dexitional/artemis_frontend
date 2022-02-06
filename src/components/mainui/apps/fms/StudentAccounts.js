@@ -90,7 +90,6 @@ const List = () => {
   }
 
   const genIndexNo = async (refno) => {
-      console.log(refno)
       try{
         const resp = await generateIndexNo({refno})
         console.log(resp)

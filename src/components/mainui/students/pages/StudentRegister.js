@@ -84,6 +84,9 @@ const StudentRegister = () => {
 		  isAllow = false
 	   } 
        */
+
+	   if((regcourses.elective && regcourses.elective.length <= 0) && (regcourses.core && regcourses.core.length <= 0)) isAllow = false; // If No courses are not selected!
+
        if(isAllow){
 		  // Submit Form Data
 		  const send = window.confirm('Register selected courses for semester ?')
@@ -109,22 +112,22 @@ const StudentRegister = () => {
 	const updateRegStatus = () => {
 		var allowReg = true, msg = "";
 		// If Student is Owing Fees, Lock Registration
-		if(sso.user.user.flag_fees_allow == 0){
+		if(user.user.flag_fees_allow == 0){
 			allowReg = false
 			msg = "You Owe Fees, Please settle debt to allow registration!"
 		}
 		// If Student is Pardoned by Finance, Allow Registration
-		if(sso.user.user.cal_register_halt == 1){
-			allowReg = true
-			msg = ""
+		if(user.user.cal_register_hold == 1){
+			allowReg = false
+			msg = "Registration is halted temporarily!"
 		}
 		// If Registration Period is Inactive
-		if(!moment().isBetween(moment(sso.user.user.cal_register_start),moment(sso.user.user.cal_register_end).add(1,'days'))){
+		if(!moment().isBetween(moment(user.user.cal_register_start),moment(user.user.cal_register_end).add(1,'days'))){
 			allowReg = false
 			msg = "Registration period is over or inactive!"
 		}
 		// If Registration Period is Active and Halt status is ON
-		if(moment().isBetween(moment(sso.user.user.cal_register_start),moment(sso.user.user.cal_register_end).add(1,'days')) && sso.user.user.cal_register_halt == 1){
+		if(moment().isBetween(moment(user.user.cal_register_start),moment(user.user.cal_register_end).add(1,'days')) && user.user.cal_register_hold == 1){
 			allowReg = false
 			msg = "Registration is closed temporarily!"
 		}
@@ -142,6 +145,7 @@ const StudentRegister = () => {
     }
 
     useEffect(() => {
+		console.log(user)
 	  updateRegStatus()
 	  loadSemesterSlip()
 	  loadSemesterReg()
@@ -157,7 +161,7 @@ const StudentRegister = () => {
 			<div className="content-area card">
 				{ allowRegister ? 
 				<div className="card-innr">
-					<div className="card-head"><h2 className="card-title text-primary"><b>{ isRegister ? `SEMESTER REGISTRATION SLIP`:`PLEASE SELECT SEMESTER COURSES FOR REGISTRATION !`}</b></h2></div>
+					<div className="card-head"><h2 className="card-title text-primary"><b>{ isRegister ? `COMPLETED REGISTRATION SLIP`:`PLEASE SELECT SEMESTER COURSES FOR REGISTRATION !`}</b></h2></div>
 					
 					{/* Registered Courses */}
                     { isRegister ?
@@ -236,7 +240,7 @@ const StudentRegister = () => {
 							  </> : null }
 
 							 
-							  <tr><td colspan={5}><button className="btn btn-block btn-xl btn-primary text-white" onClick={sendCourses}><h3><i className="fa fa-lg fa-save"></i>&nbsp;&nbsp;SAVE REGISTRATION</h3></button></td></tr>
+							  { (((regcourses.elective && regcourses.elective.filter(row => row.selected || row.lock == 1).length)+(regcourses.core && regcourses.core.filter(row => row.selected || row.lock == 1).length)+(regcourses.trail && regcourses.trail.filter(row => row.selected || row.lock == 1).length)) > 0) && <tr><td colspan={5}><button className="btn btn-block btn-xl btn-primary text-white" onClick={sendCourses}><h3><i className="fa fa-lg fa-save"></i>&nbsp;&nbsp;SAVE REGISTRATION</h3></button></td></tr> }
 							</tbody>
 						</table>
 					</div>
@@ -268,7 +272,7 @@ const StudentRegister = () => {
 					<div  className="token-balance token-balance-s2">
 						<h6  className="card-sub-title">{isRegister ? `REGISTERED`:`SELECTED`} SEMESTER COURSES</h6>
 						<ul  className="token-balance-list">
-							<li  className="token-balance-sub mr-3"><span className="lead">{ isRegister ? (courses.length):((regcourses.elective && regcourses.elective.filter(row => row.selected || row.lock == 1).length)+(regcourses.elective && regcourses.core.filter(row => row.selected || row.lock == 1).length)+(regcourses.elective && regcourses.trail.filter(row => row.selected || row.lock == 1).length))}</span></li>
+							<li  className="token-balance-sub mr-3"><span className="lead">{ isRegister ? (courses.length):((regcourses.elective && regcourses.elective.filter(row => row.selected || row.lock == 1).length)+(regcourses.core && regcourses.core.filter(row => row.selected || row.lock == 1).length)+(regcourses.trail && regcourses.trail.filter(row => row.selected || row.lock == 1).length))}</span></li>
 						</ul>
 					</div>
 					<div  className="token-balance token-balance-s2">
@@ -282,7 +286,7 @@ const StudentRegister = () => {
 				{ allowRegister && isRegister ? 
 				 <>
 				   <button className="btn btn-dark text-warning" onClick={printSlip}><i className="fa fa-lg fa-print"></i>&nbsp;&nbsp;<b>PRINT REGISTRATION SLIP</b></button>
-				   { moment().isBetween(moment(sso.user.user.cal_register_start),moment(sso.user.user.cal_register_end).add(1,'days')) ? 
+				   { moment().isBetween(moment(user.user.cal_register_start),moment(user.user.cal_register_end).add(1,'days')) ? 
 				   <button className="btn btn-default text-dark" onClick={changeReg}><i className="fa fa-lg fa-edit"></i>&nbsp;&nbsp;<b>RESET COURSE REGISTRATION</b></button>
 				   : null }
 				 </> : null

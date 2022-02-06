@@ -119,14 +119,16 @@ const PaperForm = () => {
                 </address>
                 */}
                 <address>
-                    Academic Affairs Office<br/>
-                    University Post Office<br/>
-                    Private Mail Bag<br/>
-                    AUCC-Ghana<br/><br/>
-                    Tel:+233 3220 00001<br/>
-                    Email: admissions@aucc.edu.gh<br/>
+                    Admissions Office<br/>
+                    African University<br/>
+                    College of Communications <br/>
+                    Postal Box LG 510<br/>
+                    Adabraka, Accra<br/>&nbsp;
+                    <span style={{float:'left',direction:'ltr'}}>+233 307016193</span><br/>
+                    admissions@aucc.edu.gh<br/>
                     <span className="aurora-small">{moment().format('DD/MM/YYYY')}</span>
                 </address>
+                
            </div>
        </header>
        <content>
@@ -172,19 +174,19 @@ const PaperForm = () => {
                    <tr>
                        <td rowSpan={['7','8'].includes(applicant.stage_id) ? '12':'10'}></td>
                        <td className="shead">Other Names:</td>
-                       <td className="sbody">{applicant.profile.fname && applicant.profile.fname.toUpperCase()}</td>
+                       <td className="sbody">{applicant.profile.fname && applicant.profile.fname.toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Date of Birth:</td>
-                       <td className="sbody">{applicant.profile.dob && moment(applicant.profile.dob).format('DD MMMM, YYYY').toUpperCase()}</td>
+                       <td className="sbody">{applicant.profile.dob && moment(applicant.profile.dob).format('DD MMMM, YYYY').toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Gender:</td>
-                       <td className="sbody">{applicant.profile.gender == 'M' ? 'MALE':'FEMALE'}</td>
+                       <td className="sbody">{applicant.profile.gender == 'M' ? 'MALE':(applicant.profile.gender == 'F' ? 'FEMALE':'-- NONE --')}</td>
                    </tr>
                    <tr>
                        <td className="shead">Marital Status:</td>
-                       <td className="sbody">{applicant.profile.mstatus && getMarital(applicant.profile.mstatus).toUpperCase()}</td>
+                       <td className="sbody">{applicant.profile.mstatus && getMarital(applicant.profile.mstatus).toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Home Region:</td>
@@ -192,11 +194,11 @@ const PaperForm = () => {
                    </tr>
                   <tr>
                        <td className="shead">Phone Number:</td>
-                       <td className="sbody">{applicant.profile.phone}</td>
+                       <td className="sbody">{applicant.profile.phone || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Email Address:</td>
-                       <td className="sbody">{applicant.profile.email && applicant.profile.email.toUpperCase()}</td>
+                       <td className="sbody">{applicant.profile.email && applicant.profile.email.toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Postal Address:</td>
@@ -208,18 +210,18 @@ const PaperForm = () => {
                    </tr>
                    <tr>
                        <td className="shead">Country of Residence:</td>
-                       <td className="sbody">{getCountryTitle(applicant.profile.resident_country,helpers.countries) && getCountryTitle(applicant.profile.resident_country,helpers.countries).toUpperCase()}</td>
+                       <td className="sbody">{getCountryTitle(applicant.profile.resident_country,helpers.countries) && getCountryTitle(applicant.profile.resident_country,helpers.countries).toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    
                    { ['7','8'].includes(applicant.stage_id) ? 
                    <Fragment>
                    <tr>
                        <td className="shead">Present Occupation:</td>
-                       <td className="sbody">{applicant.profile.present_occupation && applicant.profile.present_occupation.toUpperCase()}</td>
+                       <td className="sbody">{applicant.profile.present_occupation && applicant.profile.present_occupation.toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Place of Work:</td>
-                       <td className="sbody">{applicant.profile.work_place && applicant.profile.work_place.toUpperCase()}</td>
+                       <td className="sbody">{applicant.profile.work_place && applicant.profile.work_place.toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    </Fragment> : null }
 
@@ -234,19 +236,19 @@ const PaperForm = () => {
                            &nbsp;
                        </td>
                        <td className="shead">Name:</td>
-                       <td className="sbody">{applicant.guardian.title && getTitle(applicant.guardian.title)} {((applicant.guardian.fname && applicant.guardian.lname) && (applicant.guardian.fname+' '+applicant.guardian.lname)).toUpperCase()}</td>
+                       <td className="sbody">{applicant.guardian.title && getTitle(applicant.guardian.title)} {applicant.guardian.fname && applicant.guardian.fname.toUpperCase()} {applicant.guardian.lname && applicant.guardian.lname.toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Relation to Applicant:</td>
-                       <td className="sbody">{getRelation(applicant.guardian.relation) && getRelation(applicant.guardian.relation).toUpperCase()}</td>
+                       <td className="sbody">{getRelation(applicant.guardian.relation) && getRelation(applicant.guardian.relation).toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Occupation:</td>
-                       <td className="sbody">{applicant.guardian.occupation && applicant.guardian.occupation.toUpperCase()}</td>
+                       <td className="sbody">{applicant.guardian.occupation && applicant.guardian.occupation.toUpperCase() || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Phone Number:</td>
-                       <td className="sbody">{applicant.guardian.phone}</td>
+                       <td className="sbody">{applicant.guardian.phone || '-- NONE --'}</td>
                    </tr>
                    <tr>
                        <td className="shead">Email Address:</td>
@@ -378,16 +380,16 @@ const PaperForm = () => {
                    </tr>
                   { applicant.employment.map((row,i) => 
                    <tr>
-                       <td className="shead">{row.employer_name}</td>
-                       <td className="shead">{row.job_title}</td>
-                       <td className="shead">{row.employer_address}</td>
-                       <td className="shead">{ getMonth(row.start_month).title }, {row.start_year} - { (!row.end_month && !row.end_year) ? 'Till Date':`${getMonth(row.start_month).title}, ${row.end_year}`}</td>
+                       <td className="shead">{row.employer_name || '-- NONE --'}</td>
+                       <td className="shead">{row.job_title || '-- NONE --' }</td>
+                       <td className="shead">{row.employer_address || '-- NONE --' }</td>
+                       <td className="shead">{ getMonth(row.start_month) && getMonth(row.start_month).title || '-- NONE --'  }, {row.start_year} - { (!row.end_month && !row.end_year) ? 'Till Date':`${getMonth(row.start_month) && getMonth(row.start_month).title}, ${row.end_year}`}</td>
                    </tr>
                     )}
-                   </Fragment> : null }
-                   {JSON.stringify()}
-
-
+                   </Fragment> : 
+                     <tr><td className="shead" colSpan={4} align="center">NO EMPLOYMENT RECORD</td></tr>
+                   }
+                   
                    {/* Result */}
                    { isTag('result') ? 
                    <Fragment>

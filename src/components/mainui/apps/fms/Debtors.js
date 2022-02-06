@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, fetchStudentTrans, fetchStudentDebtorsFMS, generateIndexNo, } from '../../../../store/utils/ssoApi';
+import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, fetchStudentTrans, fetchStudentDebtorsFMS, generateIndexNo, postDebtorsReportAIS, } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
@@ -11,6 +11,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import parse from 'html-react-parser'
 import moment from 'moment';
+import { jsonToExcel } from '../../../../store/utils/admissionUtil';
 
 // COMPONENT -VOUCHERS
 const Debtors = ({view,data,recid}) => {
@@ -22,6 +23,7 @@ const Debtors = ({view,data,recid}) => {
        case 'list': return 'DEBTORS';
        case 'add': return 'ADD STUDENT';
        case 'edit': return 'EDIT STUDENT';
+       case 'report': return 'DEBTOR REPORT BUILDER';
      }
    }
    const content = () => {
@@ -29,6 +31,7 @@ const Debtors = ({view,data,recid}) => {
         case 'list': return <List/>;
         case 'add': return <Form recid={recid}/>;
         case 'edit': return <Form recid={recid}/>;
+        case 'report': return <Report recid={recid}/>;
      } 
    }
   
@@ -40,6 +43,7 @@ const Debtors = ({view,data,recid}) => {
            { title() }
            { view == 'list' ?
             <div className="d-inline-block print-btn">
+                <Link to="/app/fms?mod=debtors&view=report" className="badge badge-light-alt badge-warning badge-sm btn-icon text-dark"><em className="fa fa-lg fa-chart-bar"></em>&nbsp;<b>REPORT</b></Link>
                 {/*<Link to="/app/ais?mod=students&view=add" className="btn btn-light-alt btn-sm btn-icon"><em className="fa fa-sm fa-plus"></em>&nbsp;&nbsp;<b>ADD STUDENT</b></Link>*/}
             </div> : null
            }
@@ -517,6 +521,213 @@ const Form = ({recid}) => {
 					
 	     	</div>
       )
+}
+
+
+
+
+
+// COMPONENT - REPORT
+const Report = ({recid}) => {
+  const [ loading,setLoading ] = useState(false);
+  const [ helper,setHelper ] = useState({ programs:[],majors:[]});
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { sso } = useSelector(state => state)
+  const { register, handleSubmit, setValue, getValues, formState : { errors } } = useForm();
+  
+  const onSubmit = async sdata => {
+    const res = await postDebtorsReportAIS(sdata);
+    //const res = { success: false}
+    const { type,prog_id,year_group,major_id,gender } = sdata
+    console.log(sdata)
+    console.log(res)
+    if(res.success){
+       // Do something if passed
+       const mdata = res.data;
+       if(type == 1){
+          var fileName = '',data = [];
+          if(mdata && mdata.length > 0){
+            for(var row of mdata){
+              const ds = { 'STUDENT ID':row.refno,'INDEX_NUMBER':row.indexno,'STUDENT_NAME':row.name && row.name.toUpperCase(),'YEAR':Math.ceil(row.semester/2),'GENDER':(row.gender == 'M' ? 'MALE':(row.gender == 'F' ? 'FEMALE':'')),'PHONE':row.phone,'PROGRAM':row.program_name,'MAJOR':row.major_name,'STUDY MODE':row.session,'DATE OF ADMISSION': moment(row.doa).format('MM/YYYY'), DEBT:`${row.entry_group == 'GH'?'GHC':'USD'} ${row.transact_account}`, 'PARDON STATUS':row.flag_fees_pardon == 1 ? 'PARDONED':'' }
+              data.push(ds)
+            }
+            if(prog_id) fileName += `DEBTORS_${row.program_name}`
+            if(!prog_id) fileName += `ALL_DEBTORS`
+            if(major_id) fileName += `_${row.major_name}`
+            if(year_group) fileName += `_YEAR_${Math.ceil(row.semester/2)}`
+            if(gender) fileName += `_${(row.gender == 'M' ? 'MALE':(row.gender == 'F' ? 'FEMALE':''))}`
+            return jsonToExcel(data,fileName)
+          }else{ 
+            dispatch(updateAlert({ show:true, message:`NO DATA !`, type:'error' }))
+          }
+       
+        }else{
+
+       }
+       
+
+    } else{
+       // Show error messages
+       dispatch(updateAlert({show:true,message:`ACTION FAILED!`,type:'error'}))
+       alert("ACTION FAILED!")
+    }
+  }
+
+  const onChange = async data => {
+    if(data){
+      const dk = Object.keys(data);
+      dk.forEach( d => {
+          return setValue(d,data[d])
+      })
+    } 
+  }
+
+  
+
+  const helperData = async() => {
+      const hp = await loadAISHelpers()
+      console.log(hp)
+      if(hp.success){
+        setHelper(hp.data)
+      } 
+  }
+
+  const cancelForm = (e) => {
+     e.preventDefault();
+     const cm = window.confirm('Cancel Form ?')
+     if(cm) history.push('/app/ais?mod=debtors&view=list')
+  }
+
+  useEffect(()=>{
+    helperData();
+  },[])
+
+
+  return (
+  <div className="card-innr">
+            <form onSubmit={handleSubmit(onSubmit)} onChange={handleSubmit(onChange)}>
+                  <div className="row">
+                      { (errors.prog_id)  &&
+                      <div className="col-md-12">
+                          <div className="alert alert-danger text-danger font-weight-bolder">
+                             { errors.quantity && <small><b>**  {errors.quantity.message.toUpperCase()}<br/></b></small>}
+                          </div>
+                      </div>
+                      }
+                      
+                      <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                              <label htmlFor="prog_id" className="input-item-label">PROGRAMME OF STUDY</label>
+                              <select {...register("prog_id")} className="input-bordered">
+                                <option value="" disabled selected>--CHOOSE--</option>
+                                {helper && helper.programs.map( row => 
+                                  <option value={row.id}>{row.short && row.short.toUpperCase()}</option>
+                                )}
+                              </select>
+                          </div>
+                      </div>
+                      <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                              <label htmlFor="major_id" className="input-item-label">MAJOR & SPECIALIZATION</label>
+                              <select {...register("major_id")} className="input-bordered">
+                              <option value="" disabled selected>ALL</option>
+                                { helper && helper.majors.map( row => 
+                                  getValues('prog_id') == row.prog_id ? <option value={row.id} data-prog={row.prog_id}>{row.title && row.title.toUpperCase()}</option> : null 
+                                )}
+                              </select>
+                          </div>
+                      </div>
+
+                      <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                              <label htmlFor="year_group" className="input-item-label">YEAR GROUP</label>
+                              <select {...register("year_group")} className="input-bordered">
+                                 <option value="" disabled selected>ALL</option>
+                                 { [1,2,3,4,5,6].includes(parseInt(getValues('prog_id'))) ? <option value={1}>YEAR 1</option> : null }
+                                 { [1,2,3,4,5,6].includes(parseInt(getValues('prog_id'))) ? <option value={2}>YEAR 2</option> : null }
+                                 { [1,2].includes(parseInt(getValues('prog_id'))) ? <option value={3}>YEAR 3</option> : null }
+                                 { [1,2].includes(parseInt(getValues('prog_id'))) ? <option value={4}>YEAR 4</option> : null }
+                              </select>
+                          </div>
+                      </div>
+                      
+                      <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                              <label htmlFor="session" className="input-item-label">STUDY MODE </label>
+                              <select {...register("session")} className="input-bordered">
+                                 <option value="" disabled selected>ALL</option>
+                                 <option value={'M'}>MORNING</option>
+                                 <option value={'E'}>EVENING</option>
+                                 <option value={'W'}>WEEKEND</option>
+                              </select>
+                          </div>
+                      </div>
+
+                      <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                              <label htmlFor="gender" className="input-item-label">GENDER</label>
+                              <select {...register("gender")} className="input-bordered">
+                                 <option value="" disabled selected>ALL</option>
+                                 <option value={'M'}>MALE</option>
+                                 <option value={'F'}>FEMALE</option>
+                              </select>
+                          </div>
+                      </div>
+
+                      <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                              <label htmlFor="entry_group" className="input-item-label">STUDENT CATEGORY</label>
+                              <select {...register("entry_group")} className="input-bordered">
+                                 <option value="" disabled selected>ALL</option>
+                                 <option value={'GH'}>GHANAIAN STUDENT</option>
+                                 <option value={'INT'}>INTERNATIONAL STUDENT</option>
+                              </select>
+                          </div>
+                      </div>
+
+
+                      <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                              <label htmlFor="defer_status" className="input-item-label">DEFERRED STATUS</label>
+                              <select {...register("defer_status")} className="input-bordered">
+                                 <option value={'0'} selected >NOT DEFERRED</option>
+                                 <option value={'1'}>DEFFERRED</option>
+                              </select>
+                          </div>
+                      </div>
+
+                      <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                              <label htmlFor="type" className="input-item-label">REPORT TYPE</label>
+                              <select {...register("type")} className="input-bordered">
+                                 {/*<option value={0} selected>PRINT & PDF</option>*/}
+                                 <option value={1} selected>EXCEL EXPORT</option>
+                              </select>
+                          </div>
+                      </div>
+
+                     
+
+                  </div>
+
+                  <div className="gaps-1x"></div>
+
+                  <div className="d-sm-flex justify-content-between align-items-center">
+                      <span>
+                      <button className="btn btn-dark" type="submit">
+                          <i className="fa fa-chart-bar "></i>&nbsp;&nbsp;<b>GENERATE REPORT</b>
+                      </button>&nbsp;&nbsp;
+                      <Link to="#" onClick={cancelForm} className="btn btn-white text-dark">
+                          <i className="fa fa-times"></i>&nbsp;&nbsp;<b>CANCEL</b>
+                      </Link>
+                      </span>
+                  </div>
+
+              </form>
+        
+  </div>
+    )
 }
 
 

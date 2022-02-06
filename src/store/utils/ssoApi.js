@@ -173,8 +173,8 @@ export const deleteEntrance = async (id) => {
   return res.data;
 } 
 
-export const loadEntrance = async (id) => {
-  const res = await axios.get(`${API_URL}/ams/loadentrance/${id}`);
+export const loadEntrance = async (serial) => {
+  const res = await axios.get(`${API_URL}/ams/viewresult/${serial}`);
   return res.data;
 } 
 
@@ -269,6 +269,12 @@ export const sendPwd = async (data) => {
 
 /* AIS APP ENDPOINTS */
 
+// SWITCHER 
+export const fetchStreamData = async () => {
+  const res = await axios.get(`${API_URL}/ais/streams`);
+  return res.data;
+} 
+
 // STUDENTS
 export const fetchStudentDataAIS = async (query = '') => {
   const res = await axios.get(`${API_URL}/ais/students${query}`);
@@ -277,6 +283,11 @@ export const fetchStudentDataAIS = async (query = '') => {
 
 export const postStudentDataAIS = async (data) => {
   const res = await axios.post(`${API_URL}/ais/students`,{...data});
+  return res.data;
+} 
+
+export const postStudentReportAIS = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/students/report`,{...data});
   return res.data;
 } 
 
@@ -575,6 +586,11 @@ export const moveToFees = async (id) => {
 // DEBTORS ENDPOINTS
 export const fetchStudentDebtorsFMS = async (query = '') => {
   const res = await axios.get(`${API_URL}/fms/debtors${query}`);
+  return res.data;
+} 
+
+export const postDebtorsReportAIS = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/debtors/report`,{...data});
   return res.data;
 } 
 

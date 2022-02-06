@@ -235,30 +235,30 @@ const ProfilePage = () => {
 					<div className="gaps-1-5x" />
 				</div>
 				<div className="gaps-1-5x" />
-				<h5 className="card-sub-title">PERSONAL INFORMATION</h5>
-				<div className="data-details d-md-flex">
+				<h5 className="card-sub-title mb-2">PERSONAL INFORMATION</h5>
+				<div className="data-details d-md-flex mb-2">
 					<div className="fake-class"><span className="data-details-title">FIRST NAME</span><span className="data-details-info">{userData.fname && userData.fname.toUpperCase()}</span></div>
 					<div className="fake-class"><span className="data-details-title">MIDDLE NAME(S)</span><span className="data-details-info">{userData.mname && userData.mname.toUpperCase()}</span></div>
 					<div className="fake-class"><span className="data-details-title">LAST NAME</span><span className="data-details-info">{userData.lname && userData.lname.toUpperCase()}</span></div>
 				</div>
-				<div className="data-details d-md-flex">
+				<div className="data-details d-md-flex mb-2">
 					<div className="fake-class"><span className="data-details-title">AGE</span><span className="data-details-info">{userData && moment().diff(userData.dob,'years')+' YEARS'}</span></div>
 					<div className="fake-class"><span className="data-details-title">DATE OF BIRTH</span><span className="data-details-info">{userData && moment(userData.dob).format('LL').toUpperCase()}</span></div>
 					<div className="fake-class"><span className="data-details-title">PLACE OF BIRTH</span><span className="data-details-info">{userData.birth_place && userData.birth_place.toUpperCase()}</span></div>
 					<div className="fake-class"><span className="data-details-title">HOMETOWN</span><span className="data-details-info">{userData.hometown && userData.hometown.toUpperCase()}</span></div>
 				</div>
-				<div className="data-details d-md-flex">
+				<div className="data-details d-md-flex mb-2">
 					<div className="fake-class"><span className="data-details-title">DISTRICT</span><span className="data-details-info">{userData.district && userData.district.toUpperCase() || 'NOT-SET'}</span></div>
 					<div className="fake-class"><span className="data-details-title">REGION</span><span className="data-details-info">{userData.regioname && userData.regioname.toUpperCase() || 'NOT-SET'}</span></div>
 					<div className="fake-class"><span className="data-details-title">NATIONALITY</span><span className="data-details-info">{userData.countryname && userData.countryname.toUpperCase() || 'NOT-SET'}</span></div>
 					<div className="fake-class"><span className="data-details-title">NATIONAL ID OR TIN NUMBER</span><span className="data-details-info">{userData.paddress && userData.paddress.toUpperCase()}</span></div>
 				</div>
-				<div className="data-details d-md-flex">
+				<div className="data-details d-md-flex mb-2">
 					<div className="fake-class"><span className="data-details-title">PRIMARY PHONE NUMBER</span><span className="data-details-info">{userData.phone}</span></div>
 					<div className="fake-class"><span className="data-details-title">PERSONAL EMAIL ADDRESS</span><span className="data-details-info">{userData.email}</span></div>
 					<div className="fake-class"><span className="data-details-title">RESIDENTIAL ADDRESS</span><span className="data-details-info">{userData.address}</span></div>
 				</div>
-				<div className="data-details d-md-flex">
+				<div className="data-details d-md-flex mb-2">
 					{/*<div className="fake-class"><span className="data-details-title">POSTAL ADDRESS</span><span className="data-details-info">{userData.phone}</span></div>*/}
 					<div className="fake-class"><span className="data-details-title">EMERGENCY CONTACT</span><span className="data-details-info">{userData.emergency_contact || 'NOT-SET'}</span></div>
 					{/*<div className="fake-class"><span className="data-details-title">EMERGENCY NUMBER</span><span className="data-details-info">{userData.phone}</span></div>*/}
@@ -291,7 +291,7 @@ const ProfilePage = () => {
 				*/}
 
 				<div className="gaps-3x" />
-				<h5 className="card-sub-title">UNIVERSITY INFORMATION</h5>
+				<h5 className="card-sub-title mb-2">UNIVERSITY INFORMATION</h5>
 				<ul className="data-details-list">
 					<li>
 					<div className="data-details-head">AUCC STAFF NUMBER</div>

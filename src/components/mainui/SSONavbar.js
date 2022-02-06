@@ -12,7 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setIsLoggedIn } from '../../store/admission/ssoSlice';
 import { useHistory } from 'react-router-dom'; 
 
-const SSONavbar = () => {
+const SSONavbar = ({ isMobile,setMobile }) => {
    
    const dispatch = useDispatch();
    const { sso } = useSelector( state => state );
@@ -30,7 +30,7 @@ const SSONavbar = () => {
 
 
 	return (
-		<div className="navbar">
+		<div className={ isMobile ? 'navbar active navbar-mobile':'navbar'}>
 			<div className="container">
 			<div className="navbar-innr">
 				<ul className="navbar-menu">

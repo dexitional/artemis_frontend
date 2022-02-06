@@ -1,4 +1,4 @@
-import React,{ useState,useEffect,useRef } from 'react'
+ import React,{ useState,useEffect,useRef } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
 import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, fetchSheetDataAIS, loadAssessment, saveAssessment, publishAssessment, certifyAssessment, uncertifyAssessment, loadCourselist, assignSheet, unassignSheet, fetchHRStaffHRS, fetchMySheetDataAIS, } from '../../../../store/utils/ssoApi';
@@ -382,7 +382,7 @@ const List = () => {
                             <td className="data-col"><small style={{color:'#b76117',fontWeight:'bolder',wordBreak:'break-word'}}>{ row.unit_name || 'NOT SET' }</small></td>
                             <td className="data-col w-25">
                                 <small className="lead token-amount">{row.calendar} </small>
-                                {parse(`<small style="color:#b76117;font-weight:bolder;word-break:break-word">${row.stream == 'MAIN' ? 'MAIN & SEPTEMBER STREAM':'SUB & JANUARY STREAM'} </small>`)}
+                                {parse(`<small style="color:#b76117;font-weight:bolder;word-break:break-word">${row.stream == 'MAIN' ? 'MAIN & SEPTEMBER STREAM':'JANUARY STREAM'} </small>`)}
                             </td>
                             <td className="data-col">
                                 <>

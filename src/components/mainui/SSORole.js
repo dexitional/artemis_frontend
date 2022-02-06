@@ -31,7 +31,7 @@ const SSORole = ({data}) => {
 		<div className="row">
 			    <div className="col-lg-12">
 				  <div className="token-information card card-full-height">
-				    <h3 className="sub-head bg-blueblack"><span style={{fontSize:'.9rem', color:'#eee'}}>{data && data.role_name.toUpperCase()+' - '+(data && data.role_desc.toUpperCase())  }</span></h3>
+				    <h3 className="sub-head bg-blueblack"><span style={{fontSize:'.9rem', color:'#eee'}}>{data && data.app_tag.toUpperCase()} PORTAL MENU</span></h3>
 					<div className="row no-gutters height-100">
 					   {/* Content */}
 					   { getRolePage(data)}

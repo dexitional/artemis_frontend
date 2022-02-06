@@ -118,12 +118,13 @@ const FormPrint = () => {
                 </address>
                 */}
                 <address>
-                    Academic Affairs Office<br/>
-                    University Post Office<br/>
-                    Private Mail Bag<br/>
-                    AUCC-Ghana<br/><br/>
-                    Tel:+233 3220 00001<br/>
-                    Email: admissions@aucc.edu.gh<br/>
+                        Admissions Office<br/>
+                    African University<br/>
+                    College of Communications <br/>
+                    Postal Box LG 510<br/>
+                    Adabraka, Accra<br/>&nbsp;
+                    <span style={{float:'left',direction:'ltr'}}>+233 307016193</span><br/>
+                    admissions@aucc.edu.gh<br/>
                     <span className="aurora-small">{moment().format('DD/MM/YYYY')}</span>
                 </address>
            </div>

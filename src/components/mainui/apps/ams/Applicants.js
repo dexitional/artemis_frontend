@@ -125,7 +125,8 @@ const List = () => {
 
    const showFormModal = async (e,serial) => {
         e.preventDefault()
-        setActivity({...activity,[`${serial}`]:true})
+        resetFormPage()
+        setActivity({...activity,[`sn${serial}`]:true})
         const resp = await fetchApplicant(serial)
         if(resp.success){
            // Save to Redux State
@@ -145,8 +146,6 @@ const List = () => {
            if(rec.data.guardian) dispatch(setGuardian(rec.data.guardian))
            if(rec.data.education) dispatch(setEducation(rec.data.education))
            if(rec.data.result){
-             console.log(rec.data.result)
-             console.log(rec.data.grade)
              dispatch(setResult(rec.data.result))
              if(rec.data.grade) dispatch(setGrade(rec.data.grade))
            } 
@@ -157,11 +156,32 @@ const List = () => {
            //if(rec.data.qualification) dispatch(setQualification(rec.data.qualification))
            let dt = { size:'md', show:true, page:'form' }
            dispatch(setModal(dt));
-           setActivity({...activity,[`${serial}`]:false})
-           console.log(sso)
+           setActivity({...activity,[`sn${serial}`]:false})
         }
         
     } 
+
+    const resetFormPage = () => {
+        dispatch(setApplyMode(null));
+        dispatch(setStage(null));
+        // Setup Form Meta & Steps
+        dispatch(setStepCount(0));
+        dispatch(setMeta([]));
+        dispatch(setSubmitStatus(0))
+        // Setup User info
+        dispatch(updateUser({}));
+        // Setup User Form Data
+        dispatch(setProfile({}))
+        dispatch(setGuardian({}))
+        dispatch(setEducation([]))
+        dispatch(setResult([]))
+        dispatch(setGrade([]))
+        dispatch(setChoice([]))
+        dispatch(setDocument([]))
+        dispatch(setReferee([]))
+        dispatch(setEmployment([]))
+        //if(rec.data.qualification) dispatch(setQualification(rec.data.qualification))
+    }
 
    // Add to Sort
    const addToList = async (e,serial) => {
@@ -293,14 +313,14 @@ const List = () => {
                               {row.started_at ? parse(`<small style="color:#b76117;font-weight:bolder">-- ${moment(row.started_at).format('LLL').toUpperCase()} </small>`) : null }
                             </td>
                             <td className="data-col">
-                              { row.choice_name1 && <small className="lead amount-pay">1. { row.choice_name1 && row.choice_name1.toUpperCase() }</small> || <b>-- NONE --</b>}
-                              {row.choice_name2 ? parse(`<small style="color:#b76117;font-weight:bolder">2.  ${row.choice_name2 && row.choice_name2.toUpperCase()} </small>`) : null }
+                              { row.choice_name1 && <small className="lead amount-pay">1. { row.choice_name1 && row.choice_name1.toUpperCase() }</small> || <b>-- NONE --</b> }
+                              { row.choice_name2 ? parse(`<small style="color:#b76117;font-weight:bolder">2.  ${row.choice_name2 && row.choice_name2.toUpperCase()} </small>`) : null }
                             </td>
                             { true &&
                             <td className="data-col">
-                              {row.flag_submit == 1 ? 
-                              <div className="d-flex">
-                                 <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showFormModal(e,row.serial)}><b>{ !activity[`${row.serial}`] ? <i className="fa fa-id-card"></i> : <img src={Loader} style={{ margin:'0 auto' }}/>} </b></Link><br/>
+                              { row.flag_submit == 1 ? 
+                              <div className=''>
+                                 <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showFormModal(e,row.serial)}><b>{ !activity[`sn${row.serial}`] ? <i className="fa fa-id-card"></i> : <img src={Loader} style={{ margin:'0 auto',height:'18px' }}/>} </b></Link><br/>
                                  <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => getDocs(e,row.serial)}><b><i className="fa fa-folder"></i></b></Link>
                                  <Link className={`badge badge-sm badge-success text-white`} onClick={ e => addToList(e,row.serial)}><b><i className="fa fa-check"></i></b></Link>
                                 &nbsp;&nbsp;

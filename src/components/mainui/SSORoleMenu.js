@@ -14,7 +14,7 @@ import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
 
-const SSORoleMenu = ({data,mod}) => {
+const SSORoleMenu = ({ data,mod }) => {
 	const dispatch = useDispatch();
 	const { sso } = useSelector( state => state );
 	const { user } = sso;	
@@ -29,7 +29,7 @@ const SSORoleMenu = ({data,mod}) => {
 
 
 	return (
-		<div className="row">
+	<div className="row">
 		<div className="col-lg-6">
 			<div className="token-statistics card card-token height-auto">
 				<div className="card-innr">
@@ -37,7 +37,8 @@ const SSORoleMenu = ({data,mod}) => {
 						<div className="token-balance-icon"><img src={user.photo} style={{width:'200px',borderRadius:'5px'}} alt="logo"/></div>
 						<div className="token-balance-text">
 							<h6 className="card-sub-title">{user.user.names}</h6><span className="lead"> {data && data.app_name && data.app_name.toUpperCase()}</span>
-						 {/*<h6 className="card-sub-title">SENIOR ICT ASSISTANT<br><span className="btitle"><b>DESIGNATION</b></span><br><br></h6>
+							<h6 className="card-sub-title"><small><b>{data && data.role_name && data.role_name.toUpperCase()}</b> | <span className="btitle"><b>{user && user.user.name && user.user.name.toUpperCase()}</b></span></small></h6>
+				            {/*<h6 className="card-sub-title">SENIOR ICT ASSISTANT<br><span className="btitle"><b>DESIGNATION</b></span><br><br></h6>
 							<h6 className="card-sub-title">SENIOR MEMBER<br><span className="btitle"><b>STAFF CATEGORY</b></span></h6> */}
 						</div> 
 					</div>
@@ -64,11 +65,10 @@ const SSORoleMenu = ({data,mod}) => {
 								{/*<marquee className="notice" behavior="scroll" direction="left" scrollamount="4">WELCOME! TO THE UNIVERSITY UNIFIED PORTAL. THIS PORTAL HOSTS THE RECRUITMENT OF STAFF THROUGH TO APPOINTMENT AND ALSO NATIONAL SERVICE PERSONS. </marquee>*/}
 								<ul className="bread-crum">
 									{ mod && mod != '' ?
-									  <li><Link to={{ pathname:'/app', data }} className="active"><i className="fa fa-arrow-left"></i> {data && data.app_tag.toUpperCase()} MENU</Link></li> : 
+									  <li><Link to={{ pathname:'/app', data }} className="active"><i className="fa fa-arrow-left"></i> GO BACK</Link></li> : 
 									  <li><Link to="#" className="active"><i className="fa fa-file-pdf"></i>&nbsp;&nbsp;{data && data.app_tag.toUpperCase()} GUIDE</Link></li> 
 									}
-									<li><Link to="/dash"><i className="fa fa-home"></i>&nbsp;&nbsp;APPS</Link></li>
-									
+									<li><Link to="/dash"><i className="fa fa-home"></i>&nbsp;&nbsp;HOME</Link></li>
 								</ul>
 							</div>
 						  </div>

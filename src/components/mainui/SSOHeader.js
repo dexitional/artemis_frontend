@@ -11,15 +11,22 @@ import { Link } from 'react-router-dom';
 import SSOTopNav from './SSOTopnav';
 import SSONavbar from './SSONavbar';
 import SSODashMenu from './SSODashMenu';
+import { useState } from 'react';
 
 
 const SSOHeader = () => {
+	  const [ isMobile,setIsMobile ] = useState(false) 
+	  
+	  const setMobile = (bool) => {
+          setIsMobile(bool)
+	  }
+
       return (
 		<div>
 		{/* Header */}
 		<div className="topbar-wrap">
-		   <SSOTopNav/>
-		   <SSONavbar/>
+		   <SSOTopNav isMobile={isMobile} setMobile={setMobile} />
+		   <SSONavbar isMobile={isMobile} setMobile={setMobile} />
         </div>
 
 		{/* Content */}

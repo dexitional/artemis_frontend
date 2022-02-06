@@ -332,7 +332,7 @@ const Form = ({recid}) => {
                                 <select {...register("receiver")} className="input-bordered">
                                    <option value="ALL">BOTH STUDENTS & STAFF</option>
                                    <option value="STUDENT">ALL STUDENTS (ACTIVE ONLY)</option>
-                                   <option value="UNDERGRAD">UNDERRADUATE STUDENTS (ACTIVE ONLY)</option>
+                                   <option value="UNDERGRAD">UNDERGRADUATE STUDENTS (ACTIVE ONLY)</option>
                                    <option value="POSTGRAD">POSTGRADUATE STUDENTS (ACTIVE ONLY)</option>
                                    <option value="STAFF">STAFF (ALL STAFF)</option>
                                    <option value="HEAD">HEADS OF DEPARTMENTS</option>

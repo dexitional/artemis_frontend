@@ -7,6 +7,7 @@ import PaperBill from './PaperBill'
 import PaperClassList from './PaperClassList'
 import PaperCourseResult from './PaperCourseResult'
 import PaperDocs from './PaperDocs'
+import PaperEntrance from './PaperEntrance'
 import PaperForm from './PaperForm'
 import PaperLetter from './PaperLetter'
 import PaperMiniProfile from './PaperMiniProfile'
@@ -49,6 +50,7 @@ const ModalPage = () => {
       if(modal && modal.page == 'miniprofile') return  <PaperMiniProfile /> // Staff Mini Profile Printout
       if(modal && modal.page == 'admitlist') return  <PaperAdmitList /> // Admission List Printout
       if(modal && modal.page == 'docs') return  <PaperDocs /> // Applicant Submitted Docs Printout
+      if(modal && modal.page == 'entranceslip') return  <PaperEntrance /> // Entrance Exams Slip Printout
  
  
       

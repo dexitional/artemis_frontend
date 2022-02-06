@@ -123,10 +123,10 @@ const PaperLetter = () => {
                     Admissions Office<br/>
                     African University<br/>
                     College of Communications <br/>
-                    Postal Box 982<br/>
-                    Adabrakah, Accra<br/>&nbsp;
-                    +233 3220 00001<br/>
-                    admissions@aucc.edu.gh<br/>
+                    Postal Box LG 510<br/>
+                    Adabraka, Accra<br/>&nbsp;
+                    <span style={{float:'left',direction:'ltr'}}>+233 307016193</span><br/>
+                    admissions@aucc.edu.gh
                 </address>
            </div>
        </header>
@@ -147,12 +147,7 @@ const PaperLetter = () => {
                             {ReactHtml(loadPlacerData(data && data.template || ''))}
                         </td>
                     </tr>
-                   <tr>
-                        <td colspan="3">
-                            <br/><br/><br/>
-                        </td>
-                    </tr>
-                    
+                   
 
                 </tbody>
                 </table>

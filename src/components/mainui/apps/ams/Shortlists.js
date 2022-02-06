@@ -140,6 +140,7 @@ const List = () => {
 
    const showFormModal = async (e,serial) => {
         e.preventDefault()
+        resetFormPage()
         const resp = await fetchApplicant(serial)
         if(resp.success){
            // Save to Redux State
@@ -170,8 +171,29 @@ const List = () => {
            let dt = { size:'md', show:true, page:'form' }
            dispatch(setModal(dt));
         }
-        
     } 
+
+    const resetFormPage = () => {
+        dispatch(setApplyMode(null));
+        dispatch(setStage(null));
+        // Setup Form Meta & Steps
+        dispatch(setStepCount(0));
+        dispatch(setMeta([]));
+        dispatch(setSubmitStatus(0))
+        // Setup User info
+        dispatch(updateUser({}));
+        // Setup User Form Data
+        dispatch(setProfile({}))
+        dispatch(setGuardian({}))
+        dispatch(setEducation([]))
+        dispatch(setResult([]))
+        dispatch(setGrade([]))
+        dispatch(setChoice([]))
+        dispatch(setDocument([]))
+        dispatch(setReferee([]))
+        dispatch(setEmployment([]))
+        //if(rec.data.qualification) dispatch(setQualification(rec.data.qualification))
+    }
 
     const admit = (e,serial) => {
         e.preventDefault()

@@ -432,8 +432,8 @@ const Form = ({recid}) => {
                                 <label htmlFor="cal_register_hold" className="input-item-label">REGISTRATION ACTIVITY STATUS</label>
                                 <select {...register("cal_register_hold", { required: 'Please choose Registration Status !' })} className="input-bordered">
                                   <option value={''} selected disabled>--CHOOSE--</option>
-                                  <option value={'1'}>ENABLED</option>
-                                  <option value={'0'}>DISABLED</option>
+                                  <option value={'0'}>ENABLED</option>
+                                  <option value={'1'}>DISABLED</option>
                                 </select>
                             </div>
                         </div>

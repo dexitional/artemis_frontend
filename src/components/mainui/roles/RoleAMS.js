@@ -9,13 +9,13 @@ const RoleAMS = ({data}) => {
 	  const {user} = sso;
       const modules = [
 		  { title : 'Admission Sessions', desc: 'Admission sessions', url: '/app/ams?mod=sessions&view=list',icon:'fa-stream', accessRoles: [1,4] },
+		  //{ title : 'Admission Utilities', desc: 'Utilities Module', url: '/app/ams?mod=utilities&view=list',icon:'fa-book', accessRoles: [1,3,4] },
+		  { title : 'Admission Letters', desc: 'Letters Module', url: '/app/ams?mod=letters&view=list',icon:'fa-file-alt', accessRoles: [1,3,4] },
 		  { title : 'Voucher codes', desc: 'Voucher Module', url: '/app/ams?mod=vouchers&view=list',icon:'fa-id-card', accessRoles: [1,4] },
+		  { title : 'Entrance Exams', desc: 'Exams Module', url: '/app/ams?mod=entrance&view=list',icon:'fa-id-card-alt', accessRoles: [1,3,4] },
 		  { title : 'Applicants', desc: 'Applicants Module', url: '/app/ams?mod=applicants&view=list',icon:'fa-user-friends', accessRoles: [1,4] },
 		  { title : 'Shortlisted', desc: 'Shortlists Module', url: '/app/ams?mod=shortlists&view=list',icon:'fa-user-friends', accessRoles: [1,4] },
 		  { title : 'Matriculants', desc: 'Freshers Module', url: '/app/ams?mod=matriculants&view=list',icon:'fa-user-check', accessRoles: [1,3,4] },
-		  { title : 'Letters', desc: 'Letters Module', url: '/app/ams?mod=letters&view=list',icon:'fa-file-alt', accessRoles: [1,3,4] },
-		  { title : 'Entrance Exams', desc: 'Exams Module', url: '/app/ams?mod=entrance&view=list',icon:'fa-id-card-alt', accessRoles: [1,3,4] },
-		  { title : 'Admission Programs', desc: 'Programs Module', url: '/app/ams?mod=programs&view=list',icon:'fa-book', accessRoles: [1,3,4] },
 		  /*{ title : 'Admission Modes', desc: 'Admission Modes', url: '/app/ams?mod=modes&view=list',icon:'fa-chalkboard-teacher', accessRoles: [1,4] },*/
 		  /*{ title : 'Admission Notices', desc: 'Notice Module', url: '/app/ams?mod=notices&view=list',icon:'fa-comment', accessRoles: [1,3,4] },*/
 		  { title : 'Statistics', desc: 'Stats Module', url: '/app/ams?mod=statistics&view=list',icon:'fa-chart-bar', accessRoles: [1,4] },

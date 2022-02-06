@@ -50,7 +50,7 @@ const StudentHeader = ({data,mod}) => {
 								{/*<marquee className="notice" behavior="scroll" direction="left" scrollamount="4">WELCOME! TO THE UNIVERSITY UNIFIED PORTAL. THIS PORTAL HOSTS THE RECRUITMENT OF STAFF THROUGH TO APPOINTMENT AND ALSO NATIONAL SERVICE PERSONS. </marquee>*/}
 								<ul className="bread-crum">
 									<li><Link to="#" className="active"><i className="fa fa-mobile-alt"></i>&nbsp;&nbsp;AIM APP</Link></li> 
-									<li><Link to="/student"><i className="fa fa-bars"></i>&nbsp;&nbsp;APP MENUS</Link></li>
+									<li><Link to="/student">&nbsp;&nbsp;APP MENUS</Link></li>
 									
 								</ul>
 							</div>

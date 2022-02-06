@@ -7,7 +7,7 @@ import moment from 'moment';
 import { setApplicants, setCurrentPage, setModal, setVouchers } from '../../../../store/admission/ssoSlice';
 import PaperTable from '../../PaperTable';
 import Pager from '../../Pager';
-import applicantSlice, { setApplyMode, setChoice, setDocument, setEducation, setGrade, setGuardian, setProfile, setResult, setStage, setSubmitStatus, updateUser } from '../../../../store/admission/applicantSlice';
+import applicantSlice, { setApplyMode, setChoice, setDocument, setEducation, setEmployment, setGrade, setGuardian, setProfile, setReferee, setResult, setStage, setSubmitStatus, updateUser } from '../../../../store/admission/applicantSlice';
 import { setMeta, setStepCount } from '../../../../store/admission/stepSlice';
 import { getApplyTypeTitle, getStageTitle } from '../../../../store/utils/admissionUtil';
 
@@ -94,9 +94,8 @@ const List = () => {
 
    const showFormModal = async (e,serial) => {
         e.preventDefault()
-        console.log(serial)
+        resetFormPage()
         const resp = await fetchApplicant(serial)
-        console.log(resp)
         if(resp.success){
           console.log(resp.data);
            // Save to Redux State
@@ -129,6 +128,32 @@ const List = () => {
         }
         
     } 
+
+    const resetFormPage = () => {
+
+        dispatch(setApplyMode(null));
+        dispatch(setStage(null));
+        // Setup Form Meta & Steps
+        dispatch(setStepCount(0));
+        dispatch(setMeta([]));
+        dispatch(setSubmitStatus(0))
+        // Setup User info
+        dispatch(updateUser({}));
+        // Setup User Form Data
+        if(rec.data.profile) dispatch(setProfile({}))
+        if(rec.data.guardian) dispatch(setGuardian({}))
+        if(rec.data.education) dispatch(setEducation([]))
+        if(rec.data.result){
+          dispatch(setResult([]))
+          if(rec.data.grade) dispatch(setGrade([]))
+        } 
+        if(rec.data.choice) dispatch(setChoice([]))
+        if(rec.data.document) dispatch(setDocument([]))
+        if(rec.data.referee) dispatch(setReferee([]))
+        if(rec.data.employment) dispatch(setEmployment([]))
+        //if(rec.data.qualification) dispatch(setQualification(rec.data.qualification))
+       
+    }
 
    // Search & Pagination
    const [ page, setPage ] = React.useState(1);

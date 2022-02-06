@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux'
 import AdminLayout from '../../components/admission/AdminLayout'
 import { setApplyMode, setEducation, setStage, updateUser } from '../../store/admission/applicantSlice'
-import { setActiveStep, setIsAllowed, setMeta, setPrevStep } from '../../store/admission/stepSlice'
+import { setActiveStep, setIsAllowed, setMeta, setPrevStep, setStepCount } from '../../store/admission/stepSlice'
 import { getApplyTypeTitle, getStageTitle, getStepData, sortMeta } from '../../store/utils/admissionUtil';
 import { helperData } from '../../store/utils/helperData';
 import { loadAMSHelpers } from '../../store/utils/ssoApi';
@@ -46,6 +46,10 @@ const Admin = () => {
              }else{
                  console.log("No condition matched!")
              }
+
+             // Update Total Steps
+             dispatch(setStepCount(meta.length))
+            
              // Reset Institute Type in Education tag
              if(applicant.education.length > 0){
                var education = [...applicant.education];

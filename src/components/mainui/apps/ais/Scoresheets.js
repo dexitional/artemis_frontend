@@ -1,4 +1,4 @@
-import React,{ useState,useEffect,useRef } from 'react'
+import React,{ useState,useEffect,useRef, useCallback } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
 import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, fetchSheetDataAIS, loadAssessment, saveAssessment, publishAssessment, certifyAssessment, uncertifyAssessment, loadCourselist, assignSheet, unassignSheet, fetchHRStaffHRS, } from '../../../../store/utils/ssoApi';
@@ -14,6 +14,7 @@ import moment from 'moment';
 import { excelToJson, getStudyMode, jsonToExcel } from '../../../../store/utils/admissionUtil';
 import { CSVLink,CSVDownload } from "react-csv";
 import { Divider } from '@mui/material';
+import PagerStream from '../../PagerStream';
 
 // COMPONENT - Scoresheet
 const Scoresheets = ({view,data,recid}) => {
@@ -66,6 +67,7 @@ const List = () => {
    const [ page, setPage ] = React.useState(1);
    const [ count, setCount ] = React.useState(0);
    const [ keyword, setKeyword ] = React.useState('');
+   const [ sel, setSel ] = React.useState(null);
    const [ isLoading, setIsLoading ] = React.useState(false);
    const [ newId, setNewId ] = React.useState(null);
    const importRef = useRef(null)
@@ -266,7 +268,6 @@ const List = () => {
 
     
     const viewMiniProfile = async (sno) => {
-        console.log(sno)
         const res = await fetchHRStaffHRS(sno);
         //var res = { success: true}
         if(res.success){
@@ -286,20 +287,33 @@ const List = () => {
        sso.databox.sheets && setSheets([...sso.databox.sheets]);
     }
 
-    const fetchSheetData = async () => {
+    const fetchSheetData =  useCallback(async () => {
       var query = ``;
       if(page >= 1) query += `?page=${page-1}`
       if(keyword != '') query += `&keyword=${keyword}`
+      if(sel != '') query += `&stream=${sel}`
+      //alert(query)
       const res = await fetchSheetDataAIS(query);
       if(res.success){
           setIsLoading(false)
           setSheets([...res.data.data]);// Page Data
           setCount(res.data.totalPages)// Total Pages
+          setSel(res.data.data[0].session_id) // Set New Stream from Result
+      }else{
+          setIsLoading(false)
+          setSheets([]);// Page Data
+          setCount(1)// Total Pages
       }
-   }
+    },[sel,sheets])
    
    const onSearchChange = async (e) => {
       setKeyword(e.target.value)
+      setPage(1)
+      if(e.target.value == '') fetchSheetData()
+   }
+
+   const onSelectChange = async (e) => {
+      setSel(e.target.value)
       setPage(1)
       if(e.target.value == '') fetchSheetData()
    }
@@ -320,12 +334,15 @@ const List = () => {
    const onSubmitSearch = async (e) => {
       e.preventDefault()
       setIsLoading(true)
-      fetchSheetData()
+      setTimeout(() => {
+        fetchSheetData()
+      },100)
+      
    }
 
    useEffect(() => {
      restoreSheetData()
-   },[])
+   },[])  
 
    useEffect(() => {
      dispatch(updateDatabox({sheets}));
@@ -334,14 +351,14 @@ const List = () => {
    useEffect(() => {
      fetchSheetData()
      dispatch(setCurrentPage(page))
-   },[page])
+   },[page,sel])
 
 
    
 
    return (
     <div className="card-innr">
-      <Pager count={count} page={page} onPageChange={onPageChange} onPageClick={onPageClick} keyword={keyword} onSearchChange={onSearchChange} onSubmitSearch={onSubmitSearch} isLoading={isLoading} />
+      <PagerStream count={count} page={page} onPageChange={onPageChange} onPageClick={onPageClick} keyword={keyword} onSearchChange={onSearchChange} onSubmitSearch={onSubmitSearch} isLoading={isLoading} sel={sel} onSelectChange={onSelectChange}  />
       <div className="dataTables_wrapper dt-bootstrap4 no-footer">
         <div className="table-wrap">  
             <div id="DataTables_Table_0_wrapper" className="dataTables_wrapper dt-bootstrap4 no-footer">
@@ -381,7 +398,7 @@ const List = () => {
                             <td className="data-col"><small style={{color:'#b76117',fontWeight:'bolder',wordBreak:'break-word'}}>{ row.unit_name || 'NOT SET' }</small></td>
                             <td className="data-col w-25">
                                 <small className="lead token-amount">{row.calendar} </small>
-                                {parse(`<small style="color:#b76117;font-weight:bolder;word-break:break-word">${row.stream == 'MAIN' ? 'MAIN & SEPTEMBER STREAM':'SUB & JANUARY STREAM'} </small>`)}
+                                {parse(`<small style="color:#b76117;font-weight:bolder;word-break:break-word">${row.stream == 'MAIN' ? 'MAIN & SEPTEMBER STREAM':'JANUARY STREAM'} </small>`)}
                             </td>
                             <td className="data-col">
                                 <>

@@ -6,9 +6,15 @@ import { Fragment } from 'react';
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 
-const SSOTopNav = () => {
+const SSOTopNav = ({ isMobile,setMobile }) => {
       const { sso } = useSelector( state => state)
 	  const { user } = sso;
+
+	  const setIsMobile = (bool) => {
+          setMobile(bool)
+		  //alert(isMobile)
+	  }
+
 	  return (
 		<Fragment>
 		<div className="topbar is-sticky">
@@ -16,7 +22,7 @@ const SSOTopNav = () => {
 				<div className="d-flex justify-content-between align-items-center">
 				<ul className="topbar-nav d-lg-none">
 					<li className="topbar-nav-item relative">
-						<a className="toggle-nav" href="#">
+						<a className={ isMobile ? 'toggle-nav active':'toggle-nav'} onClick={ () => setIsMobile(!isMobile) }> {/* toggle-nav active */}
 							<div className="toggle-icon">
 								<span className="toggle-line" />
 								<span className="toggle-line" />

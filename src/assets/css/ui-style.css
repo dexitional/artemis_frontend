@@ -1225,6 +1225,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 .data-details>div {
   flex-grow: 1;
   margin-bottom: 18px;
+  margin-right: 10px;
 }
 
 .data-details>div:last-child {
@@ -1512,6 +1513,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 
   .data-details>div {
     margin-bottom: 0px;
+    margin-right: 10px;
   }
 
   .data-details-head {

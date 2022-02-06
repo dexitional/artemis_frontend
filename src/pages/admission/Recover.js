@@ -45,8 +45,7 @@ const Recover = () => {
                     </div>
                     { error && 
                     <div class="sc-ikJzcn fJNrxx">
-                        google-site-verification=0sLHyChltAPhiOsbhfu8_wIgVAE5Ju-_dX-ortzAQ1Y
-                        <small class="sc-jJoQpE cmGyex required-err">{error}</small>
+                       <small class="sc-jJoQpE cmGyex required-err">{error}</small>
                     </div>
                     }
                 </div>
