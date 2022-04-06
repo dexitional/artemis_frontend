@@ -296,6 +296,11 @@ export const resetAccount = async (refno) => {
   return res.data;
 } 
 
+export const switchAccount = async (tag) => {
+  const res = await axios.get(`${API_URL}/ais/switchaccess/${encodeURIComponent(tag)}`);
+  return res.data;
+}
+
 export const generateMail = async (refno) => {
   const res = await axios.get(`${API_URL}/ais/genmail/${encodeURIComponent(refno)}`);
   return res.data;
@@ -482,6 +487,12 @@ export const fetchBillFMS = async (id) => {
   const res = await axios.get(`${API_URL}/fms/sbills/${id}`);
   return res.data;
 } 
+
+export const fetchBillReceiversFMS = async (id) => {
+  const res = await axios.get(`${API_URL}/fms/sbills/receivers/${id}`);
+  return res.data;
+} 
+
 
 export const postBillFMS = async (data) => {
   const res = await axios.post(`${API_URL}/fms/sbills`,{...data});
@@ -709,6 +720,15 @@ export const loadAMSHelpers = async () => {
   const res = await axios.get(`${API_URL}/ams/helpers`);
   return res.data;
 } 
+
+
+
+/* EHUB  */
+export const registerAlumni = async (data) => {
+  const res = await axios.post(`${API_URL}/alumni`,{...data});
+  return res.data;
+} 
+
 
 
 

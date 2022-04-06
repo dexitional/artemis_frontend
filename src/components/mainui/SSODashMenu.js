@@ -57,7 +57,7 @@ const SSODashMenu = () => {
 								<ul className="bread-crum">
 									{ false ?
 									  <li><Link to={{ pathname:'/app'}} className="active"><i className="fa fa-arrow-left"></i> AMS MENU</Link></li> : 
-									  <li><Link to="/app/hrs?mod=profile&view=showprofile" className="active"><i className="fa fa-user"></i>&nbsp;&nbsp;PROFILE</Link></li> 
+									  <li><Link to="/app/alu?mod=profile&view=showprofile" className="active"><i className="fa fa-user"></i>&nbsp;&nbsp;PROFILE</Link></li> 
 									}
 									<li><Link to="/dash">HELPDESK</Link></li>
 									

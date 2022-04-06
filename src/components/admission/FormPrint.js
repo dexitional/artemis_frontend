@@ -378,12 +378,12 @@ const FormPrint = () => {
                        <td className="sbody">Duration</td>
                    </tr>
                   { applicant.employment.map((row,i) => 
-                   <tr>
-                       <td className="shead">{row.employer_name}</td>
-                       <td className="shead">{row.job_title}</td>
-                       <td className="shead">{row.employer_address}</td>
-                       <td className="shead">{ getMonth(row.start_month).title }, {row.start_year} - { (!row.end_month && !row.end_year) ? 'Till Date':`${getMonth(row.start_month).title}, ${row.end_year}`}</td>
-                   </tr>
+                    <tr>
+                        <td className="shead">{row.employer_name || '-- NONE --'}</td>
+                        <td className="shead">{row.job_title || '-- NONE --' }</td>
+                        <td className="shead">{row.employer_address || '-- NONE --' }</td>
+                        <td className="shead">{ getMonth(row.start_month) && getMonth(row.start_month).title || '-- NONE --'  }, {row.start_year} - { (!row.end_month && !row.end_year) ? 'Till Date':`${getMonth(row.start_month) && getMonth(row.start_month).title}, ${row.end_year}`}</td>
+                    </tr>
                     )}
                    </Fragment> : null }
                    

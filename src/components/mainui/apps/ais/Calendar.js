@@ -241,6 +241,8 @@ const List = () => {
                                 { row.cal_exam_start ? parse(`<small style="font-weight:bolder;word-break:break-word">EXAMS STARTS: ${ moment(row.cal_exam_start).format('LL').toUpperCase()}</small><br/>`) : null }
                                 { row.cal_entry_start ? parse(`<small style="color:#b76117;font-weight:bolder;word-break:break-word">ENTRY STARTS: ${ moment(row.cal_entry_start).format('LL').toUpperCase()}</small><br/>`) : null }
                                 { row.cal_entry_end ? parse(`<small style="color:#b76117;font-weight:bolder;word-break:break-word">ENTRY STARTS: ${ moment(row.cal_entry_end).format('LL').toUpperCase()}</small><br/>`) : null }
+                                { row.cal_allow_sheets ? parse(`<small style="color:#555;font-weight:bolder;word-break:break-word">DEADLINE ENTRIES: ${row.cal_allow_sheets == 0 ? 'DISABLED':'ENABLED'}</small><br/>`) : null }
+                                
                             </td>
                             <td className="data-col">
                                 <>
@@ -434,6 +436,17 @@ const Form = ({recid}) => {
                                   <option value={''} selected disabled>--CHOOSE--</option>
                                   <option value={'0'}>ENABLED</option>
                                   <option value={'1'}>DISABLED</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="cal_allow_sheets" className="input-item-label">SCORESHEET ENTRIES</label>
+                                <select {...register("cal_allow_sheets", { required: 'Please choose Scoresheet Entries !' })} className="input-bordered">
+                                  <option value={''} selected disabled>--CHOOSE--</option>
+                                  <option value={'1'}>ENABLED</option>
+                                  <option value={'0'}>DISABLED</option>
                                 </select>
                             </div>
                         </div>

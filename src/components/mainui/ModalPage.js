@@ -18,8 +18,10 @@ import PaperRegSlip from './PaperRegSlip'
 import PaperResult from './PaperResult'
 import PaperSlip from './PaperSlip'
 import PaperStaffActiveList from './PaperStaffActiveList'
+import PaperStudentProfile from './PaperStudentProfile'
 import PaperTable from './PaperTable'
 import PaperTransDetail from './PaperTransDetail'
+import PaperBillReceiver from './PaperBillReceiver'
 
 const ModalPage = () => {
   
@@ -39,6 +41,7 @@ const ModalPage = () => {
       // Admin Modals Printout
       if(modal && modal.page == 'form') return  <PaperForm /> // Applicant Printout
       if(modal && modal.page == 'bill') return  <PaperBill /> // Bill Printout
+      if(modal && modal.page == 'billreceivers') return  <PaperBillReceiver /> // Bill Receipients Printout
       if(modal && modal.page == 'payment') return  <PaperReceipt /> // Payment Receipt Printout
       if(modal && modal.page == 'transdetail') return  <PaperTransDetail /> // Bill Printout
       if(modal && modal.page == 'regslip') return  <PaperRegSlip /> // Registration Printout
@@ -51,6 +54,7 @@ const ModalPage = () => {
       if(modal && modal.page == 'admitlist') return  <PaperAdmitList /> // Admission List Printout
       if(modal && modal.page == 'docs') return  <PaperDocs /> // Applicant Submitted Docs Printout
       if(modal && modal.page == 'entranceslip') return  <PaperEntrance /> // Entrance Exams Slip Printout
+      if(modal && modal.page == 'studprofile') return  <PaperStudentProfile /> // Entrance Exams Slip Printout
  
  
       

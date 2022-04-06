@@ -1,9 +1,9 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, postStudentReportAIS, } from '../../../../store/utils/ssoApi';
+import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, postStudentReportAIS, switchAccount, } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
-import { setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
+import { setCurrentPage, setDatabox, setIsLoggedIn, setModal, setUser, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
 //import { Button, Menu, MenuItem } from '@material-ui/core';
 import Button from '@mui/material/Button';
@@ -82,12 +82,25 @@ const List = () => {
       history.push(url);
    }
 
+   const viewProfile = async (id) => {
+      const rt = sso.databox.students.find( r => r.id == id )
+      if(rt){
+        let dt = { content:rt, size:'md', show:true, page:'studprofile' }
+        dispatch(setModal(dt));
+        // Account Reset Successfully!
+      }else{ dispatch(updateAlert({ show:true,message:rt.msg.toUpperCase(),type:'error' })) }
+      setRef(null);
+
+     // setActivity({...activity,[`slip${i}`]:true})
+     
+     // setActivity({...activity,[`slip${i}`]:false})
+   }
+
    const stageAccess = async (refno) => {
       const rt = await stageAccount(refno)
-      console.log(rt)
       if(rt.success){
         dispatch(updateAlert({show:true,message:`User access created !`,type:'success'}))
-        alert(`${rt.data}`)
+        fetchStudentData()
         // Account Reset Successfully!
       }else{ dispatch(updateAlert({show:true,message:rt.msg.toUpperCase(),type:'error'})) }
       setRef(null);
@@ -111,11 +124,35 @@ const List = () => {
     console.log(rt)
     if(rt.success){
        dispatch(updateAlert({show:true,message:`Account has been reset !`,type:'success'}))
-       alert(`${rt.data}`)
       // Account Reset Successfully!
     }else{ dispatch(updateAlert({show:true,message:rt.msg.toUpperCase(),type:'error'})) }
     setRef(null);
   }
+
+  const switchAccess = async (tag) => {
+    const rt = await switchAccount(tag)
+    if(rt.success){
+       //dispatch(setUser(null))
+       dispatch(updateAlert({show:true,message:`ACCESS GRANTED !`,type:'success'}))
+       setTimeout(()=> {
+            var rec = rt.data;
+            rec.user.access = sso.user && sso.user.user.staff_no;
+            // Set User Data
+            dispatch(setUser(rec));
+            // Goto Dashboard
+            dispatch(setIsLoggedIn(true));
+            // Reset Authentication Flag
+            if(parseInt(rec.user.user_group) == 1){
+              history.push('/student');  // Student Portal
+            }else{
+              history.push('/dash');  // Staff, NSS, Alumni, Others Portals
+            }
+       }, 2000)
+      // Account Reset Successfully!
+    }else{ dispatch(updateAlert({show:true,message:rt.msg.toUpperCase(),type:'error'})) }
+    setRef(null);
+  }
+
    
   const restoreStudentData = () => {
     sso.databox.students && setStudents([...sso.databox.students]);
@@ -217,7 +254,8 @@ const List = () => {
                                 <>
                                 <Button id={`basic-button${row.refno}`} variant="contained" color={row.complete_status > 0 ? 'success':(row.complete_status == 0 ? 'error':'warning')} aria-controls={`basic-menu${row.refno}`} aria-haspopup="true" aria-expanded={ anchorEl && anchorEl == row.refno ? 'true' : undefined} onClick={(e) => handleClick(e,row.refno)}><i className="fa fa-bars"></i></Button>
                                   <Menu id={`basic-menu${row.refno}`} anchorEl={anchorEl} open={ref && ref == row.refno} onClose={handleClose} variant="outlined" MenuListProps={{'aria-labelledby': `basic-button${row.refno}`}}>
-                                    {/*<MenuItem onClick={handleClose}>VIEW PROFILE</MenuItem>*/}
+                                    { row.uid && <MenuItem onClick={() => switchAccess(row.refno)}>GOTO PORTAL</MenuItem>}
+                                    <MenuItem onClick={() => viewProfile(row.id)}>VIEW PROFILE</MenuItem>
                                     <MenuItem onClick={() => editProfile(row.id)}>EDIT PROFILE</MenuItem>
                                     <MenuItem onClick={() => resetAccess(row.refno)}>RESET PASSWORD</MenuItem>
                                     { !row.institute_email && <MenuItem onClick={() => genMail(row.refno)}>GENERATE EMAIL</MenuItem>}

@@ -386,9 +386,7 @@ const PaperForm = () => {
                        <td className="shead">{ getMonth(row.start_month) && getMonth(row.start_month).title || '-- NONE --'  }, {row.start_year} - { (!row.end_month && !row.end_year) ? 'Till Date':`${getMonth(row.start_month) && getMonth(row.start_month).title}, ${row.end_year}`}</td>
                    </tr>
                     )}
-                   </Fragment> : 
-                     <tr><td className="shead" colSpan={4} align="center">NO EMPLOYMENT RECORD</td></tr>
-                   }
+                   </Fragment> : null }
                    
                    {/* Result */}
                    { isTag('result') ? 

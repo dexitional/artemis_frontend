@@ -23,7 +23,7 @@ const PaperTransDetail = () => {
            i++;
        }
        sum = dt.reduce((acc,val) => acc+val.amount,0) || 0
-       return sum;
+       return sum.toFixed(2);
     }
     
     
@@ -59,10 +59,10 @@ const PaperTransDetail = () => {
                             <tr class="tbody">
                                 <td align="center">{moment(row.transdate).format('DD MMM YYYY')}</td>
                                 {/*<td align="center">Sem 1, Year 1<br/>2020-2021</td>*/}
-                                <td>{row.narrative}</td>
-                                <td align="center">{parseFloat(row.amount) > 0 ? 'BILL':'PAYMENT'}</td>
-                                <td align="center">{row.currency} {parseFloat(Math.abs(row.amount))}</td>
-                                <td align="center"><span className={`${i == fees.length-1 ? (row.amount > 0 ? 'text-danger badge badge-md':'text-success badge badge-md'):''}`}>{row.currency} {calBal(fees,i)}</span></td>
+                                <td>{row.narrative && row.narrative.toUpperCase()}</td>
+                                <td align="center">{ parseFloat(row.amount) < 0 && row.bill_id ? 'DISCOUNT': parseFloat(row.amount) > 0 ? 'BILL':'PAYMENT'}</td>
+                                <td align="center">{row.currency} {Math.abs(row.amount).toFixed(2)}</td>
+                                <td align="center" style={{ position:'relative'}}><span className={`${i == fees.length-1 ? (calBal(fees,i) > 0 ? 'text-danger badge badge-md':'text-success badge badge-md'):''}`}>{row.currency} {Math.abs(calBal(fees,i))}{ i == fees.length-1 ? <b style={{position:'absolute',display:'block',top:'1%',left:'40%',fontSize:'9px',padding:'0 10px',boxShadow:'0 0 2px #666',color:'black',borderRadius:'10px',background:'#fff'}}>{calBal(fees,i) <= 0 ? 'BALANCE':'DEBT'}</b>:''}</span></td>
                                 <td align="center">{row.tid}</td>
                             </tr>
                         ) : null }

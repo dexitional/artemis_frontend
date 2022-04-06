@@ -111,15 +111,18 @@ const StudentRegister = () => {
 
 	const updateRegStatus = () => {
 		var allowReg = true, msg = "";
+		
 		// If Student is Owing Fees, Lock Registration
+		/*
 		if(user.user.flag_fees_allow == 0){
 			allowReg = false
 			msg = "You Owe Fees, Please settle debt to allow registration!"
 		}
+		*/
+
 		// If Student is Pardoned by Finance, Allow Registration
-		if(user.user.cal_register_hold == 1){
-			allowReg = false
-			msg = "Registration is halted temporarily!"
+		if(user.user.flag_fees_pardon  == 1){
+			allowReg = true
 		}
 		// If Registration Period is Inactive
 		if(!moment().isBetween(moment(user.user.cal_register_start),moment(user.user.cal_register_end).add(1,'days'))){
@@ -129,7 +132,7 @@ const StudentRegister = () => {
 		// If Registration Period is Active and Halt status is ON
 		if(moment().isBetween(moment(user.user.cal_register_start),moment(user.user.cal_register_end).add(1,'days')) && user.user.cal_register_hold == 1){
 			allowReg = false
-			msg = "Registration is closed temporarily!"
+			msg = "Registration is halted temporarily!"
 		}
         // If Semester Level or Program ID or Major  ID is not Updated, Block Registration
         if(!user.user.semester || !user.user.prog_id){
@@ -145,7 +148,6 @@ const StudentRegister = () => {
     }
 
     useEffect(() => {
-		console.log(user)
 	  updateRegStatus()
 	  loadSemesterSlip()
 	  loadSemesterReg()

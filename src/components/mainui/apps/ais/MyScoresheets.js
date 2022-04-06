@@ -296,6 +296,10 @@ const List = () => {
           setIsLoading(false)
           setSheets([...res.data.data]);// Page Data
           setCount(res.data.totalPages)// Total Pages
+      }else{
+          setIsLoading(false)
+          setSheets([]);// Page Data
+          setCount(1)
       }
     }
    

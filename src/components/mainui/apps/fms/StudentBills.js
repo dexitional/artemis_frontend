@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { deleteBill, fetchBillFMS, fetchBillsFMS, loadFMSHelpers, postBillFMS, revokeBillFMS, revokeStBillFMS, sendBillFMS } from '../../../../store/utils/ssoApi';
+import { deleteBill, fetchBillFMS, fetchBillReceiversFMS, fetchBillsFMS, loadFMSHelpers, postBillFMS, revokeBillFMS, revokeStBillFMS, sendBillFMS } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
@@ -112,9 +112,11 @@ const List = () => {
         if(s.bid == id) return {...s,post_status:1 }
         return s
       })
+      setBid(null);
       setBills([...ss ])
       dispatch(updateAlert({show:true,message:`BILL REMOVED FROM STUDENT ACCOUNTS !`,type:'success'}))
-      setBid(null);
+      fetchBills()
+     
     }else{
       dispatch(updateAlert({show:true,message:`${bl.msg.toUpperCase()}`,type:'error'}))
     }
@@ -145,8 +147,22 @@ const List = () => {
     }else{
        // Error occurred
     }
-    
   }
+
+  const receiverBill = async (id) => {
+    const bl = await fetchBillReceiversFMS(id)
+    console.log(bl)
+    if(bl.success){
+      const content = { title:'Bill Receipients', data:bl.data }
+      let dz = { content, size:'md', show:true, page:'billreceivers' }
+      dispatch(setModal(dz));
+      setBid(null);
+    }else{
+       // Error occurred
+       dispatch(updateAlert({show:true,message:`NO RECEIPIENTS FOUND !`,type:'error'}))
+    }
+  }
+
 
    const fetchBills = async () => {
       var query = ``;
@@ -233,7 +249,7 @@ const List = () => {
                           { bills.map((row) => 
                           <tr className="data-item odd" role="row">
                             <td className="data-col">
-                              <span className="lead tnx-id"> {row.narrative} <small className="input-item-label"><b>( {row.session_tag == 'MAIN' ? 'SEPT/MAIN STREAM':'JAN/SUB STREAM'} )</b></small>
+                              <span className="lead tnx-id" style={{ fontSize:'13px'}}> {row.narrative} <small className="input-item-label"><b>( {row.session_tag == 'MAIN' ? 'SEPT/MAIN STREAM':'JAN/SUB STREAM'} - SESSION ID: {row.session_id} )</b></small>
                               {row.tag ? parse(`<br/><small style="color:#b76117;font-weight:bolder"> -- ${row.tag.toUpperCase()} </small>`) : null } 
                               {row.bid ? parse(` <small style="color:#555;font-weight:bolder"> -- BILL ID: ${row.bid}</small>`) : null }
                               </span>
@@ -246,6 +262,7 @@ const List = () => {
                                 { row.post_type == 'INT' && <>
                                   <span className="lead token-amount">INTERNATIONAL STUDENTS</span> 
                                   {row.group_code ? parse(`<small style="color:#b76117;font-weight:bolder">  ${getTargetGroup(row.group_code) && getTargetGroup(row.group_code).toUpperCase()} </small>`) : null }
+                                  {row.program_name ? parse(`<br/><small style="color:#666;font-weight:bolder">--  ${row.program_name && row.program_name.toUpperCase()} --</small>`) : null }
                                 </>}
                             </td>
                             <td className="data-col center"><span className="lead amount-pay">{row.currency ? parse(`<b style="color:#b76117;font-weight:bolder">${row.currency} </b>`) : null }{row.amount }</span></td>
@@ -254,11 +271,13 @@ const List = () => {
                                   <Button id={`basic-button${row.bid}`} variant="contained" color={row.post_status > 0 ? 'success':'warning'} aria-controls={`basic-menu${row.bid}`} aria-haspopup="true" aria-expanded={anchorEl && anchorEl == row.bid ? 'true' : undefined} onClick={(e) => handleClick(e,row.bid)}><i className="fa fa-bars"></i></Button>
                                   <Menu id={`basic-menu${row.bid}`} anchorEl={anchorEl} open={bid && bid == row.bid} onClose={handleClose} variant="outlined" MenuListProps={{'aria-labelledby': `basic-button${row.bid}`}}>
                                     <MenuItem onClick={()=> viewBill(row.bid)}>VIEW BILL</MenuItem>
+                                    <MenuItem onClick={()=> editBill(row.bid)}>EDIT BILL</MenuItem>
+                                    { row.post_status == 1 && <MenuItem onClick={()=> receiverBill(row.bid)}>RECEIPIENTS</MenuItem> }
                                     { row.post_status == 1 && <MenuItem onClick={()=> revokeBill(row.bid)}>REVOKE BILL</MenuItem> }
                                     { row.post_status == 1 && <MenuItem onClick={()=> revokeStBill(row.bid)}>REVOKE STUDENT</MenuItem> }
                                     {/* row.post_status == 0 && <MenuItem onClick={()=> postBill(row.bid)}>POST BILL</MenuItem> */}
                                     {/* row.post_status == 0 && <MenuItem onClick={()=> postBill(row.bid)}>POST BILL</MenuItem> */}
-                                    <MenuItem onClick={()=> editBill(row.bid)}>EDIT BILL</MenuItem>
+                                    
                                     { row.post_status == 0 && <MenuItem onClick={()=> delBill(row.bid)}>DELETE BILL</MenuItem>}
                                   </Menu>
                                 </>
@@ -289,6 +308,7 @@ const Form = ({recid}) => {
     
     
     const onSubmit = async data => {
+      console.log(data)
       data.bid = parseInt(recid) || 0;
       const res = await postBillFMS(data);
       if(res.success){
@@ -311,7 +331,7 @@ const Form = ({recid}) => {
         if(dt){
           const dk = Object.keys(dt);
           dk.forEach( d => {
-              //if(d == 'dob') return setValue(d,moment(dt[d]).format('YYYY-MM-DD'))
+              if(d == 'prog_id') return setValue(d,parseInt(dt[d]))
               return setValue(d,dt[d])
           })
         } 
@@ -409,10 +429,10 @@ const Form = ({recid}) => {
                         <div className="col-md-6">
                             <div className="input-item input-with-label">
                                 <label htmlFor="prog_id" className="input-item-label">BILL TARGET PROGRAMME</label>
-                                <select {...register("prog_id")} className="input-bordered">
+                                <select {...register("prog_id")} id="prog_id" className="input-bordered">
                                   <option value="" disabled selected>--NONE--</option>
                                   {helper && helper.programs.map( row => 
-                                    <option value={row.id}>{row.short && row.short.toUpperCase()}</option>
+                                    <option value={row.id} selected={ getValues('prog_id') == row.id}>{row.short && row.short.toUpperCase()} </option>
                                   )}
                                 </select>
                             </div>
@@ -436,9 +456,9 @@ const Form = ({recid}) => {
                             <div className="input-item input-with-label">
                                 <label htmlFor="session_id" className="input-item-label">ACADEMIC SESSION</label>
                                 <select {...register("session_id")} className="input-bordered">
-                                  <option value="" disabled selected>--NONE--</option>
+                                  <option value="" disabled>--NONE--</option>
                                   {helper && helper.sessions.map( row => 
-                                    <option value={row.id}>{ row.title+' - '+(row.tag == 'MAIN' ? 'SEPT/MAIN STREAM':'JAN/SUB STREAM') }</option>
+                                    <option value={row.id} selected={ getValues('session_id') == row.id} >{ row.title+' - '+(row.tag == 'MAIN' ? 'SEPT/MAIN STREAM':'JAN/SUB STREAM') }</option>
                                   )}
                                 </select>
                             </div>

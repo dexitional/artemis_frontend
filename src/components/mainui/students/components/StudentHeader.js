@@ -32,7 +32,7 @@ const StudentHeader = ({data,mod}) => {
 		<div className="col-lg-4">
 			<div className="token-information card token-padding">
 					<div className="row">
-					  <div className="col-12" style={{paddingRight:'5px',paddingLeft:'5px', paddingTop:'5px', paddingBottom:'5px'}}>
+					  <div className="col-12" style={{ paddingRight:'5px',paddingLeft:'5px', paddingTop:'5px', paddingBottom:'5px' }}>
 						<div className="token-currency-choose">
 						  <div className="row">
 							<div className="col-12">

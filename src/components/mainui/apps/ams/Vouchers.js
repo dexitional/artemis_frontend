@@ -1,9 +1,9 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, loadAMSHelpers, sellVoucher, } from '../../../../store/utils/ssoApi';
+import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, loadAMSHelpers, sellVoucher, fetchSessions, } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
-import { setCurrentPage, setModal, setVouchers } from '../../../../store/admission/ssoSlice';
+import { setCurrentPage, setModal, setVouchers, updateAlert } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
 
 
@@ -243,23 +243,31 @@ const Form = ({recid}) => {
     const [ loading,setLoading ] = useState(false);
     const [ helper,setHelper ] = useState({ vendors:[] });
     const history = useHistory();
+    const dispatch = useDispatch();
     const { sso } = useSelector(state => state)
     const { register, handleSubmit, formState : { errors } } = useForm();
     
     const onSubmit = async data => {
-      const dt = sso.sessions.find(r => r.session_id == 1)
+      
       if(data.quantity == 0) return
+      const rex = await fetchSessions();
+      var dt;
+      if(rex.success){
+         dt = rex.data.find(r => r.session_id == 1)
+      }
       if(dt){
-           data.session_id = parseInt(dt.session_id)
-           data.created_by = sso.user.user.inst_mail
+          data.session_id = parseInt(dt.session_id)
+          data.created_by = sso.user.user.inst_mail
       }
       const res = await postVoucher(data);
       if(res.success){
          // Do something if passed
-         history.push('/app/ams?mod=vouchers&view=list')
-      } else{
+         dispatch(updateAlert({show:true,message:`${data.quantity} NEW VOUCHERS GENERATED FOR ${data.group_id}!`,type:'success'}))
+         setTimeout(() => history.push('/app/ams?mod=vouchers&view=list'), 2000)
+         
+      }else{
          // Show error messages
-         alert("ACTION FAILED!")
+         alert(`ACTION FAILED!`)
       }
     }
 
