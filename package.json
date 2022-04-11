@@ -25,7 +25,6 @@
     "react-cookie": "^4.0.3",
     "react-csv": "^2.0.3",
     "react-dom": "^17.0.2",
-    "react-easy-print": "^0.6.0",
     "react-google-charts": "^3.0.15",
     "react-hook-form": "^7.11.1",
     "react-image-file-resizer": "^0.4.7",
@@ -44,7 +43,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rm -rf ../backend/public/frontend/* && cp -r build/* ../backend/public/frontend && ../backend && git add . && git commit -m 'update' && git push origin master && cd ../client",
+    "build": "react-scripts build && rm -rf ../artemis_backend/public/frontend/* && cp -r build/* ../artemis_backend/public/frontend && ../artemis_backend && git add . && git commit -m 'update' && git push origin master && cd ../artemis_frontend",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -605,6 +605,11 @@ export const postDebtorsReportAIS = async (data) => {
   return res.data;
 } 
 
+// FINANCE REPORTS
+export const postFinanceReport = async (data) => {
+  const res = await axios.post(`${API_URL}/fms/reports`,{...data});
+  return res.data;
+} 
 
 
 

@@ -12,17 +12,17 @@ const PaperStaffActiveList = () => {
     const printRef = useRef();
 
     const handlePrint = useReactToPrint({
-      content: () => printRef.current,
+        content: () => printRef.current,
     });
     
+    
     useEffect(() => {
-        modal.content && setData([...modal.content]);
-        console.log(modal.content)
+       modal.content && setData([...modal.content]);
+       console.log(modal.content)
 	},[])
 
 	
-    return (
-    <>
+    return (<>
     <div className="row">
         <div className="Box small-12 columns" style={{width:'900px', margin:'0px auto',float:'none',overflow:'hidden'}}>
             <div className="small-12 columns u-pr-0 right">

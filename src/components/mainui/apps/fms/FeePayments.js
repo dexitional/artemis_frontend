@@ -1,23 +1,29 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { generateIndexNo, deletePayment, fetchPaymentFMS, fetchPaymentsFMS, loadFMSHelpers, postPaymentFMS, fetchStudentData } from '../../../../store/utils/ssoApi';
+import { generateIndexNo, deletePayment, fetchPaymentFMS, fetchPaymentsFMS, loadFMSHelpers, postPaymentFMS, fetchStudentData, postFinanceReport, loadAISHelpers } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
 //import { Button, Menu, MenuItem } from '@material-ui/core';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import parse from 'html-react-parser'
 import moment from 'moment';
 import {getTargetGroup} from '../../../../store/utils/util'
-
+import Loader from '../../../../assets/img/loaderm.gif'
+import { jsonToExcel } from '../../../../store/utils/admissionUtil';
 
 
 
 // COMPONENT - FEES PAYMENTS
 const FeePayments = ({view,data,recid}) => {
+   
+   const [anchorEl, setAnchorEl] = React.useState(null);
+   const [ref, setRef] = React.useState(1);
+   const open = Boolean(anchorEl);
    
    const dispatch = useDispatch()
    const { sso } = useSelector(state => state)
@@ -26,6 +32,8 @@ const FeePayments = ({view,data,recid}) => {
        case 'list': return 'FEE PAYMENTS';
        case 'add': return 'ADD PAYMENT';
        case 'edit': return 'EDIT PAYMENT';
+       case 'period': return (recid == "fees" ? "FEES PAYMENT REPORT":(recid == "others" ? " OTHER PAYMENTS REPORTS" : " VOUCHER SALES REPORT"));
+       case 'eligible': return 'EXAMS ELIGIBILITY REPORT';
      }
    }
    const content = () => {
@@ -33,6 +41,8 @@ const FeePayments = ({view,data,recid}) => {
         case 'list': return <List/>;
         case 'add': return <Form recid={recid}/>;
         case 'edit': return <Form recid={recid}/>;
+        case 'period': return <PeriodReport recid={recid}/>;
+        case 'eligible': return <BuildReport recid={recid}/>;
      } 
    }
   
@@ -56,7 +66,32 @@ const FeePayments = ({view,data,recid}) => {
       }else{
         alert('Please provide a valid Student Reference Number')
       }
-   }
+  }
+
+  // lOAD REPORTS
+  const generateReport = async (e,type) => {
+    e.preventDefault();
+    const res = await postFinanceReport({type});
+    console.log(res)
+    if(res.success){
+      return jsonToExcel(res.data,res.fileName)
+    }else {
+      dispatch(updateAlert({ show:true, message:`NO DATA !`, type:'error' }))
+    }
+  }
+
+  const handleClick = (e,id) => {
+    setAnchorEl(e.currentTarget);
+    setRef(id);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+    setRef(null);
+  };
+
+  useEffect(()=>{
+    handleClose()
+  },[])
 
    return (
     <div className="content-area card">
@@ -64,8 +99,19 @@ const FeePayments = ({view,data,recid}) => {
            { title() }
            { view == 'list' ?
             <div className="d-inline-block print-btn">
-                <Link to="/app/fms?mod=feestrans&view=add" className="btn btn-light-alt btn-sm btn-icon"><em className="fa fa-sm fa-plus"></em>&nbsp;&nbsp;<b>ADD PAYMENT</b></Link>
-                <Link to="#" onClick={genIndex} className="btn btn-light-alt btn-sm btn-icon ml-2"><em className="fa fa-sm fa-plus"></em>&nbsp;&nbsp;<b>GENERATE INDEX NUMBER</b></Link>
+              <Link to="/app/fms?mod=feestrans&view=add" className="btn btn-light-alt btn-sm btn-icon"><em className="fa fa-sm fa-plus"></em>&nbsp;&nbsp;<b>ADD PAYMENT</b></Link>
+              <Link to="#" onClick={genIndex} className="btn btn-light-alt btn-sm btn-icon ml-2"><em className="fa fa-sm fa-plus"></em>&nbsp;&nbsp;<b>GENERATE INDEX NUMBER</b></Link>
+              &nbsp;
+              <Button id={`basic-button1`} variant="contained" color='warning' aria-controls={`basic-menu1`} aria-haspopup="true" aria-expanded={ anchorEl && anchorEl == 1 ? 'true' : undefined} onClick={(e) => handleClick(e,1)}><b>REPORT SHEETS</b>&nbsp;&nbsp;<i className="fa fa-bars"></i></Button>
+              <Menu id={`basic-menu1`} anchorEl={anchorEl} open={ref && ref == 1} onClose={handleClose} variant="outlined" MenuListProps={{'aria-labelledby': `basic-button1`}}> 
+                <MenuItem> <Link to="#" onClick={(e) => generateReport(e,'admitted')}><b>ADMITTED STUDENTS REPORT</b></Link></MenuItem>
+                <MenuItem><Link to="#"  onClick={(e) => generateReport(e,'advance')}><b>ADVANCE PAYMENT REPORT</b></Link></MenuItem>
+                <MenuItem> <Link to="/app/fms?mod=feestrans&view=eligible"><b>EXAMINATION ELIGIBILITY REPORT</b></Link></MenuItem>
+                <MenuItem> <Link to="/app/fms?mod=feestrans&view=period&recid=fees"><b>FEES PAYMENT REPORT</b></Link></MenuItem>
+                <MenuItem> <Link to="/app/fms?mod=feestrans&view=period&recid=others"><b>OTHER PAYMENT REPORT</b></Link></MenuItem>
+                <MenuItem> <Link to="/app/fms?mod=feestrans&view=period&recid=voucher"><b>VOUCHER SALES REPORT</b></Link></MenuItem>
+                <Divider/>
+              </Menu>
             </div> : null
            }
      </h3>
@@ -151,6 +197,7 @@ const List = () => {
         setCount(res.data.totalPages)// Total Pages
       }
    }
+
    
    const onSearchChange = async (e) => {
      setKeyword(e.target.value)
@@ -198,9 +245,6 @@ const List = () => {
      fetchPayments()
      dispatch(setCurrentPage(page))
    },[page])
-
-
-   
 
    return (
     <div className="card-innr">
@@ -342,9 +386,7 @@ const Form = ({recid}) => {
       formData();
     },[])
 
-    useEffect(()=> {
-      //console.log(getValues('refno'))
-    })
+   
   
 
     return (
@@ -465,4 +507,242 @@ const Form = ({recid}) => {
 }
 
 
-export default FeePayments
+// COMPONENT - REPORT
+const PeriodReport = ({ recid }) => {
+  const [ loading,setLoading ] = useState(false);
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { sso } = useSelector(state => state)
+  const { register, handleSubmit, setValue, getValues, formState : { errors } } = useForm();
+  
+  const onSubmit = async sdata => {
+    const res = await postFinanceReport({ type: recid, ...sdata });
+    console.log(res)
+    if(res.success){
+      return jsonToExcel(res.data,res.fileName)
+    }else {
+      dispatch(updateAlert({ show:true, message:`NO DATA !`, type:'error' }))
+    }
+  }
+
+  const onChange = async data => {
+    if(data){
+      const dk = Object.keys(data);
+      dk.forEach( d => {
+        return setValue(d,data[d])
+      })
+    } 
+  }
+
+  const cancelForm = (e) => {
+     e.preventDefault();
+     const cm = window.confirm('Cancel Form ?')
+     if(cm) history.push('/app/fms?mod=feestrans&view=list')
+  }
+
+  return (
+         <div className="card-innr">
+            <form onSubmit={handleSubmit(onSubmit)} onChange={handleSubmit(onChange)}>
+                  <div className="row">
+                        { (errors.startdate)  &&
+                        <div className="col-md-12">
+                            <div className="alert alert-danger text-danger font-weight-bolder">
+                              { errors.startdate && <small><b>**  {errors.startdate.message.toUpperCase()}<br/></b></small>}
+                            </div>
+                        </div>
+                        }
+                        
+                     
+                        <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                            <label htmlFor="startdate" className="input-item-label">START PERIOD</label>
+                            <input {...register("startdate", { required: 'Please Enter Start Date!' })} className="input-bordered" type="date"/>
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                            <label htmlFor="endate" className="input-item-label">END PERIOD</label>
+                            <input {...register("endate", { required: 'Please Enter End Date!' })} className="input-bordered" type="date"/>
+                          </div>
+                        </div>
+                  </div>
+
+                  <div className="gaps-1x"></div>
+
+                  <div className="d-sm-flex justify-content-between align-items-center">
+                      <span>
+                      <button className="btn btn-dark" type="submit">
+                          <i className="fa fa-chart-bar "></i>&nbsp;&nbsp;<b>GENERATE REPORT</b>
+                      </button>&nbsp;&nbsp;
+                      <Link to="#" onClick={cancelForm} className="btn btn-white text-dark">
+                          <i className="fa fa-times"></i>&nbsp;&nbsp;<b>CANCEL</b>
+                      </Link>
+                      </span>
+                  </div>
+
+            </form>
+          </div>
+    )
+ }
+
+
+
+  // COMPONENT - ELIGIBILITY REPORT
+  const BuildReport = ({ recid }) => {
+    const [ loading,setLoading ] = useState(false);
+    const [ helper,setHelper ] = useState({ programs:[],majors:[]});
+    const history = useHistory();
+    const dispatch = useDispatch();
+    const { sso } = useSelector(state => state)
+    const { register, handleSubmit, setValue, getValues, formState : { errors } } = useForm();
+    
+    const onSubmit = async sdata => {
+      //const res = await postDebtorsReportAIS(sdata);
+      const res = { success: false}
+      const { type,prog_id,year_group,major_id,gender } = sdata
+      console.log(sdata)
+      console.log(res)
+      if(res.success){
+        // Do something if passed
+        const mdata = res.data;
+        if(type == 1){
+            var fileName = '',data = [];
+            if(mdata && mdata.length > 0){
+              for(var row of mdata){
+                const ds = { 'STUDENT ID':row.refno,'INDEX_NUMBER':row.indexno,'STUDENT_NAME':row.name && row.name.toUpperCase(),'YEAR':Math.ceil(row.semester/2),'GENDER':(row.gender == 'M' ? 'MALE':(row.gender == 'F' ? 'FEMALE':'')),'PHONE':row.phone,'PROGRAM':row.program_name,'MAJOR':row.major_name,'STUDY MODE':row.session,'DATE OF ADMISSION': moment(row.doa).format('MM/YYYY'), DEBT:`${row.entry_group == 'GH'?'GHC':'USD'} ${row.transact_account}`, 'PARDON STATUS':row.flag_fees_pardon == 1 ? 'PARDONED':'' }
+                data.push(ds)
+              }
+              if(prog_id) fileName += `DEBTORS_${row.program_name}`
+              if(!prog_id) fileName += `ALL_DEBTORS`
+              if(major_id) fileName += `_${row.major_name}`
+              if(year_group) fileName += `_YEAR_${Math.ceil(row.semester/2)}`
+              if(gender) fileName += `_${(row.gender == 'M' ? 'MALE':(row.gender == 'F' ? 'FEMALE':''))}`
+              return jsonToExcel(data,fileName)
+            }else{ 
+              dispatch(updateAlert({ show:true, message:`NO DATA !`, type:'error' }))
+            }
+        
+          }else{
+
+        }
+        
+
+      } else{
+        // Show error messages
+        dispatch(updateAlert({show:true,message:`ACTION FAILED!`,type:'error'}))
+        alert("ACTION FAILED!")
+      }
+    }
+
+    const onChange = async data => {
+      if(data){
+        const dk = Object.keys(data);
+        dk.forEach( d => {
+            return setValue(d,data[d])
+        })
+      } 
+    }
+
+    
+
+    const helperData = async() => {
+        const hp = await loadAISHelpers()
+        console.log(hp)
+        if(hp.success){
+          setHelper(hp.data)
+        } 
+    }
+
+    const cancelForm = (e) => {
+      e.preventDefault();
+      const cm = window.confirm('Cancel Form ?')
+      if(cm) history.push('/app/fms?mod=debtors&view=list')
+    }
+
+    useEffect(()=>{
+      helperData();
+    },[])
+
+
+    return (
+    <div className="card-innr">
+              <form onSubmit={handleSubmit(onSubmit)} onChange={handleSubmit(onChange)}>
+                    <div className="row">
+                        { (errors.prog_id)  &&
+                        <div className="col-md-12">
+                            <div className="alert alert-danger text-danger font-weight-bolder">
+                              { errors.quantity && <small><b>**  {errors.quantity.message.toUpperCase()}<br/></b></small>}
+                            </div>
+                        </div>
+                        }
+                        
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="prog_id" className="input-item-label">PROGRAMME OF STUDY</label>
+                                <select {...register("prog_id")} className="input-bordered">
+                                  <option value="" disabled selected>--CHOOSE--</option>
+                                  {helper && helper.programs.map( row => 
+                                    <option value={row.id}>{row.short && row.short.toUpperCase()}</option>
+                                  )}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="major_id" className="input-item-label">MAJOR & SPECIALIZATION</label>
+                                <select {...register("major_id")} className="input-bordered">
+                                <option value="" disabled selected>ALL</option>
+                                  { helper && helper.majors.map( row => 
+                                    getValues('prog_id') == row.prog_id ? <option value={row.id} data-prog={row.prog_id}>{row.title && row.title.toUpperCase()}</option> : null 
+                                  )}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="year_group" className="input-item-label">TARGET YEAR GROUP</label>
+                                <select {...register("year_group")} className="input-bordered">
+                                  <option value="" disabled selected>ALL</option>
+                                  { [1,2,3,4,5,6].includes(parseInt(getValues('prog_id'))) ? <option value={1}>YEAR 1</option> : null }
+                                  { [1,2,3,4,5,6].includes(parseInt(getValues('prog_id'))) ? <option value={2}>YEAR 2</option> : null }
+                                  { [1,2].includes(parseInt(getValues('prog_id'))) ? <option value={3}>YEAR 3</option> : null }
+                                  { [1,2].includes(parseInt(getValues('prog_id'))) ? <option value={4}>YEAR 4</option> : null }
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="session" className="input-item-label">ASSESSMENT SESSION </label>
+                                <select {...register("session")} className="input-bordered">
+                                  <option value="" disabled selected>ALL</option>
+                                  <option value={'M'}>MORNING</option>
+                                  <option value={'E'}>EVENING</option>
+                                  <option value={'W'}>WEEKEND</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="gaps-1x"></div>
+
+                    <div className="d-sm-flex justify-content-between align-items-center">
+                      <span>
+                        <button className="btn btn-dark" type="submit">
+                          <i className="fa fa-chart-bar "></i>&nbsp;&nbsp;<b>GENERATE REPORT</b>
+                        </button>&nbsp;&nbsp;
+                        <Link to="#" onClick={cancelForm} className="btn btn-white text-dark">
+                          <i className="fa fa-times"></i>&nbsp;&nbsp;<b>CANCEL</b>
+                        </Link>
+                      </span>
+                    </div>
+
+                </form>
+          
+    </div>
+      )
+  }
+
+  export default FeePayments
