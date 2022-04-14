@@ -42,7 +42,7 @@ const FeePayments = ({view,data,recid}) => {
         case 'add': return <Form recid={recid}/>;
         case 'edit': return <Form recid={recid}/>;
         case 'period': return <PeriodReport recid={recid}/>;
-        case 'eligible': return <BuildReport recid={recid}/>;
+        case 'eligible': return <BuildReport view={view}/>;
      } 
    }
   
@@ -552,7 +552,6 @@ const PeriodReport = ({ recid }) => {
                         </div>
                         }
                         
-                     
                         <div className="col-md-6">
                           <div className="input-item input-with-label">
                             <label htmlFor="startdate" className="input-item-label">START PERIOD</label>
@@ -589,7 +588,7 @@ const PeriodReport = ({ recid }) => {
 
 
   // COMPONENT - ELIGIBILITY REPORT
-  const BuildReport = ({ recid }) => {
+  const BuildReport = ({ view }) => {
     const [ loading,setLoading ] = useState(false);
     const [ helper,setHelper ] = useState({ programs:[],majors:[]});
     const history = useHistory();
@@ -598,40 +597,11 @@ const PeriodReport = ({ recid }) => {
     const { register, handleSubmit, setValue, getValues, formState : { errors } } = useForm();
     
     const onSubmit = async sdata => {
-      //const res = await postDebtorsReportAIS(sdata);
-      const res = { success: false}
-      const { type,prog_id,year_group,major_id,gender } = sdata
-      console.log(sdata)
-      console.log(res)
+      const res = await postFinanceReport({ type: view, ...sdata });
       if(res.success){
-        // Do something if passed
-        const mdata = res.data;
-        if(type == 1){
-            var fileName = '',data = [];
-            if(mdata && mdata.length > 0){
-              for(var row of mdata){
-                const ds = { 'STUDENT ID':row.refno,'INDEX_NUMBER':row.indexno,'STUDENT_NAME':row.name && row.name.toUpperCase(),'YEAR':Math.ceil(row.semester/2),'GENDER':(row.gender == 'M' ? 'MALE':(row.gender == 'F' ? 'FEMALE':'')),'PHONE':row.phone,'PROGRAM':row.program_name,'MAJOR':row.major_name,'STUDY MODE':row.session,'DATE OF ADMISSION': moment(row.doa).format('MM/YYYY'), DEBT:`${row.entry_group == 'GH'?'GHC':'USD'} ${row.transact_account}`, 'PARDON STATUS':row.flag_fees_pardon == 1 ? 'PARDONED':'' }
-                data.push(ds)
-              }
-              if(prog_id) fileName += `DEBTORS_${row.program_name}`
-              if(!prog_id) fileName += `ALL_DEBTORS`
-              if(major_id) fileName += `_${row.major_name}`
-              if(year_group) fileName += `_YEAR_${Math.ceil(row.semester/2)}`
-              if(gender) fileName += `_${(row.gender == 'M' ? 'MALE':(row.gender == 'F' ? 'FEMALE':''))}`
-              return jsonToExcel(data,fileName)
-            }else{ 
-              dispatch(updateAlert({ show:true, message:`NO DATA !`, type:'error' }))
-            }
-        
-          }else{
-
-        }
-        
-
-      } else{
-        // Show error messages
-        dispatch(updateAlert({show:true,message:`ACTION FAILED!`,type:'error'}))
-        alert("ACTION FAILED!")
+        return jsonToExcel(res.data,res.fileName)
+      }else {
+        dispatch(updateAlert({ show:true, message:`NO DATA !`, type:'error' }))
       }
     }
 
@@ -657,7 +627,7 @@ const PeriodReport = ({ recid }) => {
     const cancelForm = (e) => {
       e.preventDefault();
       const cm = window.confirm('Cancel Form ?')
-      if(cm) history.push('/app/fms?mod=debtors&view=list')
+      if(cm) history.push('/app/fms?mod=feestrans&view=list')
     }
 
     useEffect(()=>{
