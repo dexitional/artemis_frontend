@@ -42,7 +42,7 @@ const StudentHeader = ({data,mod}) => {
 							</div>
 							<div className="col-12">
 								<div className="pay-option-label unit-cover">
-									<h3 style={{textAlign:'center', color:'white'}}><b> {user.user.session_name ? `${user.user.session_year}, SEMESTER ${user.user.session_semester}` : 'NO ACTIVE SESSION SET'}</b></h3>
+									<h3 style={{textAlign:'center', color:'white'}}><b> {user.user.defer_status == 1 ? `PROGRAM DEFERRED`: (user.user.session_name ? `${user.user.session_year}, SEMESTER ${user.user.session_semester}` : 'NO ACTIVE SESSION SET')}</b></h3>
 								</div>
 							</div>
 							

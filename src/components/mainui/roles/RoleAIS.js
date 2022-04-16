@@ -20,6 +20,7 @@ const RoleAIS = ({data}) => {
 		  { title : 'Informer', desc: 'Information Dispatcher Module', url: '/app/ais?mod=informer&view=list',icon:'fa-envelope', accessRoles: [1,15,18,13] },
 		  { title : 'Program Change', desc: 'Program Change Module', url: '/app/ais?mod=progchange&view=list',icon:'fa-envelope', accessRoles: [15] },
 		  { title : 'Deferment', desc: 'Deferment Module', url: '/app/ais?mod=deferment&view=list',icon:'fa-envelope', accessRoles: [15] },
+		  { title : 'Transwift', desc: 'Transwift Module', url: '/app/ais?mod=transwift&view=list',icon:'fa-book', accessRoles: [15] },
 		  //{ title : 'Schemes', desc: 'Academic Scheme Module', url: '/app/ais?mod=schemes&view=list',icon:'fa-book', accessRoles: [15] },
 		  //{ title : 'Settings', desc: 'Settings Module', url: '/app/ais?mod=settings&view=list',icon:'fa-cog', accessRoles: [15] },
 		  //{ title : 'Statistics', desc: 'Stats Module', url: '/app/ais?mod=statistics&view=list',icon:'fa-chart-bar', accessRoles: [15,21,22] },

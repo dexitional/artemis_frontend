@@ -395,6 +395,76 @@ export const loadCourselist = async (id) => {
   return res.data;
 } 
 
+
+// TRANSWIFT
+export const fetchTranswift = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/transwift${query}`);
+  return res.data;
+} 
+
+
+export const postTranswift = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/transwift`,{...data});
+  return res.data;
+} 
+
+export const deleteTranswift = async (id) => {
+  const res = await axios.delete(`${API_URL}/ais/transwift/${id}`);
+  return res.data;
+} 
+
+
+export const fetchTranscript = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/transcript`,{...data});
+  return res.data;
+} 
+
+export const fetchAttestation = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/attestation`,{...data});
+  return res.data;
+} 
+
+export const fetchProficiency = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/proficiency`,{...data});
+  return res.data;
+} 
+
+export const fetchIntroLetter = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/introletter`,{...data});
+  return res.data;
+} 
+
+/*
+export const loadAssessment = async (id) => {
+  const res = await axios.get(`${API_URL}/ais/loadsheet/${id}`);
+  return res.data;
+} 
+
+export const saveAssessment = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/savesheet`,{...data});
+  return res.data;
+} 
+
+export const publishAssessment = async (id,sno) => {
+  const res = await axios.get(`${API_URL}/ais/publishsheet/${id}/${sno}`);
+  return res.data;
+} 
+
+export const certifyAssessment = async (id,sno) => {
+  const res = await axios.get(`${API_URL}/ais/certifysheet/${id}/${sno}`);
+  return res.data;
+} 
+
+export const uncertifyAssessment = async (id) => {
+  const res = await axios.get(`${API_URL}/ais/uncertifysheet/${id}`);
+  return res.data;
+} 
+
+export const loadCourselist = async (id) => {
+  const res = await axios.get(`${API_URL}/ais/loadcourselist/${id}`);
+  return res.data;
+} 
+*/
  
 // CURRICULUM
 

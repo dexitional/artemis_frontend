@@ -24,12 +24,12 @@ const PaperResult = () => {
 
     const getGrade = (num) => {
         const vs = modal.content.grades && modal.content.grades.find(row => row.min <= num && num <= row.max)
-        return (vs && vs.grade) || 'N/A';
+        return (vs && vs.grade) || 'IC';
      }
  
      const getPoint = (num) => {
         const vs = modal.content.grades && modal.content.grades.find(row => row.min <= num && num <= row.max)
-        return (vs && vs.gradepoint) || 'N/A';
+        return (vs && vs.gradepoint) || 'IC';
      }
 
     const handlePrint = useReactToPrint({
@@ -99,7 +99,7 @@ const PaperResult = () => {
                             <td align="center">{row.credit}</td>
                             <td align="center">{row.total_score}</td>
                             <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{getGrade(row.total_score)}</td>
-                            <td align="center">{row.total_score && getPoint(row.total_score) && getPoint(row.total_score).toFixed(1)}</td>
+                            <td align="center">{row.total_score}</td>
                         </tr>
                          ) : 
                          <tr>
@@ -112,10 +112,10 @@ const PaperResult = () => {
               <div className="title-cover">
                     <div className="title-group flex-2">&nbsp;</div>
                     <div className="title-group"><b>TCR:&nbsp;</b>{modal.content.data && modal.content.data.data.reduce((acc,row)=> row.credit+acc,0)}</div>
-                    <div className="title-group"><b>TGP:&nbsp;</b>{modal.content.data && modal.content.data.data.reduce((acc,row)=> row.total_score && getPoint(row.total_score)+acc,0).toFixed(1)}</div>
+                    <div className="title-group"><b>TGP:&nbsp;</b>{modal.content.data && modal.content.data.data.reduce((acc,row)=> getPoint(parseFloat(row.total_score))+acc,0).toFixed(1)}</div>
                     <div className="title-group"><b>CCR:&nbsp;</b>10</div>
                     <div className="title-group"><b>CGV:&nbsp;</b>10</div>
-                    <div className="title-group"><b>GPA:&nbsp;</b>{ modal.content.data && ((modal.content.data.data.reduce((acc,row)=> row.total_score && (getPoint(row.total_score)+acc,0))/(modal.content.data.data.reduce((acc,row)=> row.credit+acc,0))).toFixed(1)) }</div>
+                    <div className="title-group"><b>GPA:&nbsp;</b>{ /*modal.content.data && ((modal.content.data.data.reduce((acc,row)=> row.total_score && (getPoint(row.total_score)+acc,0))/(modal.content.data.data.reduce((acc,row)=> row.credit+acc,0))).toFixed(1))*/ }</div>
                     <div className="title-group"><b>CGPA:&nbsp;</b>2.40</div>
                     <div className="title-group flex-2">&nbsp;</div>
               </div><br/>

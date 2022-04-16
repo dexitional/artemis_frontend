@@ -438,7 +438,7 @@ const Form = ({recid}) => {
                                 <select {...register("bankacc_id")} className="input-bordered">
                                   <option value="" disabled selected>--NONE--</option>
                                   {helper && helper.bankacc.map( row => 
-                                    <option value={row.id}>{row.tag && row.tag.toUpperCase()}</option>
+                                    <option value={row.id} selected={getValues('bankacc_id') == row.id}>{row.tag && row.tag.toUpperCase()}</option>
                                   )}
                                 </select>
                             </div>

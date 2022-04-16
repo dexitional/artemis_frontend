@@ -28,7 +28,7 @@ const StudentNavbar = () => {
 				<ul className="navbar-menu">
 					<li className="active"><Link to="/student"> DASHBOARD</Link></li>
 					<li className=""><Link to="/student?mod=profile&view=list"> STUDENT PROFILE</Link></li>
-					{/*<li className=""><Link to="/student?mod=results&view=list"> STATEMENT OF RESULTS</Link></li> */}
+					<li className=""><Link to="/student?mod=results&view=list"> STATEMENT OF RESULTS</Link></li> 
 					<li className=""><Link to="/student?mod=registration&view=list"> SEMESTER REGISTRATION</Link></li>
 					<li className=""><Link to="/student?mod=fees&view=list"> ACADEMIC FEES</Link></li>
 					

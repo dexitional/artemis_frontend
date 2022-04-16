@@ -1,4 +1,4 @@
-import React, { useState,useEffect,useRef }  from 'react';
+import React, { useState,useEffect,useRef, Fragment }  from 'react';
 import '../../../../assets/css/ui-auth-elements.css';
 import Loader from '../../../../assets/img/loader.gif';
 import { useHistory,Link } from 'react-router-dom';
@@ -123,7 +123,7 @@ const StudentResult = () => {
 							</thead>
 							<tbody >
 								{ slip.data && slip.data.map(row =>
-								<tr role="row" className="data-item odd">
+								<tr role="row" className="data-item odd" key={row.course_code}>
 									<td className="data-col" colspan="2" ><span className="lead user-name">{row.course_name && row.course_name.toUpperCase()}</span><b className="user-id text-primary left">{row.course_code && row.course_code.toUpperCase()}</b></td>
 									<td className="data-col dt-doc-type  center"><h3 className="lead user-name">{row.credit}</h3></td>
 								    <td className="data-col dt-doc-type center"><h3 className="lead user-name">{row.total_score}</h3></td>
@@ -160,7 +160,7 @@ const StudentResult = () => {
 			<div  className="token-sales card">
 				<div  className="card-innr">
 					{ results && Object.keys(results).map(row => 
-					  <>
+					  <Fragment key={row.course_code}>
 						<ul  className="progress-info">
 							<li>
 								<b>{row}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
@@ -169,7 +169,7 @@ const StudentResult = () => {
 							</li>
 						</ul>
 						<hr/>
-					  </>
+					  </Fragment>
                     )}
 					<ul  className="progress-info nitro" style={{border:"none",display:"none"}}>
 					  <li>
