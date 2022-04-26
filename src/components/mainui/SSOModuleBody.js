@@ -30,6 +30,7 @@ import Progchange from './apps/ais/Progchange';
 import Letters from './apps/ams/Letters';
 import Entrance from './apps/ams/Entrance';
 import Utilities from './apps/ams/Utilities';
+import Deferment from './apps/ais/Deferment';
 
 const SSOModuleBody = ({module,mod,view,data,recid}) => {
   const { sso } = useSelector( state => state)
@@ -62,6 +63,7 @@ const SSOModuleBody = ({module,mod,view,data,recid}) => {
       if(module == 'ais' && mod == 'calendar') return <Calendar view={view} data={data} recid={recid}/>
       if(module == 'ais' && mod == 'informer') return <Informer view={view} data={data} recid={recid}/>
       if(module == 'ais' && mod == 'progchange') return <Progchange view={view} data={data} recid={recid}/>
+      if(module == 'ais' && mod == 'deferment') return <Deferment view={view} data={data} recid={recid}/>
       // FMS Modules
       if(module == 'fms' && mod == 'studentbills') return <StudentBills view={view} data={data} recid={recid}/>
       if(module == 'fms' && mod == 'staccounts') return <StudentAccounts view={view} data={data} recid={recid}/>

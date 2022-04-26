@@ -58,6 +58,7 @@ const Scoresheets = ({view,data,recid}) => {
 const List = () => {
    
    const history = useHistory()
+   const [ role, setRole ] = useState(null)
    const [ sheets, setSheets ] = useState([])
    const { sso } = useSelector(state => state)
    const dispatch = useDispatch();
@@ -71,6 +72,8 @@ const List = () => {
    const [ isLoading, setIsLoading ] = React.useState(false);
    const [ newId, setNewId ] = React.useState(null);
    const importRef = useRef(null)
+   const { user }  = sso;
+   console.log(user);
 
    const handleClick = (e,id) => {
       setAnchorEl(e.currentTarget);
@@ -143,17 +146,17 @@ const List = () => {
         }
     }
 
-    const certifySheet = async (id) => {
-       const ok = window.confirm('PUBLISH ASSESSMENTS IN THIS SHEET?')
+    const certifySheet = async (id,sno) => {
+       const ok = window.confirm('PUBLISH ASSESSMENT SHEET?')
        if(ok){
-          const res = await certifyAssessment(id);
+          const res = await certifyAssessment(id,sno);
           if(res.success){
             const newsheets = sso.databox.sheets.map((sh) =>{
                 if(sh.id == id) return { ...sh,flag_certified:1 }
                 return sh
             })
             setSheets([...newsheets]);
-            dispatch(updateAlert({show:true,message:`SHEET CERTIFIED !`,type:'success'}))
+            dispatch(updateAlert({show:true,message:`SHEET PUBLISHED !`,type:'success'}))
           }else{
             dispatch(updateAlert({show:true,message:`ACTION FAILED!`,type:'error'}))
           }
@@ -161,7 +164,7 @@ const List = () => {
     }
 
     const uncertifySheet = async (id) => {
-      const ok = window.confirm('UNPUBLISH ASSESSMENTS IN THIS SHEET?')
+      const ok = window.confirm('UNPUBLISH ASSESSMENT SHEET?')
       if(ok){
          const res = await uncertifyAssessment(id);
          if(res.success){
@@ -177,12 +180,12 @@ const List = () => {
       }
    }
 
-    const publishSheet = async (id) => {
-       const ok = window.confirm('SUBMIT ASSESSMENTS IN THIS SHEET?')
+    const publishSheet = async (id,sno) => {
+       const ok = window.confirm('SUBMIT ASSESSMENT SHEET?')
        if(ok){
           const rt = await loadAssessment(id)
           if(rt.success && rt.data.length > 0){
-              const res = await publishAssessment(id);
+              const res = await publishAssessment(id,sno);
               if(res.success){
                   const newsheets = sso.databox.sheets.map((sh) =>{
                       if(sh.id == id) return { ...sh,flag_assessed:1 }
@@ -280,9 +283,6 @@ const List = () => {
         }
     }
    
-
-
-
     const restoreSheetData = () => {
        sso.databox.sheets && setSheets([...sso.databox.sheets]);
     }
@@ -292,6 +292,7 @@ const List = () => {
       if(page >= 1) query += `?page=${page-1}`
       if(keyword != '') query += `&keyword=${keyword}`
       if(sel != '') query += `&stream=${sel}`
+      if(role) query += `&role=${role}`
       //alert(query)
       const res = await fetchSheetDataAIS(query);
       if(res.success){
@@ -305,6 +306,14 @@ const List = () => {
           setCount(1)// Total Pages
       }
     },[sel,sheets])
+
+
+    const getAcademicRole = () => {
+      if(user.roles.length > 0){
+        const m = user.roles.find( r => ['ais dean','ais hod'].includes(r.role_name.toLowerCase()))
+        setRole(m && m.role_meta || null)
+      }
+    }
    
    const onSearchChange = async (e) => {
       setKeyword(e.target.value)
@@ -342,6 +351,7 @@ const List = () => {
 
    useEffect(() => {
      restoreSheetData()
+     getAcademicRole()
    },[])  
 
    useEffect(() => {
@@ -411,10 +421,11 @@ const List = () => {
                                     <Divider/>
                                     <MenuItem onClick={() => viewScores(row.id)}>VIEW SCORES</MenuItem>
                                     <MenuItem onClick={() => viewClass(row.id)}>VIEW CLASS</MenuItem>
-                                    { row.flag_assessed == 1 && <Divider/>}
-                                    {(row.flag_assessed == 1 && row.flag_certified == 0) && <MenuItem onClick={() => certifySheet(row.id)}>PUBLISH SCORES</MenuItem>}
-                                    {(row.flag_assessed == 1 && row.flag_certified == 1 ) && <MenuItem onClick={() => uncertifySheet(row.id)}>UNPUBLISH SCORES</MenuItem>}
-                                    {row.flag_assessed == 0 && <MenuItem onClick={() => publishSheet(row.id)}>SUBMIT SCORES</MenuItem>}
+                                    { row.flag_assessed == 1 &&  (role && role.role_name && role.role_name.toLowerCase() == 'ais dean') && <Divider/>}
+                                    {(row.flag_assessed == 1 && row.flag_certified == 0) &&  (role && role.role_name && role.role_name.toLowerCase() == 'ais dean') && <MenuItem onClick={() => certifySheet(row.id,user.user.staff_no)}>PUBLISH SCORES</MenuItem>}
+                                    {(row.flag_assessed == 1 && row.flag_certified == 1 ) &&  (role && role.role_name && role.role_name.toLowerCase() == 'ais dean') && <MenuItem onClick={() => uncertifySheet(row.id)}>UNPUBLISH SCORES</MenuItem>}
+                                    
+                                    {row.flag_assessed == 0 && <MenuItem onClick={() => publishSheet(row.id,user.user.staff_no)}>SUBMIT SHEET</MenuItem>}
                                     
                                     { row.flag_assessed == 0 && <Divider/>}
                                     { row.flag_assessed == 0 && <MenuItem onClick={() => fillSheet(row.id)}>ASSESS SHEET</MenuItem> }

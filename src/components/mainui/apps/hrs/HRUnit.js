@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postHRUnitDataHRS, loadHRSHelpers, deleteHRUnitDataHRS, fetchHRUnitDataHRS } from '../../../../store/utils/ssoApi';
+import { postHRUnitDataHRS, loadHRSHelpers, deleteHRUnitDataHRS, fetchHRUnitDataHRS, updateHRUnitHead } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
@@ -91,6 +91,20 @@ const List = () => {
         }
       }
    }
+
+   const updateHead = async (id) => {
+    const cm = window.prompt('Please Provide Staff Number !')
+    if(cm) {
+      const resp = await updateHRUnitHead(id,cm)
+      if(resp.success){
+        const ss = hrunit.filter(s => s.id != id)
+        setHRUnit([...ss ])
+        dispatch(updateAlert({show:true,message:`HEAD UPDATED TO STAFF NUMBER: ${cm} !`,type:'success'}))
+      }else{
+        dispatch(updateAlert({show:true,message:`ACTION FAILED!`,type:'error'}))
+      }
+    }
+ }
 
   
    
@@ -197,9 +211,8 @@ const List = () => {
                                     {/*<MenuItem onClick={handleClose}>VIEW PROFILE</MenuItem>*/}
                                     <MenuItem onClick={() => editUnit(row.id)}>EDIT UNIT</MenuItem>
                                     <MenuItem onClick={() => delUnit(row.id)}>DELETE UNIT</MenuItem>
-                                    {/*
-                                    <MenuItem onClick={handleClose}>VIEW REGISTRATION</MenuItem>
-                                    <MenuItem onClick={handleClose}>VIEW TRANSCRIPT</MenuItem>
+                                    <MenuItem onClick={() => updateHead(row.id) }>UPDATE HEAD</MenuItem>
+                                     {/*<MenuItem onClick={handleClose}>VIEW TRANSCRIPT</MenuItem>
                                     <MenuItem onClick={handleClose}>VIEW STATEMENT</MenuItem>
                                     */}
                                   </Menu>

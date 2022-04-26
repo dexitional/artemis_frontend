@@ -74,16 +74,14 @@ const PaperClassList = () => {
                             <td className="codetitle" align="left">INDEX NO</td>
                             <td className="codetitle" align="left">STUDENT ID</td>
                             <td className="tdtitle">STUDENT NAME</td>
-                            <td className="codetitle" align="center">STATUS </td>
-                            <td className="codetitle" align="left">DATE</td>
+                            <td className="codetitle" align="left">DATE REGISTERED</td>
                         </tr>
                         { modal && modal.content.data.map(row => 
                         <tr class="tbody">
                             <td align="left"><b>{row.indexno.toUpperCase()}</b></td>
                             <td align="left"><b>{row.refno.toUpperCase()}</b></td>
                             <td><b>{row.name.toUpperCase()}</b></td>
-                            <td align="center">{row.regstatus}</td>
-                            <td align="left">{row.regdate}</td>
+                            <td align="left">{row.regdate && row.regdate.toUpperCase()}</td>
                         </tr>
                         ) ||
                          <tr>

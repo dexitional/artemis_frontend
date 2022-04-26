@@ -87,7 +87,7 @@ const Matriculants = ({view,data,recid}) => {
       var fileName,data = [];
       if(resp.success){
         if(resp.data && resp.data.length > 0){
-          fileName = `2022 ADMISSIONS`
+          fileName = `${new Date().getFullYear()} ADMISSIONS`
           for(var row of resp.data){
             const ds = {'STUDENT ID':row.serial.toString(),'STUDENT NAME':row.name.toUpperCase(),'PROGRAMME':row.program_name,'YEAR':Math.ceil(row.start_semester/2),'GENDER':row.gender, 'AGE':moment().diff(row.dob,'years')+' YRS', 'PHONE': row.phone}
             data.push(ds)

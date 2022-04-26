@@ -179,7 +179,7 @@ const List = () => {
    }
 
     const publishSheet = async (id) => {
-       const ok = window.confirm('SUBMIT ASSESSMENTS IN THIS SHEET?')
+       const ok = window.confirm('SUBMIT ASSESSMENT SHEET?')
        if(ok){
           const rt = await loadAssessment(id)
           if(rt.success && rt.data.length > 0){
@@ -406,8 +406,7 @@ const List = () => {
                                       {(row.flag_assessed == 1 && row.flag_certified == 1 ) && <MenuItem onClick={() => uncertifySheet(row.id)}>UNPUBLISH SCORES</MenuItem>}
                                     */
                                     }
-                                    {row.flag_assessed == 0 && <MenuItem onClick={() => publishSheet(row.id)}>SUBMIT SCORES</MenuItem>}
-                                    
+                                    { row.flag_assessed == 0 && <MenuItem onClick={() => publishSheet(row.id,user.user.staff_no)}>SUBMIT SHEET</MenuItem>}
                                     { row.flag_assessed == 0 && <Divider/>}
                                     { row.flag_assessed == 0 && <MenuItem onClick={() => fillSheet(row.id)}>ASSESS SHEET</MenuItem> }
                                     { row.flag_assessed == 0 && <MenuItem onClick={() => exportSheet(row.id)}>EXPORT SHEET</MenuItem> }

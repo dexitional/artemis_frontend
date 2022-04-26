@@ -1,7 +1,7 @@
 import React,{ useState,useEffect,useRef } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, fetchSheetDataAIS, loadAssessment, saveAssessment, publishAssessment, certifyAssessment, uncertifyAssessment, loadCourselist, assignSheet, unassignSheet, fetchHRStaffHRS, fetchMetaDataAIS, fetchMountListAIS, postMetaDataAIS, fetchCalDataAIS, postCalDataAIS, activateCalendar, } from '../../../../store/utils/ssoApi';
+import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, fetchSheetDataAIS, loadAssessment, saveAssessment, publishAssessment, certifyAssessment, uncertifyAssessment, loadCourselist, assignSheet, unassignSheet, fetchHRStaffHRS, fetchMetaDataAIS, fetchMountListAIS, postMetaDataAIS, fetchCalDataAIS, postCalDataAIS, activateCalendar, stageSheet, } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import { setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
 import Pager from '../../Pager';
@@ -76,6 +76,7 @@ const List = () => {
    const [ cal, setCal ] = useState([])
    const { sso } = useSelector(state => state)
    const dispatch = useDispatch();
+   const [ activity,setActivity ] = useState({})
    const [anchorEl, setAnchorEl] = React.useState(null);
    const [ref, setRef] = React.useState(null);
    const open = Boolean(anchorEl);
@@ -111,6 +112,19 @@ const List = () => {
         setRef(null);
     }
 
+    const setSchoresheet = async (sid) => {
+        setActivity({...activity,[`cal${sid}`]:true})
+        const res = await stageSheet(sid);
+        console.log(res)
+        if(res.success){
+          fetchMetaData()
+          dispatch(updateAlert({show:true,message:`SCORESHEETS STAGED !`,type:'success'}))
+        }else{
+          dispatch(updateAlert({show:true,message:`ACTIVATION FAILED !`,type:'error'}))
+        }
+        setActivity({...activity,[`cal${sid}`]:false})
+        setRef(null);
+    }
 
     const deleteProfile = async (sno) => {
         const res = await fetchHRStaffHRS(sno);
@@ -249,8 +263,9 @@ const List = () => {
                                 <Button id={`basic-button${row.id}`} variant="contained" color={(row.status == 1 && row.default == 1) ? 'success':(row.default == 0 && row.status == 1 ? 'warning':'error')} aria-controls={`basic-menu${row.id}`} aria-haspopup="true" aria-expanded={ anchorEl && anchorEl == row.id ? 'true' : undefined} onClick={(e) => handleClick(e,row.id)}><i className="fa fa-bars"></i></Button>
                                   <Menu id={`basic-menu${row.id}`} anchorEl={anchorEl} open={ref && ref == row.id} onClose={handleClose} variant="outlined" MenuListProps={{'aria-labelledby': `basic-button${row.id}`}}>
                                     {/*<MenuItem onClick={handleClose}>VIEW PROFILE</MenuItem>*/}
-                                    <MenuItem onClick={() => editProfile(row.id)}>EDIT CALENDAR</MenuItem>
+                                   <MenuItem onClick={() => editProfile(row.id)}>EDIT CALENDAR</MenuItem>
                                     <MenuItem onClick={() => setDefault(row.id)}>SET AS DEFAULT</MenuItem>
+                                    <MenuItem onClick={() => setSchoresheet(row.id)}>{ !activity['cal'+row.id] ? <>STAGE SHEETS</> : <>&nbsp;&nbsp;<img src={Loader} style={{height:'20px',margin:'0 auto'}}/> STAGING ...</>}</MenuItem>
                                     {/*<MenuItem onClick={() => deleteProfile(row.id)}>DELETE CALENDAR</MenuItem>*/}
                                   </Menu>
                                 </>

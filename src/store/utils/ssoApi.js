@@ -370,13 +370,13 @@ export const saveAssessment = async (data) => {
   return res.data;
 } 
 
-export const publishAssessment = async (id) => {
-  const res = await axios.get(`${API_URL}/ais/publishsheet/${id}`);
+export const publishAssessment = async (id,sno) => {
+  const res = await axios.get(`${API_URL}/ais/publishsheet/${id}/${sno}`);
   return res.data;
 } 
 
-export const certifyAssessment = async (id) => {
-  const res = await axios.get(`${API_URL}/ais/certifysheet/${id}`);
+export const certifyAssessment = async (id,sno) => {
+  const res = await axios.get(`${API_URL}/ais/certifysheet/${id}/${sno}`);
   return res.data;
 } 
 
@@ -427,9 +427,15 @@ export const deleteCalendar = async (id) => {
 } 
 
 export const activateCalendar = async (id) => {
-  const res = await axios.delete(`${API_URL}/ais/setcalendar/${id}`);
+  const res = await axios.get(`${API_URL}/ais/setcalendar/${id}`);
   return res.data;
 } 
+
+export const stageSheet = async (id) => {
+  const res = await axios.post(`${API_URL}/ais/stagesheet`,{ session_id:id });
+  return res.data;
+} 
+
 
 // INFORMER
 
@@ -469,6 +475,29 @@ export const deleteProgchange = async (id) => {
 
 export const approveProgchange = async (id,sno) => {
   const res = await axios.get(`${API_URL}/ais/progchange/approve/${id}/${sno}`);
+  return res.data;
+} 
+
+
+// DEFERMENT
+
+export const fetchDefer = async (query = '') => {
+  const res = await axios.get(`${API_URL}/ais/deferment${query}`);
+  return res.data;
+} 
+
+export const postDefer = async (data) => {
+  const res = await axios.post(`${API_URL}/ais/deferment`,{...data});
+  return res.data;
+} 
+
+export const deleteDefer = async (id) => {
+  const res = await axios.delete(`${API_URL}/ais/deferment/${id}`);
+  return res.data;
+} 
+
+export const approveDefer = async (id,sno) => {
+  const res = await axios.get(`${API_URL}/ais/deferment/approve/${id}/${sno}`);
   return res.data;
 } 
 
@@ -681,6 +710,11 @@ export const postHRUnitDataHRS = async (data) => {
 
 export const deleteHRUnitDataHRS = async (id) => {
   const res = await axios.delete(`${API_URL}/hrs/hrunit/${id}`);
+  return res.data;
+} 
+
+export const updateHRUnitHead = async (id,sno) => {
+  const res = await axios.get(`${API_URL}/hrs/updatehead/${id}/${sno}`);
   return res.data;
 } 
 
