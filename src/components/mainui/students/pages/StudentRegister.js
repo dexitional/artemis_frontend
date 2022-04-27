@@ -124,11 +124,11 @@ const StudentRegister = () => {
 		// If Student does't have an Index Number
 		if(!user.user.indexno || (user.user.indexno && user.user.indexno.toLowerCase() == 'unique')){
 			allowReg = false; 
+			msg = "No Index Number, Pay fees to obtain one or contact Helpdesk!"
 		}
 		// If Student is Pardoned by Finance, Allow Registration
 		if(user.user.flag_fees_pardon  == 1){
 			allowReg = true
-			msg = "No Index Number, Pay fees to obtain one or contact Helpdesk!"
 		}
 
 		// If Student Deferred Programme
