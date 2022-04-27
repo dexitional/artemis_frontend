@@ -249,8 +249,6 @@ const Form = ({recid}) => {
     const onSubmit = async data => {
       data.id = parseInt(recid) || 0;
       const sentToServer = { id: data.id, unit_id:data.unit_id, course_id:data.course_id, lock:data.lock, prog_id:data.prog_id, major_id:data.major_id, status:data.status, semester:data.semester, type:data.type }
-      console.log(data); 
-      console.log(sentToServer); 
       const res = await postMetaDataAIS(sentToServer);
       if(res.success){
          // Do something if passed
@@ -316,7 +314,7 @@ const Form = ({recid}) => {
                                 <select {...register("unit_id")} className="input-bordered">
                                   <option value="" disabled selected>--CHOOSE--</option>
                                   {helper && helper.departments.map( row => 
-                                    <option value={row.id}>{row.title && row.title.toUpperCase()}</option>
+                                    <option value={row.id} selected={ getValues('unit_id') == row.id} >{row.title && row.title.toUpperCase()}</option>
                                   )}
                                 </select>
                             </div>
@@ -328,7 +326,7 @@ const Form = ({recid}) => {
                                 <select {...register("course_id")} className="input-bordered">
                                   <option value="" disabled selected>--CHOOSE--</option>
                                   {helper && helper.courses.map( row => 
-                                    <option value={row.id}>{row.title && row.title.toUpperCase()} - ( {row.course_code} ) </option>
+                                    <option value={row.id} selected={ getValues('course_id') == row.id} >{row.title && row.title.toUpperCase()} - ( {row.course_code} ) </option>
                                   )}
                                 </select>
                             </div>
@@ -339,7 +337,7 @@ const Form = ({recid}) => {
                                 <select {...register("prog_id")} className="input-bordered">
                                 <option value="" disabled selected>--CHOOSE--</option>
                                   {helper && helper.programs.map( row => 
-                                    <option value={row.id}>{row.short && row.short.toUpperCase()}</option>
+                                    <option value={row.id} selected={ getValues('prog_id') == row.id} >{row.short && row.short.toUpperCase()}</option>
                                   )}
                                 </select>
                             </div>
@@ -350,7 +348,7 @@ const Form = ({recid}) => {
                                 <select {...register("major_id")} className="input-bordered">
                                 <option value="" selected>-- NO MAJOR --</option>
                                   {helper && helper.majors.map( row => 
-                                    <option value={row.id}>{row.title && row.title.toUpperCase()} ({row.code && row.code.toUpperCase()})</option>
+                                    <option value={row.id} selected={ getValues('major_id') == row.id} >{row.title && row.title.toUpperCase()} ({row.code && row.code.toUpperCase()})</option>
                                   )}
                                 </select>
                             </div>

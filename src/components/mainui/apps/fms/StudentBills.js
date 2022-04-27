@@ -99,7 +99,6 @@ const List = () => {
       })
       setBills([...ss ])
       setBid(null);
-      
     }else{
       dispatch(updateAlert({show:true,message:`${bl.msg.toUpperCase()}`,type:'error'}))
     }

@@ -54,16 +54,17 @@ const List = () => {
    const restoreDeferData = () => {
       sso.databox.deferment && setDeferment([ ...sso.databox.deferment ]);
    }
+
    const deleteRecord = async (e,id) => {
       e.preventDefault()
       const cm = window.confirm('Delete record ?')
       if(cm) {
         const resp = await deleteDefer(id)
-        console.log(resp);
         if(resp.success){
-           fetchDeferData()
+          dispatch(updateAlert({show:true,message:`RECORD DELETED !`,type:'success'}))
+          fetchDeferData()
         }else{
-           alert('ACTION FAILED!')
+          alert('ACTION FAILED!')
         }
       }
    }
@@ -74,9 +75,10 @@ const List = () => {
      if(cm) {
         const resp = await approveDefer(id,sno)
         if(resp.success){
-           fetchDeferData()
+          dispatch(updateAlert({show:true,message:`REQUEST APPROVED !`,type:'success'}))
+          fetchDeferData()
         }else{
-            alert('ACTION FAILED!')
+          alert('ACTION FAILED!')
         }
      }
    }
@@ -104,7 +106,8 @@ const List = () => {
                             <tr className="data-item data-head" role="row">
                                 <th className="data-col" rowspan="1" colspan="1">ID </th>
                                 <th className="data-col w-25" rowspan="1" colspan="1">STUDENT</th>
-                                <th className="data-col w-50" rowspan="1" colspan="1">DEFERMENT INFO</th>
+                                <th className="data-col w-25" rowspan="1" colspan="1">REASON</th>
+                                <th className="data-col w-25" rowspan="1" colspan="1">DEFERMENT INFO</th>
                                 <th className="data-col" rowspan="1" colspan="1">STATUS</th>
                             </tr>
                         </thead>
@@ -115,6 +118,9 @@ const List = () => {
                             <td className="data-col w-25">
                               <small style={{color:'#b76117',fontWeight:'bolder',wordBreak:'break-word'}}>{ row.name }</small>
                               { row.indexno ? parse(`<br/><small style="font-weight:bolder;word-break:break-word">${row.indexno.toUpperCase()}</small>`) : null }
+                            </td>
+                            <td className="data-col w-25">
+                              <small style={{color:'#333',fontWeight:'bolder',wordBreak:'break-word'}}>{ row.reason && row.reason.toUpperCase() }</small>
                             </td>
                             <td className="data-col w-25">
                               <small style={{color:'#b76117',fontWeight:'bolder',wordBreak:'break-word'}}>STATUS: { row.verified == 0 ? 'NOT APPROVED':'APPROVED' }</small>
@@ -188,7 +194,6 @@ const Form = ({recid}) => {
 
     const helperData = async() => {
         const hps = await loadFMSHelpers()
-        console.log(hps)
         if(hps.success){
           setHelper(hps.data)
         } 
@@ -214,7 +219,7 @@ const Form = ({recid}) => {
                             </div>
                         </div>
                         }
-                        <div className="col-md-12">
+                        <div className="col-md-6">
                             <div className="input-item input-with-label">
                                 <label htmlFor="session_id" className="input-item-label">ACADEMIC CALENDAR/SESSION</label>
                                 <select {...register("session_id")} className="input-bordered">
@@ -224,6 +229,11 @@ const Form = ({recid}) => {
                                   )}
                                 </select>
                             </div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="input-item input-with-label">
+                                <label htmlFor="reason" className="input-item-label">DEFERMENT REASON</label>
+                                <input {...register("reason", { required: 'Please enter Reason for Deferment !' })} className="input-bordered" type="text"/></div>
                         </div>
                         <div className="col-md-6">
                             <div className="input-item input-with-label">

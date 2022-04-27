@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchApplicants, fetchApplicant, fetchFreshers, fetchFreshersData, fetchDocuments, removeFresherData, } from '../../../../store/utils/ssoApi';
+import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchApplicants, fetchApplicant, fetchFreshers, fetchFreshersData, fetchDocuments, removeFresherData, reAdmitApplicant, } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import moment from 'moment';
 import { setApplicants, setCurrentPage, setDatabox, setModal, setVouchers, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
@@ -236,6 +236,15 @@ const List = () => {
           setCount(1)// Total Pages
       }
    }
+
+   const admitApplicant = async (e,serial) => {
+      const res = await reAdmitApplicant({serial})
+      if(res.success){
+        dispatch(updateAlert({show:true,message:`APPLICANT ADMITTED !`,type:'success'}))
+        fetchVoucherData()
+      }
+   }
+
    
    const onSearchChange = async (e) => {
      setKeyword(e.target.value)
@@ -308,8 +317,11 @@ const List = () => {
                             <td className="data-col"><span className="lead amount-pay">{ Math.ceil(row.start_semester/2) }</span></td>
                             <td className="data-col"><span className="lead amount-pay">{ row.created_at && moment(row.created_at).format('DD MMM YY, HH:MM').toUpperCase() }</span></td>
                            
-                            <td className="data-col d-flex">
-                                <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showLetterModal(e,row.serial)}><b><em className="ti ti-sms"></em>LETTER</b></Link><br/>
+                            <td className="data-col">
+                                { row.name ?
+                                 <><Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => showLetterModal(e,row.serial)}><b><em className="ti ti-sms"></em>LETTER</b></Link><br/></> :
+                                 <><Link className={`badge badge-sm badge-success text-white`} onClick={ e => admitApplicant(e,row.serial)}><b><em className="ti ti-sms"></em>ADMIT</b></Link><br/></>
+                                }
                                 <Link className={`badge badge-sm badge-warning text-dark`} onClick={ e => getDocs(e,row.serial)}><b><i className="fa fa-folder"></i></b></Link>
                                 <Link className={`badge badge-sm badge-danger text-white`} onClick={ e => removeData(e,row.serial)}><b><i className="fa fa-trash"></i></b></Link>
                             </td>

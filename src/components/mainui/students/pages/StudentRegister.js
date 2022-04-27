@@ -85,6 +85,7 @@ const StudentRegister = () => {
 	   } 
        */
 
+	   if(!user.user.indexno || (user.user.indexno && user.user.indexno.toLowerCase() == 'unique')) isAllow = true; // If student Doesnt Have an Index Number
 	   if((regcourses.elective && regcourses.elective.length <= 0) && (regcourses.core && regcourses.core.length <= 0)) isAllow = false; // If No courses are not selected!
 
        if(isAllow){
@@ -120,10 +121,22 @@ const StudentRegister = () => {
 		}
 		*/
 
+		// If Student does't have an Index Number
+		if(!user.user.indexno || (user.user.indexno && user.user.indexno.toLowerCase() == 'unique')){
+			allowReg = false; 
+		}
 		// If Student is Pardoned by Finance, Allow Registration
 		if(user.user.flag_fees_pardon  == 1){
 			allowReg = true
+			msg = "No Index Number, Pay fees to obtain one or contact Helpdesk!"
 		}
+
+		// If Student Deferred Programme
+		if(user.user.defer_status  == 1){
+			allowReg = false
+			msg = "You have deffered active Programme!"
+		}
+
 		// If Registration Period is Inactive
 		if(!moment().isBetween(moment(user.user.cal_register_start),moment(user.user.cal_register_end).add(1,'days'))){
 			allowReg = false

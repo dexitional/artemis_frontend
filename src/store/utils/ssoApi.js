@@ -114,6 +114,11 @@ export const admitApplicant = async (data) => {
   return res.data;
 } 
 
+export const reAdmitApplicant = async (data) => {
+  const res = await axios.post(`${API_URL}/ams/admitfix`,{...data});
+  return res.data;
+} 
+
 
 // MATRICULANTS ENDPOINT CALLS
 
