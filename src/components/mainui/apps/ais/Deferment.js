@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { deleteDefer, fetchDefer, loadAMSHelpers, postDefer, approveDefer, loadAISHelpers, loadFMSHelpers } from '../../../../store/utils/ssoApi';
+import { deleteDefer, fetchDefer, loadAMSHelpers, postDefer, approveDefer, loadAISHelpers, loadFMSHelpers, resumeDefer } from '../../../../store/utils/ssoApi';
 import { useSelector,useDispatch } from 'react-redux';
 import moment from 'moment';
 import { setDatabox, updateAlert, updateDatabox } from '../../../../store/admission/ssoSlice';
@@ -83,6 +83,20 @@ const List = () => {
      }
    }
 
+   const resumeDeferment = async (e,id,sno) => {
+    e.preventDefault()
+    const cm = window.confirm('Resume Academics ?'+sno)
+    if(cm) {
+       const resp = await resumeDefer(id,sno)
+       if(resp.success){
+         dispatch(updateAlert({show:true,message:`ACADEMICS RESUMPTION ACTIVATED !`,type:'success'}))
+         fetchDeferData()
+       }else{
+         alert('ACTION FAILED!')
+       }
+    }
+  }
+
    useEffect(() => {
      restoreDeferData()
      fetchDeferData()
@@ -123,11 +137,15 @@ const List = () => {
                               <small style={{color:'#333',fontWeight:'bolder',wordBreak:'break-word'}}>{ row.reason && row.reason.toUpperCase() }</small>
                             </td>
                             <td className="data-col w-25">
-                              <small style={{color:'#b76117',fontWeight:'bolder',wordBreak:'break-word'}}>STATUS: { row.verified == 0 ? 'NOT APPROVED':'APPROVED' }</small>
+                              <small style={{color:'#b76117',fontWeight:'bolder',wordBreak:'break-word'}}>STATUS: { row.verified == 0 ? 'NOT APPROVED': (row.verified == 1 ? 'APPROVED':'RESUMED') }</small>
                               {row.verified == 1 ? parse(`<br/><small style="font-weight:bolder;word-break:break-word">APPROVED ON: ${row.verified_at && row.verified_at.toUpperCase() }</small>`) : null }
+                              {row.verified == 2 ? parse(`<br/><small style="font-weight:bolder;word-break:break-word">RESUMED ON: ${row.resumed_at && row.resumed_at.toUpperCase() }</small>`) : null }
                             </td>
                             <td className="data-col">
-                                { row.verified == 0 ? <Link className={`badge badge-sm ${row.verified == 0 ? 'badge-success text-white' : 'badge-success badge-outline text-success'}`} onClick={ e => approveDeferment(e,row.id,user.user.staff_no)}><b>APPROVE</b></Link>: <span className="badge badge-sm badge-outline badge-dark text-dark"><b>APPROVED</b></span>}
+                                { row.verified == 0 && <Link className={`badge badge-sm ${row.verified == 0 ? 'badge-success text-white' : 'badge-success badge-outline text-success'}`} onClick={ e => approveDeferment(e,row.id,user.user.staff_no)}><b>APPROVE</b></Link> }
+                                { row.verified == 1 && <span className="badge badge-sm badge-outline badge-dark text-dark"><b>APPROVED</b></span>}
+                                { row.verified == 1 && <Link className={`badge badge-sm ${row.verified == 1 ? 'badge-success text-white' : 'badge-success badge-outline text-success'}`} onClick={ e => resumeDeferment(e,row.id,user.user.staff_no)}><b>RESUME</b></Link> }
+                                { row.verified == 2 && <span className="badge badge-sm badge-outline badge-dark text-dark"><b>RESUMED</b></span>}
                                 <Link className={`badge badge-sm badge-success text-white`} to={`/app/ais?mod=deferment&view=edit&recid=${row.id}`}><b><em className="ti ti-pencil"></em></b></Link>
                                 <Link className={`badge badge-sm badge-danger text-white`} onClick={ e => deleteRecord(e,row.id)}><b><em className="ti ti-trash"></em></b></Link>
                             </td>   

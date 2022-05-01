@@ -506,6 +506,11 @@ export const approveDefer = async (id,sno) => {
   return res.data;
 } 
 
+export const resumeDefer = async (id,sno) => {
+  const res = await axios.get(`${API_URL}/ais/deferment/resume/${id}/${sno}`);
+  return res.data;
+} 
+
 
 
 
