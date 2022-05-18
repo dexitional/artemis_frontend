@@ -123,6 +123,7 @@ const List = () => {
     const rt = await resetAccount(refno)
     console.log(rt)
     if(rt.success){
+       alert(`${rt.data}`)
        dispatch(updateAlert({show:true,message:`Account has been reset !`,type:'success'}))
       // Account Reset Successfully!
     }else{ dispatch(updateAlert({show:true,message:rt.msg.toUpperCase(),type:'error'})) }

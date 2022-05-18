@@ -23,13 +23,16 @@ const PaperResult = () => {
 	}
 
     const getGrade = (num) => {
+        if(num == null) return 'IC'
+        num = parseFloat(num)
         const vs = modal.content.grades && modal.content.grades.find(row => row.min <= num && num <= row.max)
         return (vs && vs.grade) || 'IC';
      }
  
      const getPoint = (num) => {
+        num = parseFloat(num)
         const vs = modal.content.grades && modal.content.grades.find(row => row.min <= num && num <= row.max)
-        return (vs && vs.gradepoint) || 'IC';
+        return (vs && parseFloat(vs.gradepoint)) || 0;
      }
 
     const handlePrint = useReactToPrint({
@@ -93,13 +96,21 @@ const PaperResult = () => {
                         </tr>
                         { modal.content.data.data && modal.content.data.data.length > 0 ?
 						modal.content.data.data.map((row) =>
+                        row.flag_visible == 1 ?
                         <tr class="tbody">
                             <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{row.course_code && row.course_code.toUpperCase()}</td>
                             <td>{row.course_name && row.course_name.toUpperCase()} {row.score_type == 'R' ? ' (Resit)':''}</td>
                             <td align="center">{row.credit}</td>
                             <td align="center">{row.total_score}</td>
                             <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{getGrade(row.total_score)}</td>
-                            <td align="center">{row.total_score}</td>
+                            <td align="center">{ (getPoint(row.total_score) * row.credit).toFixed(1) }</td>
+                        </tr>
+                        :
+                        <tr class="tbody">
+                            <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{row.course_code && row.course_code.toUpperCase()}</td>
+                            <td>{row.course_name && row.course_name.toUpperCase()} {row.score_type == 'R' ? ' (Resit)':''}</td>
+                            <td align="center">{row.credit}</td>
+                            <td align="center" colSpan={3}>NOT RELEASED</td>
                         </tr>
                          ) : 
                          <tr>
@@ -112,11 +123,11 @@ const PaperResult = () => {
               <div className="title-cover">
                     <div className="title-group flex-2">&nbsp;</div>
                     <div className="title-group"><b>TCR:&nbsp;</b>{modal.content.data && modal.content.data.data.reduce((acc,row)=> row.credit+acc,0)}</div>
-                    <div className="title-group"><b>TGP:&nbsp;</b>{modal.content.data && modal.content.data.data.reduce((acc,row)=> getPoint(parseFloat(row.total_score))+acc,0).toFixed(1)}</div>
-                    <div className="title-group"><b>CCR:&nbsp;</b>10</div>
-                    <div className="title-group"><b>CGV:&nbsp;</b>10</div>
-                    <div className="title-group"><b>GPA:&nbsp;</b>{ /*modal.content.data && ((modal.content.data.data.reduce((acc,row)=> row.total_score && (getPoint(row.total_score)+acc,0))/(modal.content.data.data.reduce((acc,row)=> row.credit+acc,0))).toFixed(1))*/ }</div>
-                    <div className="title-group"><b>CGPA:&nbsp;</b>2.40</div>
+                    <div className="title-group"><b>TGP:&nbsp;</b>{modal.content.data && modal.content.data.data.reduce((acc,row)=>(getPoint(row.total_score) * row.credit)+acc,0).toFixed(1)}</div>
+                   { /*<div className="title-group"><b>CCR:&nbsp;</b>10</div>
+                    <div className="title-group"><b>CGV:&nbsp;</b>10</div>*/}
+                    <div className="title-group"><b>GPA:&nbsp;</b>{ modal.content.data && ((modal.content.data.data.reduce((acc,row)=> (getPoint(row.total_score) * row.credit)+acc,0) / (modal.content.data.data.reduce((acc,row)=> row.credit+acc,0))).toFixed(1)) }</div>
+                    <div className="title-group"><b>CGPA:&nbsp;</b>{ modal.content.data && ((modal.content.data.data.reduce((acc,row)=> (getPoint(row.total_score) * row.credit)+acc,0) / (modal.content.data.data.reduce((acc,row)=> row.credit+acc,0))).toFixed(1)) }</div>
                     <div className="title-group flex-2">&nbsp;</div>
               </div><br/>
               <div className="separator"></div>

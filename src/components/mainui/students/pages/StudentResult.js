@@ -70,16 +70,20 @@ const StudentResult = () => {
 	}
 
 	const getGrade = (num) => {
+	   if(num == null) return 'IC'
+	   num = parseFloat(num)
 	   console.log(grades)
 	   const vs = grades && grades.find(row => row.min <= num && num <= row.max)
-	   return (vs && vs.grade) || 'N/A';
+	   return (vs && vs.grade) || 'IC';
 	}
 
 	const getPoint = (num) => {
+	   num = parseFloat(num)
 	   const vs = grades && grades.find(row => row.min <= num && num <= row.max)
-	   return (vs && vs.gradepoint) || 'N/A';
+	   return (vs && parseFloat(vs.gradepoint)) || 0;
 	}
 
+	
 	useEffect(() => {
 	   loadResults()
 	},[])
@@ -123,14 +127,29 @@ const StudentResult = () => {
 							</thead>
 							<tbody >
 								{ slip.data && slip.data.map(row =>
+								 row.flag_visible == 1 ? 
 								<tr role="row" className="data-item odd" key={row.course_code}>
 									<td className="data-col" colspan="2" ><span className="lead user-name">{row.course_name && row.course_name.toUpperCase()}</span><b className="user-id text-primary left">{row.course_code && row.course_code.toUpperCase()}</b></td>
 									<td className="data-col dt-doc-type  center"><h3 className="lead user-name">{row.credit}</h3></td>
 								    <td className="data-col dt-doc-type center"><h3 className="lead user-name">{row.total_score}</h3></td>
 									<td className="data-col center"><b className="badge badge-outline badge-dark badge-md text-dark" style={{fontSize:'20px'}}>{getGrade(row.total_score)}</b></td>
 								</tr>
+								:
+								<tr role="row" className="data-item odd" key={row.course_code}>
+									<td className="data-col" colspan="2" ><span className="lead user-name">{row.course_name && row.course_name.toUpperCase()}</span><b className="user-id text-primary left">{row.course_code && row.course_code.toUpperCase()}</b></td>
+									<td className="data-col dt-doc-type  center"><h3 className="lead user-name">{row.credit}</h3></td>
+								    <td className="data-col center" colSpan={2}><b className="badge badge-outline badge-dark badge-md text-danger" style={{fontSize:'20px'}}><small>NOT RELEASED</small></b></td>
+								</tr>
 								)}
 							</tbody>
+							<tfoot >
+								<tr role="row" className="data-item data-head">
+									<th colspan="2" className="data-col dt-user sorting_disabled pt-3">&nbsp;</th>
+									<th className="data-col dt-doc-type sorting_disabled center">&nbsp;</th>
+									<th className="data-col dt-doc-type sorting_disabled center">GPA: { slip.data && ((slip.data.reduce((acc,row)=> (getPoint(row.total_score) * row.credit)+acc,0) / (slip.data.reduce((acc,row)=> row.credit+acc,0))).toFixed(1)) }</th>
+									<th className="data-col dt-user sorting_disabled center">CGPA:  { slip.data && ((slip.data.reduce((acc,row)=> (getPoint(row.total_score) * row.credit)+acc,0) / (slip.data.reduce((acc,row)=> row.credit+acc,0))).toFixed(1)) }</th>
+								</tr>
+							</tfoot>
 						</table>
 						:
 						<table id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" className="data-table dt-init kyc-list dataTable no-footer">
@@ -162,7 +181,7 @@ const StudentResult = () => {
 					{ results && Object.keys(results).map(row => 
 					  <Fragment key={row.course_code}>
 						<ul  className="progress-info">
-							<li>
+							<li><pre>{JSON.stringify(results[row])}</pre>
 								<b>{row}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
 								<small><button className="badge badge-dark text-warning" onClick={()=> getPage(row)}>VIEW</button></small>
 								<small><button className="badge badge-dark text-warning" onClick={()=> getPrint(row)}><i className="fa fa-print"></i></button></small>

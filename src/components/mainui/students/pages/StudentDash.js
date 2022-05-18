@@ -10,9 +10,13 @@ const StudentDash = () => {
 	const modules = [
 		{ title : 'PROFILE MODULE', desc: 'Student Profile', url: '/student?mod=profile&view=list',icon:'fa-user-graduate'},
 		{ title : 'REGISTRATION MODULE', desc: 'Registration Module', url: '/student?mod=registration&view=list',icon:'fa-address-card'},
-		//{ title : 'RESULTS MODULE', desc: 'Statement of Result', url: '/student?mod=results&view=list',icon:'fa-book'},
+		{ title : 'RESULTS MODULE', desc: 'Statement of Result', url: '/student?mod=results&view=list',icon:'fa-book'},
 		{ title : 'FEES MODULE', desc: 'Academic Fees & Payment History', url: '/student?mod=fees&view=list',icon:'fa-credit-card'},
-		//{ title : 'SLIP MODULE', desc: 'Academic Fees & Payment History', url: '/student?mod=slip&view=list',icon:'fa-file-invoice-dollar'},
+		{ title : 'ELECTA MODULE', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'},
+		{/* { title : 'ACTIVATE EMAIL', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, */},
+		{/* { title : 'TRANSWIFT', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, */},
+		{/* { title : 'E-PAY', desc: 'AUCC Payment Platform', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, */},
+		{/* { title : 'ECAMPUS', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, */},
 	]
 
 	return (

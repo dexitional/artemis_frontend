@@ -319,6 +319,21 @@ export const helperData = {
           if(con) allowAccess = con
         }
 		  } return allowAccess;
-	  }
+	  },
+
+    gpa : (indexno,session_id,results) => {
+      // credit, gradepoint, session_id 
+      let pa = { gpa:0, cgpa:0 }
+      if(results.length > 0){
+         pa.gpa = results.reduce((r => {
+           
+         }))
+      }
+
+		  
+	  },
+
+
+
   }
                     
