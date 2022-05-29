@@ -321,13 +321,40 @@ export const helperData = {
 		  } return allowAccess;
 	  },
 
-    gpa : (indexno,session_id,results) => {
+    getGrade : (num,grades) => {
+      if(num == null) return 'IC'
+      num = parseFloat(num)
+      console.log(grades)
+      const vs = grades && grades.find(row => row.min <= num && num <= row.max)
+      return (vs && vs.grade) || 'IC';
+    },
+ 
+    getPoint : (num,grades) => {
+      num = parseFloat(num)
+      const vs = grades && grades.find(row => row.min <= num && num <= row.max)
+      return (vs && parseFloat(vs.gradepoint)) || 0;
+    },
+
+    average : (indexno,session_id,results) => {
       // credit, gradepoint, session_id 
       let pa = { gpa:0, cgpa:0 }
       if(results.length > 0){
-         pa.gpa = results.reduce((r => {
-           
-         }))
+         // GPA
+         const gp_sum = results.filter(r => r.session_id == session_id).reduce(((acc,r) => {
+             const gp = this.helperData.getPoint(r.total_score,r.grade_meta) * r.credit
+             return gp+acc;
+         }, 0))
+         const gp_credit = results.filter(r => r.session_id == session_id).reduce(((acc,r) => r.credit+acc,0))
+         pa.gpa = gp_sum/gp_credit  
+        
+         // CGPA
+         const cp_sum = results.filter(r => r.session_id <= session_id).reduce(((acc,r) => {
+             const gp = this.helperData.getPoint(r.total_score) * r.credit
+             return gp+acc;
+         }, 0))
+         const cp_credit = results.filter(r => r.session_id <= session_id).reduce(((acc,r) => r.credit+acc,0))
+         pa.cgpa = cp_sum/cp_credit
+        
       }
 
 		  
