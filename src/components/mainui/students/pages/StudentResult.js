@@ -181,7 +181,7 @@ const StudentResult = () => {
 					{ results && Object.keys(results).map(row => 
 					  <Fragment key={row.course_code}>
 						<ul  className="progress-info">
-							<li><pre>{JSON.stringify(results[row])}</pre>
+							<li>
 								<b>{row}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
 								<small><button className="badge badge-dark text-warning" onClick={()=> getPage(row)}>VIEW</button></small>
 								<small><button className="badge badge-dark text-warning" onClick={()=> getPrint(row)}><i className="fa fa-print"></i></button></small>

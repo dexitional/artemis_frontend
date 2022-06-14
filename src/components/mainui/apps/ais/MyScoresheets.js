@@ -824,13 +824,13 @@ const ScoreForm = ({recid}) => {
                           <div className="input-item input-with-label">
                             {/* sessionID_courseID_indexno_class/exam letter_ */}
                               <label htmlFor={`${row.class.name}`} className="input-item-label">CLASS SCORE</label>
-                              <input  {...register(`${row.class.name}`, { required: 'Please enter Class Score !' })} className="input-bordered" type="number" step="0.01" max={40} onKeyUp={(e) => e.currentTarget.value = (e.currentTarget.value > 40 ? 40 : e.currentTarget.value)}/>
+                              <input  {...register(`${row.class.name}`, { required: 'Please enter Class Score !' })} className="input-bordered" type="number" step="0.1" min={0} max={40} onKeyUp={(e) => e.currentTarget.value = (e.currentTarget.value > 40 ? 40 : e.currentTarget.value)}/>
                           </div>
                       </div>
                       <div className="col-md-2">
                           <div className="input-item input-with-label">
                               <label htmlFor={`${row.exam.name}`} className="input-item-label">EXAM SCORE</label>
-                              <input  {...register(`${row.exam.name}`, { required: 'Please enter Exam Score !' })} className="input-bordered" type="number" step="0.01" max={60} onKeyUp={(e) => e.currentTarget.value = (e.currentTarget.value > 60 ? 60 : e.currentTarget.value)}/>
+                              <input  {...register(`${row.exam.name}`, { required: 'Please enter Exam Score !' })} className="input-bordered" type="number" step="0.1" min={0} max={60} onKeyUp={(e) => e.currentTarget.value = (e.currentTarget.value > 60 ? 60 : e.currentTarget.value)}/>
                           </div>
                       </div>
                       <hr/>

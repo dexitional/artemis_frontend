@@ -578,7 +578,7 @@ const Form = ({recid}) => {
 // COMPONENT - REPORT
 const Report = ({recid}) => {
   const [ loading,setLoading ] = useState(false);
-  const [ helper,setHelper ] = useState({ programs:[],majors:[]});
+  const [ helper,setHelper ] = useState({ programs:[],majors:[],sessions:[] });
   const history = useHistory();
   const dispatch = useDispatch();
   const { sso } = useSelector(state => state)
@@ -586,7 +586,7 @@ const Report = ({recid}) => {
   
   const onSubmit = async sdata => {
     const res = await postStudentReportAIS(sdata);
-    const { type,prog_id,year_group,major_id,gender } = sdata
+    const { type,prog_id,year_group,major_id,gender,asession } = sdata
     console.log(sdata)
     console.log(res)
     if(res.success){
@@ -596,7 +596,7 @@ const Report = ({recid}) => {
           var fileName = '',data = [];
           if(mdata && mdata.length > 0){
             for(var row of mdata){
-              const ds = { 'STUDENT ID':row.refno,'INDEX_NUMBER':row.indexno,'STUDENT_NAME':row.name && row.name.toUpperCase(),'YEAR':Math.ceil(row.semester/2),'GENDER':(row.gender == 'M' ? 'MALE':(row.gender == 'F' ? 'FEMALE':'')),'PHONE':row.phone,'DATE OF BIRTH':moment(row.dob).format('MMM DD,YYYY'),'PROGRAM':row.program_name,'MAJOR':row.major_name,'STUDY MODE':row.session,'INSTITUTIONAL EMAIL':row.institute_email,'DATE OF ADMISSION': moment(row.doa).format('MM/YYYY') }
+              const ds = { 'STUDENT ID':row.refno,'INDEX_NUMBER':row.indexno,'STUDENT_NAME':row.name && row.name.toUpperCase(),'YEAR':Math.ceil(row.semester/2),'GENDER':(row.gender == 'M' ? 'MALE':(row.gender == 'F' ? 'FEMALE':'')),'PHONE':row.phone,'DATE OF BIRTH':moment(row.dob).format('MMM DD,YYYY'),'PROGRAM':row.program_name,'MAJOR':row.major_name,'STUDY MODE':row.session,'INSTITUTIONAL EMAIL':row.institute_email,'DATE OF ADMISSION': moment(row.doa).format('MM/YYYY'),'PERSONAL EMAIL':row.email }
               data.push(ds)
             }
             if(prog_id) fileName += `${row.program_name}`
@@ -634,7 +634,6 @@ const Report = ({recid}) => {
 
   const helperData = async() => {
       const hp = await loadAISHelpers()
-      console.log(hp)
       if(hp.success){
         setHelper(hp.data)
       } 
@@ -740,6 +739,18 @@ const Report = ({recid}) => {
                               <select {...register("defer_status")} className="input-bordered">
                                  <option value={'0'} selected >NOT DEFERRED</option>
                                  <option value={'1'}>DEFFERRED</option>
+                              </select>
+                          </div>
+                      </div>
+
+                      <div className="col-md-6">
+                          <div className="input-item input-with-label">
+                              <label htmlFor="prog_id" className="input-item-label">ADMISSION SESSION</label>
+                              <select {...register("asession")} className="input-bordered">
+                                <option value="" disabled selected>ALL</option>
+                                {helper && helper.sessions.map( row => 
+                                  <option value={row.admission_code}>{row.title && row.title.toUpperCase()}</option>
+                                )}
                               </select>
                           </div>
                       </div>

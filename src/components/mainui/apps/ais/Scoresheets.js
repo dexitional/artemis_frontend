@@ -59,6 +59,7 @@ const List = () => {
    
    const history = useHistory()
    const [ role, setRole ] = useState(null)
+   const [ roleName, setRoleName ] = useState(null)
    const [ sheets, setSheets ] = useState([])
    const { sso } = useSelector(state => state)
    const dispatch = useDispatch();
@@ -73,7 +74,7 @@ const List = () => {
    const [ newId, setNewId ] = React.useState(null);
    const importRef = useRef(null)
    const { user }  = sso;
-   console.log(user);
+   
 
    const handleClick = (e,id) => {
       setAnchorEl(e.currentTarget);
@@ -294,6 +295,7 @@ const List = () => {
       if(sel != '') query += `&stream=${sel}`
       if(role) query += `&role=${role}`
       //alert(query)
+     
       const res = await fetchSheetDataAIS(query);
       if(res.success){
           setIsLoading(false)
@@ -311,7 +313,8 @@ const List = () => {
     const getAcademicRole = () => {
       if(user.roles.length > 0){
         const m = user.roles.find( r => ['ais dean','ais hod'].includes(r.role_name.toLowerCase()))
-        setRole(m && m.role_meta || null)
+        setRole((m && m.role_meta) || null)
+        setRoleName((m && m.role_name.toLowerCase()) || null)
       }
     }
    
@@ -350,8 +353,8 @@ const List = () => {
    }
 
    useEffect(() => {
-     restoreSheetData()
      getAcademicRole()
+     restoreSheetData()
    },[])  
 
    useEffect(() => {
@@ -391,13 +394,15 @@ const List = () => {
                           { sheets.map((row) => 
                           <tr className="data-item odd" role="row">
                             <td className="data-col w-25">
-                                <small className="lead token-amount">{row.course_name} </small>  
+                                <small className="lead token-amount">{row.course_name && row.course_name.toUpperCase()} </small>  
                                 {row.course_code ? parse(`<small style="color:#b76117;font-weight:bolder;word-break:break-word">${row.course_code}  <em> ( ${row.credit} credits )</em></small>`) : null }
+                                {row.regcount ? parse(`<br/><em><small style="color:#666;font-weight:bolder;word-break:break-word"> -- STUDENTS: ${row.regcount} </small></em>`) : null }
                             </td>
                             <td className="data-col w-25">
                                 <small className="lead token-amount">{row.program_name} </small>
                                 {row.major_name ? parse(`<small style="color:#b76117;font-weight:bolder;word-break:break-word">${row.major_name}</small><br/>`) : null }
                                 {row.semester ? parse(`<small style="color:#b76117;font-weight:bolder;word-break:break-word">YEAR ${Math.ceil(row.semester/2)}    <em> ( ${getStudyMode(row.session).toUpperCase()} CLASS )</em></small>`) : null }
+                                {row.complete_ratio ? parse(`<br/><em><small style="color:#666;font-weight:bolder;word-break:break-word">COMPLETION: ${row.complete_ratio}%</small></em>`) : null }
                             
                             </td>
                             <td className="data-col">
@@ -416,21 +421,21 @@ const List = () => {
                                   <Menu id={`basic-menu${row.id}`} anchorEl={anchorEl} open={ref && ref == row.id} onClose={handleClose} variant="outlined" MenuListProps={{'aria-labelledby': `basic-button${row.id}`}}>
                                     {/*<MenuItem onClick={handleClose}>VIEW PROFILE</MenuItem>*/}
                                     {/*<MenuItem onClick={() => editProfile(row.id)}>MANAGE SHEET</MenuItem>*/}
-                                    <MenuItem onClick={() => assignNewSheet(row.id)}>ASSIGN SHEET</MenuItem>
-                                    <MenuItem onClick={() => claimSheet(row.id)}>CLAIM SHEET</MenuItem>
-                                    <Divider/>
+                                    { row.flag_assessed == 0 && roleName != 'ais dean' && <MenuItem onClick={() => assignNewSheet(row.id)}>ASSIGN SHEET</MenuItem>}
+                                    { row.flag_assessed == 0 && roleName != 'ais dean' && <MenuItem onClick={() => claimSheet(row.id)}>CLAIM SHEET</MenuItem>}
+                                    { row.flag_assessed == 0  && roleName != 'ais dean' && <Divider/> }
                                     <MenuItem onClick={() => viewScores(row.id)}>VIEW SCORES</MenuItem>
                                     <MenuItem onClick={() => viewClass(row.id)}>VIEW CLASS</MenuItem>
                                     { row.flag_assessed == 1 &&  (role && role.role_name && role.role_name.toLowerCase() == 'ais dean') && <Divider/>}
-                                    {(row.flag_assessed == 1 && row.flag_certified == 0) &&  (role && role.role_name && role.role_name.toLowerCase() == 'ais dean') && <MenuItem onClick={() => certifySheet(row.id,user.user.staff_no)}>PUBLISH SCORES</MenuItem>}
-                                    {(row.flag_assessed == 1 && row.flag_certified == 1 ) &&  (role && role.role_name && role.role_name.toLowerCase() == 'ais dean') && <MenuItem onClick={() => uncertifySheet(row.id)}>UNPUBLISH SCORES</MenuItem>}
+                                    {(row.flag_assessed == 1 && row.flag_certified == 0) &&  (roleName == 'ais dean') && <MenuItem onClick={() => certifySheet(row.id,user.user.staff_no)}>PUBLISH SCORES</MenuItem>}
+                                    {(row.flag_assessed == 1 && row.flag_certified == 1 ) &&  (roleName == 'ais dean') && <MenuItem onClick={() => uncertifySheet(row.id)}>UNPUBLISH SCORES</MenuItem>}
                                     
-                                    {row.flag_assessed == 0 && <MenuItem onClick={() => publishSheet(row.id,user.user.staff_no)}>SUBMIT SHEET</MenuItem>}
+                                    {row.flag_assessed == 0 && roleName != 'ais dean' && <MenuItem onClick={() => publishSheet(row.id,user.user.staff_no)}>SUBMIT SHEET</MenuItem>}
                                     
                                     { row.flag_assessed == 0 && <Divider/>}
-                                    { row.flag_assessed == 0 && <MenuItem onClick={() => fillSheet(row.id)}>ASSESS SHEET</MenuItem> }
+                                    { row.flag_assessed == 0  && roleName != 'ais dean' && <MenuItem onClick={() => fillSheet(row.id)}>ASSESS SHEET</MenuItem> }
                                     { row.flag_assessed == 0 && <MenuItem onClick={() => exportSheet(row.id)}>EXPORT SHEET</MenuItem> }
-                                    { row.flag_assessed == 0 && <MenuItem onClick={() => importTrigger(row.id)}>IMPORT SHEET</MenuItem> }
+                                    { row.flag_assessed == 0  && roleName != 'ais dean' && <MenuItem onClick={() => importTrigger(row.id)}>IMPORT SHEET</MenuItem> }
                                     
                                   </Menu>
                                 </>
@@ -844,13 +849,13 @@ const ScoreForm = ({recid}) => {
                           <div className="input-item input-with-label">
                             {/* sessionID_courseID_indexno_class/exam letter_ */}
                               <label htmlFor={`${row.class.name}`} className="input-item-label">CLASS SCORE</label>
-                              <input  {...register(`${row.class.name}`, { required: 'Please enter Class Score !' })} className="input-bordered" type="number" step="0.01" max={40} onKeyUp={(e) => e.currentTarget.value = (e.currentTarget.value > 40 ? 40 : e.currentTarget.value)}/>
+                              <input  {...register(`${row.class.name}`, { required: 'Please enter Class Score !' })} className="input-bordered" type="number" step="0.1" min={0} max={40} onKeyUp={(e) => e.currentTarget.value = (e.currentTarget.value > 40 ? 40 : e.currentTarget.value)}/>
                           </div>
                       </div>
                       <div className="col-md-2">
                           <div className="input-item input-with-label">
                               <label htmlFor={`${row.exam.name}`} className="input-item-label">EXAM SCORE</label>
-                              <input  {...register(`${row.exam.name}`, { required: 'Please enter Exam Score !' })} className="input-bordered" type="number" step="0.01" max={60} onKeyUp={(e) => e.currentTarget.value = (e.currentTarget.value > 60 ? 60 : e.currentTarget.value)}/>
+                              <input  {...register(`${row.exam.name}`, { required: 'Please enter Exam Score !' })} className="input-bordered" type="number" step="0.1" min={0} max={60} onKeyUp={(e) => e.currentTarget.value = (e.currentTarget.value > 60 ? 60 : e.currentTarget.value)}/>
                           </div>
                       </div>
                       <hr/>

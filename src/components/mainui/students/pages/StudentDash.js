@@ -13,10 +13,11 @@ const StudentDash = () => {
 		{ title : 'RESULTS MODULE', desc: 'Statement of Result', url: '/student?mod=results&view=list',icon:'fa-book'},
 		{ title : 'FEES MODULE', desc: 'Academic Fees & Payment History', url: '/student?mod=fees&view=list',icon:'fa-credit-card'},
 		{ title : 'ELECTA MODULE', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'},
-		{/* { title : 'ACTIVATE EMAIL', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, */},
-		{/* { title : 'TRANSWIFT', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, */},
-		{/* { title : 'E-PAY', desc: 'AUCC Payment Platform', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, */},
-		{/* { title : 'ECAMPUS', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, */},
+		/* { title : 'ACTIVATE EMAIL', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'},
+		   { title : 'TRANSWIFT', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, 
+		   { title : 'E-PAY', desc: 'AUCC Payment Platform', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'}, 
+		   { title : 'ECAMPUS', desc: 'Electa Voting System', url: '/student?mod=electa&view=list',icon:'fa-file-invoice-dollar'},
+		 */
 	]
 
 	return (
@@ -25,13 +26,12 @@ const StudentDash = () => {
 			<div className="token-information card card-full-height">
 				<h3 className="sub-head bg-blueblack"><span style={{fontSize:'.9rem', color:'#eee'}}>STUDENT PORTAL MENU</span></h3>
 				<div className="row no-gutters height-100">
-				   
 				   {modules.map((mod,i) => 	
 					  <div className="col-md-3">
 						<div className="token-info nitro">
 								<em className={`fas fa-3x ${mod.icon} text-info`} />
 								<div className="gaps-2x" />
-								<div><Link to={mod.url} title={mod.desc} className="btn btn-primary" style={{color:'#f8e0cd'}}><b>{mod.title.toUpperCase()}</b></Link></div>
+								<div><Link to={mod.url} title={mod.desc} className="btn btn-primary" style={{color:'#f8e0cd'}}><b>{mod.title && mod.title.toUpperCase()}</b></Link></div>
 						</div>
 					  </div>
 					)}

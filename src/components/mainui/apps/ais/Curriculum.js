@@ -1,4 +1,4 @@
-import React,{ useState,useEffect,useRef } from 'react'
+import React,{ useState,useEffect,useRef, useCallback } from 'react'
 import { Link,useHistory } from 'react-router-dom'
 import { useForm } from "react-hook-form"
 import { postVoucher,deleteVoucher, fetchVouchers, recoverVoucher, fetchStudentDataAIS, postStudentDataAIS, loadAISHelpers, resetAccount, generateMail, stageAccount, fetchSheetDataAIS, loadAssessment, saveAssessment, publishAssessment, certifyAssessment, uncertifyAssessment, loadCourselist, assignSheet, unassignSheet, fetchHRStaffHRS, fetchMetaDataAIS, fetchMountListAIS, postMetaDataAIS, } from '../../../../store/utils/ssoApi';
@@ -15,6 +15,7 @@ import { excelToJson, getStudyMode, jsonToExcel } from '../../../../store/utils/
 import { CSVLink,CSVDownload } from "react-csv";
 import { Divider } from '@mui/material';
 import Loader from '../../../../assets/img/loaderm.gif'
+import PagerStream from '../../PagerStream';
 
 
 // COMPONENT - Scoresheet
@@ -75,7 +76,10 @@ const List = () => {
    
    const history = useHistory()
    const [ curri, setCurri ] = useState([])
+   const [ role, setRole ] = useState(null)
+   const [ sel, setSel ] = React.useState(null);
    const { sso } = useSelector(state => state)
+   const { user }  = sso;
    const dispatch = useDispatch();
    const [anchorEl, setAnchorEl] = React.useState(null);
    const [ref, setRef] = React.useState(null);
@@ -86,6 +90,7 @@ const List = () => {
    const [ isLoading, setIsLoading ] = React.useState(false);
    const [ newId, setNewId ] = React.useState(null);
    const importRef = useRef(null)
+  
 
    const handleClick = (e,id) => {
       setAnchorEl(e.currentTarget);
@@ -100,7 +105,7 @@ const List = () => {
       const url = `/app/ais?mod=curriculum&view=edit&recid=${id}`;
       history.push(url);
    }
-
+ 
     
     const viewMiniProfile = async (sno) => {
         const res = await fetchHRStaffHRS(sno);
@@ -118,22 +123,37 @@ const List = () => {
        sso.databox.curri && setCurri([ ...sso.databox.curri ]);
     }
 
-    const fetchMetaData = async () => {
-        var query = ``;
-        if(page >= 1) query += `?page=${page-1}`
-        if(keyword != '') query += `&keyword=${keyword}`
-        const res = await fetchMetaDataAIS(query);
-        if(res.success){
-            setIsLoading(false)
-            setCurri([...res.data.data]);// Page Data
-            setCount(res.data.totalPages)// Total Pages
-        }
+    const fetchMetaData =  useCallback(async () => {
+      var query = ``;
+      if(page >= 1) query += `?page=${page-1}`
+      if(keyword != '') query += `&keyword=${keyword}`
+      if(sel != '') query += `&stream=${sel}`
+      if(role) query += `&role=${role}`
+      const res = await fetchMetaDataAIS(query);
+      if(res.success){
+        setIsLoading(false)
+        setCurri([...res.data.data]);// Page Data
+        setCount(res.data.totalPages)// Total Pages
+      }
+    },[sel,curri])
+
+    const getAcademicRole = () => {
+      if( user && user.roles.length > 0){
+        const m = user.roles.find( r => ['ais dean','ais hod'].includes(r.role_name.toLowerCase()))
+        setRole(m && m.role_meta || null)
+      }
     }
    
     const onSearchChange = async (e) => {
-        setKeyword(e.target.value)
-        setPage(1)
-        if(e.target.value == '') fetchMetaData()
+      setKeyword(e.target.value)
+      setPage(1)
+      if(e.target.value == '') fetchMetaData()
+    }
+
+    const onSelectChange = async (e) => {
+      setSel(e.target.value)
+      setPage(1)
+      if(e.target.value == '') fetchMetaData()
     }
 
     const onPageChange = async (e) => {
@@ -156,6 +176,7 @@ const List = () => {
     }
 
     useEffect(() => {
+      getAcademicRole()
       restoreMetaData()
     },[])
 
@@ -166,14 +187,15 @@ const List = () => {
     useEffect(() => {
       fetchMetaData()
       dispatch(setCurrentPage(page))
-    },[page])
+    },[page,sel])
 
 
    
 
    return (
     <div className="card-innr">
-      <Pager count={count} page={page} onPageChange={onPageChange} onPageClick={onPageClick} keyword={keyword} onSearchChange={onSearchChange} onSubmitSearch={onSubmitSearch} isLoading={isLoading} />
+      {/*<Pager count={count} page={page} onPageChange={onPageChange} onPageClick={onPageClick} keyword={keyword} onSearchChange={onSearchChange} onSubmitSearch={onSubmitSearch} isLoading={isLoading} /> */}
+      <PagerStream count={count} page={page} onPageChange={onPageChange} onPageClick={onPageClick} keyword={keyword} onSearchChange={onSearchChange} onSubmitSearch={onSubmitSearch} isLoading={isLoading} sel={sel} onSelectChange={onSelectChange}  />
       <div className="dataTables_wrapper dt-bootstrap4 no-footer">
         <div className="table-wrap">  
             <div id="DataTables_Table_0_wrapper" className="dataTables_wrapper dt-bootstrap4 no-footer">
